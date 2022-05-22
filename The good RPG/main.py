@@ -1,9 +1,11 @@
+import Utilitarios
 from Utilitarios import Inventario
+import os
+
+
 print('Teste')
 item = 'Espada Sagrada'
-bag = Inventario.inventario(1)
-bag.mostrar()
+bag = Inventario.inventario(5)
 bag.adicionar(item)
-bag.mostrar()
-bag.adicionar('Espada divina')
+bag.remover()
 bag.mostrar()

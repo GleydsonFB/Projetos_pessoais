@@ -30,3 +30,23 @@ class inventario:
             print('Bag cheia')
         else:
             print(f'Item {item} adicionado com sucesso na slot {verificador+1}')
+
+
+    def remover(self):
+        verificador = 0
+        print('Qual item irá remover?')
+        for espacos in range(self.tamanho):
+            tratamento = self.bag[espacos]
+            tratamento.replace("'", "")
+            tratamento.replace('[', '')
+            tratamento.replace(']', '')
+            self.bag[espacos] = tratamento
+        for visual in range(self.tamanho):
+            print(f'{visual + 1}° -- {self.bag[visual]}')
+        remove = int(input('Digite a posição do item escolhido: '))
+        remove -= 1
+        if self.bag[remove] not in 'Vazio':
+            self.bag[remove] = 'Vazio'
+            print('Item retirado!')
+        else:
+            print('O espaço já se encontra vazio')

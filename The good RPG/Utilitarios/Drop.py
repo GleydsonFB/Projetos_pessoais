@@ -1,6 +1,38 @@
 import random
 
 
+def qualidade_item():
+    normal = [1, 2, 3, 4, 5, 6, 7]
+    verde = [8, 9]
+    azul = [10]
+    escolha = random.randint(1, 10)
+    if escolha in normal:
+        return 1
+    elif escolha in verde:
+        return 2
+    else:
+        return 3
+
+
 class Drops:
     def __init__(self, nome_item):
         self.nome_item = nome_item
+        self.qualidade_item = qualidade_item()
+
+
+    def caiu(self, inimigo):
+        qualidade = self.qualidade_item
+        print(qualidade)
+        if qualidade == 1:
+            qualidade = 'normal'
+        elif qualidade == 2:
+            qualidade = 'verde'
+        else:
+            qualidade = 'azul'
+        print(f'O item {self.nome_item} caiu do inimigo {inimigo}, a qualidade dele é {qualidade}!')
+        if qualidade == 'normal':
+            return f'{self.nome_item + " normal"}'
+        elif qualidade == 'verde':
+            return f'{self.nome_item + " verde"}'
+        else:
+            return f'{self.nome_item + " azul"}'

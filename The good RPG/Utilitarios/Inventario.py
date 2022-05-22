@@ -29,7 +29,7 @@ class inventario:
         if adicionado is False:
             print('Bag cheia')
         else:
-            print(f'Item {item} adicionado com sucesso na slot {verificador+1}')
+            print(f'Item {item} adicionado com sucesso na slot {verificador+1} da mochila!')
 
 
     def remover(self):

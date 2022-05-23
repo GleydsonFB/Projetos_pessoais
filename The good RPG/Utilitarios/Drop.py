@@ -22,7 +22,6 @@ class Drops:
 
     def caiu(self, inimigo):
         qualidade = self.qualidade_item
-        print(qualidade)
         if qualidade == 1:
             qualidade = 'normal'
         elif qualidade == 2:

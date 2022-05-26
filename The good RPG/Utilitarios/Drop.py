@@ -35,3 +35,12 @@ class Drops:
             return f'{self.nome_item + " verde"}'
         else:
             return f'{self.nome_item + " azul"}'
+
+
+    def grana(self):
+        if self.qualidade_item == 1:
+            return random.randint(1, 3)
+        elif self.qualidade_item == 2:
+            return random.randint(2, 5)
+        else:
+            return random.randint(4, 8)

@@ -1,6 +1,7 @@
 class inventario:
-    def __init__(self, tamanho):
+    def __init__(self, tamanho, gold):
         self.tamanho = tamanho
+        self.gold = gold
         self.bag = []
         for espaco in range(self.tamanho):
             self.bag.append('Vazio')
@@ -15,8 +16,14 @@ class inventario:
             self.bag[espacos] = tratamento
         for visual in range(self.tamanho):
             print(f'{visual +1}° -- {self.bag[visual]}')
+        print(f'Você possui {self.gold} moedas de ouro')
 
-    def adicionar(self, item):
+
+    def mostrar_gold(self):
+        return self.gold
+
+
+    def adicionar(self, item, gold=0):
         verificador = 0
         adicionado = False
         while verificador < self.tamanho:
@@ -27,9 +34,12 @@ class inventario:
                 adicionado = True
                 break
         if adicionado is False:
-            print('Bag cheia')
+            print(f'A mochila está cheia!')
         else:
             print(f'Item {item} adicionado com sucesso na slot {verificador+1} da mochila!')
+            if gold > 0:
+                print(f'Você recebeu {gold} moeda(s) de ouro!')
+                self.gold += gold
 
 
     def remover(self):

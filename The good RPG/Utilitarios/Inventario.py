@@ -16,7 +16,7 @@ class inventario:
             self.bag[espacos] = tratamento
         for visual in range(self.tamanho):
             print(f'{visual +1}° -- {self.bag[visual]}')
-        print(f'Você possui {self.gold} moedas de ouro')
+        print(f'Você possui {self.gold} moedas de ouro.')
 
 
     def mostrar_gold(self):
@@ -60,3 +60,19 @@ class inventario:
             print('Item retirado!')
         else:
             print('O espaço já se encontra vazio')
+
+
+    def espaco_ocupado(self):
+        contagem = 0
+        for espaco in range(self.tamanho):
+            if self.bag[espaco] in 'Vazio':
+                pass
+            else:
+                contagem += 1
+        return contagem
+
+
+    def venda_item(self, posicao, recebido):
+        self.bag[posicao] = 'Vazio'
+        print('Item vendido com sucesso!')
+        self.gold += recebido

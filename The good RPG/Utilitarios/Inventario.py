@@ -1,4 +1,4 @@
-class inventario:
+class Inventario:
     def __init__(self, tamanho, gold):
         self.tamanho = tamanho
         self.gold = gold

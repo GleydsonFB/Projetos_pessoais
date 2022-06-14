@@ -2,13 +2,15 @@ from time import sleep
 from random import randint
 
 
-class ator:
-    def __init__(self, nome, hp, atk, defe, defe_magica):
+class Ator:
+    def __init__(self, nome, hp, atk, defe, defe_magica, valor_soco, valor_chute):
         self.nome = nome
         self.hp = hp
         self.atk = atk
         self.defe = defe
         self.defm = defe_magica
+        self.soco = valor_soco
+        self.chute = valor_chute
 
     def mostrar_status(self):
         print(f'\tPersonagem: {self.nome}')
@@ -20,7 +22,8 @@ class ator:
         print(f'\tDefesa mágica: {self.defm}')
         sleep(1.5)
 
-class npc:
+
+class Npc:
     def __init__(self, nome, lista_vende, valor_item):
         self.nome = nome
         self.vende = lista_vende
@@ -31,7 +34,6 @@ class npc:
         print(f'{self.nome} te apresenta o que possui na loja: ')
         for item in range(len(self.vende)):
             print(f'{item}° item: {self.vende[item]} custa {self.valor[item]} moedas de ouro')
-
 
     def vendas(self, nome_ator, grana):
         print(f'Que ótimo {nome_ator}!\nQual item deseja comprar? ')

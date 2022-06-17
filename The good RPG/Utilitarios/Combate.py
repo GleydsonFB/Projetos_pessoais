@@ -1,5 +1,6 @@
 from random import randint
 from time import sleep
+import Auxiliares
 
 
 class Batalha:
@@ -22,7 +23,6 @@ class Batalha:
     def luta(self):
         turnos = 1
         inicializa = 0
-        contador = 0
         while True:
             if inicializa == 0:
                 print('Combate inicializado!')
@@ -31,7 +31,6 @@ class Batalha:
                 print(f'Turno {turnos}.')
                 turnos += 1
                 acao = randint(1, 2)
-                print(acao)
                 dano_j = [self.soco - self.df2, self.chute - self.df2]
                 dano_v = [self.soco2 - self.df, self.chute2 - self.df]
                 if acao == 1:
@@ -49,12 +48,8 @@ class Batalha:
                     if dano_v[1] > 0:
                         self.hp -= dano_v[1]
                 print('Sua vez, o que irá fazer?')
-                jogada = int(input('1 - para atacar com soco ou 2 - para chute: '))
-                while jogada not in (1, 2):
-                    jogada = int(input('Opção inválida, 1 para soco ou 2 para chute: '))
-                    contador += 1
-                    if contador == 3:
-                        break
+                jogada = Auxiliares.valida_int('Digite 1 para golpear com um soco ou 2 para chute: ',
+                                               'Opção inválida, 1 para soco ou 2 para chute: ', 3)
                 if jogada == 1:
                     print(f'Você ataca {self.nome2} com um soco, ',
                           f'causando {dano_j[0]} de dano!' if dano_j[0] > 0 else
@@ -69,7 +64,7 @@ class Batalha:
                     sleep(2)
                     if dano_j[1] > 0:
                         self.hp2 -= dano_j[1]
-                elif contador == 3:
+                elif jogada == 0:
                     print(f'Você perdeu a vez de atacar =/')
             if self.hp <= 0 or self.hp2 <= 0:
                 break

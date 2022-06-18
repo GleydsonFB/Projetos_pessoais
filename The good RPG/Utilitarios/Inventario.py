@@ -1,3 +1,5 @@
+from .Erros import remove_inv
+
 class Inventario:
     def __init__(self, tamanho, gold):
         self.tamanho = tamanho
@@ -49,7 +51,7 @@ class Inventario:
             self.bag[espacos] = tratamento
         for visual in range(self.tamanho):
             print(f'{visual + 1}° -- {self.bag[visual]}')
-        remove = int(input('Digite a posição do item escolhido: '))
+        remove = remove_inv('Digite a posição do item escolhido ', 'Posição inválida', self.tamanho)
         remove -= 1
         if self.bag[remove] not in 'Vazio':
             self.bag[remove] = 'Vazio'

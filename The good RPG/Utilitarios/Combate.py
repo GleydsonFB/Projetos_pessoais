@@ -1,6 +1,6 @@
 from random import randint
 from time import sleep
-import Auxiliares
+from .Erros import valida_int
 
 
 class Batalha:
@@ -48,8 +48,8 @@ class Batalha:
                     if dano_v[1] > 0:
                         self.hp -= dano_v[1]
                 print('Sua vez, o que irá fazer?')
-                jogada = Auxiliares.valida_int('Digite 1 para golpear com um soco ou 2 para chute: ',
-                                               'Opção inválida, 1 para soco ou 2 para chute: ', 3)
+                jogada = valida_int('Digite 1 para golpear com um soco ou 2 para chute: ',
+                                    'Opção inválida, 1 para soco ou 2 para chute: ', 3)
                 if jogada == 1:
                     print(f'Você ataca {self.nome2} com um soco, ',
                           f'causando {dano_j[0]} de dano!' if dano_j[0] > 0 else

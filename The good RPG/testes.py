@@ -3,5 +3,8 @@ from Utilitarios import Combate, Drop, Inventario, Personagens, limpa_tela
 
 print('Teste')
 bag = Inventario.Inventario(6, 2)
-bag.remover()
+vilao_1 = Personagens.Vilao('Junior', 3, 1, 1, 2, 3, 4)
+protagonista = Personagens.Ator('Eu', 10, 1, 2, 3, 2, 3)
+batalha_1 = Combate.Batalha(protagonista, vilao_1)
+batalha_1.luta()
 

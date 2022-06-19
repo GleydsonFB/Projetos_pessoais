@@ -81,3 +81,7 @@ class Npc:
             inventario.venda_item(item, pagamento)
         else:
             print(f'Tudo bem {nome_ator}, passe outro dia, quem sabe este item não me seja mais interessante.')
+
+
+class Vilao(Ator):
+    pass

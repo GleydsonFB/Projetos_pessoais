@@ -1,5 +1,6 @@
 from .Erros import remove_inv
 
+
 class Inventario:
     def __init__(self, tamanho, gold):
         self.tamanho = tamanho

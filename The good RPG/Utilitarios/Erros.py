@@ -86,3 +86,4 @@ def remove_inv(posicao, msg, espaco_total, limite=100):
                 contador += 1
             else:
                 return v
+

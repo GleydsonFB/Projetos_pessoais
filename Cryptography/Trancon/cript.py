@@ -12,7 +12,7 @@ def is_float(num):
         return False
 
 
-def Dicionario(letra, desvio=0):
+def dicionario(letra, desvio=0):
     Alfab = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
              'u', 'v', 'w', 'x', 'y', 'z']
     Element = [1.2, 1.4, 1.6, 2.1, 2.2, 2.9, 3.0, 11, 25, 9, 31, 5.5, 12, 33, 40, 4.0,
@@ -30,11 +30,11 @@ def Dicionario(letra, desvio=0):
     return l
 
 
-def Conversor(msg, desvio=0):
+def conversor(msg, desvio=0):
     mensagem = list(msg)
     conversao = []
     for dado in range(len(mensagem)):
-        temp = Dicionario(mensagem[dado], desvio)
+        temp = dicionario(mensagem[dado], desvio)
         conversao.append(temp)
     return conversao
 
@@ -63,4 +63,16 @@ def tradutor(conv, desvio=0):
         for item in range(len(Element)):
             if traducao[letra] == Element[item]:
                 traducao[letra] = Alfab[item]
-    return str(traducao).replace("'", "")
+    return traducao
+
+
+def tratamento(transcricao):
+    for letra in range(len(transcricao)):
+        resultado = transcricao[letra]
+        resultado = str(resultado)
+        resultado.replace("'", '')
+        resultado.replace('[', '')
+        resultado.replace(']', '')
+        resultado.replace(',', '')
+        print(resultado, end='')
+

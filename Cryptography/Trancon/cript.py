@@ -12,15 +12,27 @@ def is_float(num):
         return False
 
 
+def letra_mai(texto):
+    maiusculas = []
+    for letra in range(len(texto)):
+        temporario = texto[letra]
+        temporario = str(temporario)
+        if temporario.isupper():
+            maiusculas.append('@')
+        else:
+            maiusculas.append('!')
+    return maiusculas
+
+
 def dicionario(letra, desvio=0):
-    Alfab = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+    alfab = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
              'u', 'v', 'w', 'x', 'y', 'z']
-    Element = [1.2, 1.4, 1.6, 2.1, 2.2, 2.9, 3.0, 11, 25, 9, 31, 5.5, 12, 33, 40, 4.0,
+    element = [1.2, 1.4, 1.6, 2.1, 2.2, 2.9, 3.0, 11, 25, 9, 31, 5.5, 12, 33, 40, 4.0,
                9.9, 36, 64, 333, 44, 54, 67, 6.7, 79.1, 89.5]
     l = str(letra).lower()
-    for letra, alfabeto in enumerate(Alfab):
+    for letra, alfabeto in enumerate(alfab):
         if l in alfabeto:
-            elemento_final = Element[letra]
+            elemento_final = element[letra]
             return elemento_final + desvio
     if l.isnumeric() or is_float(l):
         if l.isnumeric():
@@ -33,16 +45,17 @@ def dicionario(letra, desvio=0):
 def conversor(msg, desvio=0):
     mensagem = list(msg)
     conversao = []
+    maisculas = letra_mai(list(msg))
     for dado in range(len(mensagem)):
         temp = dicionario(mensagem[dado], desvio)
         conversao.append(temp)
-    return conversao
+    return conversao, maisculas
 
 
 def tradutor(conv, desvio=0):
-    Alfab = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+    alfab = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
              'u', 'v', 'w', 'x', 'y', 'z']
-    Element = [1.2, 1.4, 1.6, 2.1, 2.2, 2.9, 3.0, 11, 25, 9, 31, 5.5, 12, 33, 40, 4.0,
+    element = [1.2, 1.4, 1.6, 2.1, 2.2, 2.9, 3.0, 11, 25, 9, 31, 5.5, 12, 33, 40, 4.0,
                9.9, 36, 64, 333, 44, 54, 67, 6.7, 79.1, 89.5]
     traducao = []
     total = 0
@@ -60,13 +73,13 @@ def tradutor(conv, desvio=0):
         else:
             traducao.append(temp)
     for letra in range(len(traducao)):
-        for item in range(len(Element)):
-            if traducao[letra] == Element[item]:
-                traducao[letra] = Alfab[item]
+        for item in range(len(element)):
+            if traducao[letra] == element[item]:
+                traducao[letra] = alfab[item]
     return traducao
 
 
-def tratamento(transcricao):
+def tratamento(transcricao, letras_m):
     for letra in range(len(transcricao)):
         resultado = transcricao[letra]
         resultado = str(resultado)
@@ -74,5 +87,9 @@ def tratamento(transcricao):
         resultado.replace('[', '')
         resultado.replace(']', '')
         resultado.replace(',', '')
-        print(resultado, end='')
+        if letras_m[letra] == '@':
+            l_mai = resultado.upper()
+            print(l_mai, end='')
+        else:
+            print(resultado, end='')
 

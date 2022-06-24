@@ -19,7 +19,6 @@ class Drops:
         self.nome_item = nome_item
         self.qualidade_item = qualidade_item()
 
-
     def caiu(self, inimigo):
         qualidade = self.qualidade_item
         if qualidade == 1:
@@ -35,7 +34,6 @@ class Drops:
             return f'{self.nome_item + " verde"}'
         else:
             return f'{self.nome_item + " azul"}'
-
 
     def grana(self):
         if self.qualidade_item == 1:

@@ -1,6 +1,7 @@
 from random import randint
 from time import sleep
 from .Erros import valida_int
+from .UX import texto_tela
 
 
 class Batalha:
@@ -101,3 +102,12 @@ class Batalha:
                     print(f'Com o poder que restava, {self.nome2} te derrotou...')
                     sleep(2)
                     return 2
+
+
+def final_luta(resultado, drops):
+    """
+    :param resultado: Receberá o valor do resultado (1 para vitória ou 2 para derrota);
+    :param drops: Recebe o drop do monstro, em caso de vitória;
+    :return: Retorna o resultado bem como a opção de inserir o drop no inventário.
+    """
+    

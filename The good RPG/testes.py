@@ -1,4 +1,4 @@
-from Utilitarios import Combate, Drop, Inventario, Personagens, limpa_tela
+from Utilitarios import Combate, Drop, Inventario, Personagens, UX
 
 
 print('Teste')

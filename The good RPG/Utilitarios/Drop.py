@@ -27,13 +27,14 @@ class Drops:
             qualidade = 'verde'
         else:
             qualidade = 'azul'
-        print(f'O item {self.nome_item} caiu do inimigo {inimigo}, a qualidade dele é {qualidade}!')
+        print(f'O item {self.nome_item} caiu do inimigo {inimigo}, a qualidade dele é {qualidade}!\n'
+              f'Você também ganhou {self.grana()} moedas de ouro.')
         if qualidade == 'normal':
-            return f'{self.nome_item + " normal"}'
+            return f'{self.nome_item + " normal"}', self.grana()
         elif qualidade == 'verde':
-            return f'{self.nome_item + " verde"}'
+            return f'{self.nome_item + " verde"}', self.grana()
         else:
-            return f'{self.nome_item + " azul"}'
+            return f'{self.nome_item + " azul"}', self.grana()
 
     def grana(self):
         if self.qualidade_item == 1:

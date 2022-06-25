@@ -1,7 +1,8 @@
 from random import randint
 from time import sleep
-from .Erros import valida_int
+from .Erros import valida_int, valida_str
 from .UX import texto_tela
+from .Drop import Drops
 
 
 class Batalha:
@@ -104,10 +105,28 @@ class Batalha:
                     return 2
 
 
-def final_luta(resultado, drops):
+def final_luta(resultado, loot, nome_vilao):
     """
     :param resultado: Receberá o valor do resultado (1 para vitória ou 2 para derrota);
-    :param drops: Recebe o drop do monstro, em caso de vitória;
+    :param loot: Recebe o drop do monstro, em caso de vitória;
+    :param nome_vilao: Recebe o nome do oponente;
     :return: Retorna o resultado bem como a opção de inserir o drop no inventário.
     """
-    
+    item = Drops(loot)
+    contador = 0
+    if resultado == 1:
+        print(f'De {nome_vilao} você obteve {item.nome_item}!')
+        escolha = str(input('Deseja adicionar este item ao seu inventário? '))
+        while escolha not in 'SsNn':
+            escolha = str(input('Digite S ou N: '))
+            contador += 1
+            if contador == 5:
+                break
+        if contador == 5:
+            print(f'Devido ao tempo perdido, o item {item.nome_item} acabou ficando inapto para uso.')
+        elif escolha in 'SsNn':
+            if escolha in 'Nn':
+                print(f'Por sua opção, você perdeu o item {item.nome_item}.')
+            else:
+                n_item = item.caiu(nome_vilao)
+                return n_item

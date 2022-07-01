@@ -3,10 +3,10 @@ from Trancon import cript
 
 while True:
     desvio = randint(1, 9999)
-    retorno_desvio = [desvio]
     texto = str(input('Digite: '))
     converso = list(cript.conversor(texto, desvio))
-    print(converso, retorno_desvio)
+    print(desvio)
+    print(converso)
     tradutor = cript.tradutor(converso[0], desvio)
     print(tradutor)
     cript.tratamento(tradutor, converso[1])

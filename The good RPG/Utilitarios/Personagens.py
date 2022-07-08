@@ -59,7 +59,6 @@ class Npc:
             else:
                 print(f'Você não tem moedas suficientes para comprar este item.')
 
-
     def compras(self, nome_ator, inventario):
         print(f'Tudo bem {nome_ator}, me mostre o que você tem.')
         print(f'Você abre o inventário para {self.nome} e espera sua avaliação.')

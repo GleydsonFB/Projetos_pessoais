@@ -20,9 +20,3 @@ class Conector:
             print('Falhou')
         else:
             print('Conexão finalizada')
-
-
-
-
-cone = Conector('localhost', 'root', 'root', 'sakila')
-a = cone.conexao_iniciada()

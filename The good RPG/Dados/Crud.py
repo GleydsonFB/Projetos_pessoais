@@ -47,15 +47,25 @@ class Editor:
                     for item in cursor:
                         return item
                 case 4:
-                    sql = f"SELECT {coluna1}, {colunas[0]}, {colunas[1]}, {colunas[2]} FROM {tabela} " \
-                          f"WHERE {coluna_p} = {dado_proc}"
+                    sql = f"SELECT {coluna1}, {colunas[0]}, {colunas[1]}, {colunas[2]} FROM {tabela} WHERE {coluna_p} = {dado_proc}"
                     cursor = self.con.cursor()
                     cursor.execute(sql)
                     for item in cursor:
                         return item
                 case 5:
-                    sql = f"SELECT {coluna1}, {colunas[0]}, {colunas[1]}, {colunas[2]}, {colunas[3]} FROM {tabela} " \
-                          f"WHERE {coluna_p} = {dado_proc}"
+                    sql = f"SELECT {coluna1}, {colunas[0]}, {colunas[1]}, {colunas[2]}, {colunas[3]} FROM {tabela} WHERE {coluna_p} = {dado_proc}"
+                    cursor = self.con.cursor()
+                    cursor.execute(sql)
+                    for item in cursor:
+                        return item
+                case 6:
+                    sql = f"SELECT {coluna1}, {colunas[0]}, {colunas[1]}, {colunas[2]}, {colunas[3]}, {colunas[4]} FROM {tabela} WHERE {coluna_p} = {dado_proc}"
+                    cursor = self.con.cursor()
+                    cursor.execute(sql)
+                    for item in cursor:
+                        return item
+                case 7:
+                    sql = f"SELECT {coluna1}, {colunas[0]}, {colunas[1]}, {colunas[2]}, {colunas[3]}, {colunas[4]}, {colunas[5]} FROM {tabela} WHERE {coluna_p} = {dado_proc}"
                     cursor = self.con.cursor()
                     cursor.execute(sql)
                     for item in cursor:

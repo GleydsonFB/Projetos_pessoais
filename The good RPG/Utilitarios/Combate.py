@@ -3,6 +3,7 @@ from time import sleep
 from .Erros import valida_int, valida_str
 from .UX import texto_tela
 from .Drop import Drops
+from .Inventario import Inventario
 
 
 class Batalha:

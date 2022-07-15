@@ -1,4 +1,4 @@
-from .Erros import remove_inv
+from .Erros import remove_inv, valida_int
 
 
 class Inventario:
@@ -36,7 +36,7 @@ class Inventario:
         if adicionado is False:
             print(f'A mochila está cheia!')
         else:
-            print(f'Item {item} adicionado com sucesso na slot {verificador + 1} da mochila!')
+            print(f'Item adicionado com sucesso na slot {verificador + 1} da mochila!')
             if gold > 0:
                 print(f'Você recebeu {gold} moeda(s) de ouro!')
                 self.gold += gold
@@ -60,16 +60,33 @@ class Inventario:
         else:
             print('O espaço já se encontra vazio')
 
-    def espaco_ocupado(self):
-        contagem = 0
-        for espaco in range(self.tamanho):
-            if self.bag[espaco] in 'Vazio':
-                pass
+    def equipar_arma(self):
+        """
+        Método usado para escolher uma arma do inventário.
+        :return: Retorna o nome da arma escolhida.
+        """
+        self.mostrar()
+        while True:
+            while True:
+                escolha = valida_int('Escolha o slot que possui a arma desejada: ', 'digite um número inteiro')
+                if escolha > self.tamanho or escolha <= 0:
+                    print('Opção inválida')
+                else:
+                    escolha -= 1
+                    break
+            if self.bag[escolha] != 'Vazio' and self.bag[escolha] != 'Poção':
+                retorno = []
+                slot = list(self.bag[escolha])
+                for d, l in enumerate(slot):
+                    temp = slot[d]
+                    temp = str(temp)
+                    if temp.isnumeric():
+                        retorno.append(temp)
+                    else:
+                        pass
+                if len(retorno) == 1:
+                    return int(retorno[0])
+                else:
+                    return int(str(retorno[0])+str(retorno[1]))
             else:
-                contagem += 1
-        return contagem
-
-    def venda_item(self, posicao, recebido):
-        self.bag[posicao] = 'Vazio'
-        print('Item vendido com sucesso!')
-        self.gold += recebido
+                print('o slot escolhido não contem uma arma!')

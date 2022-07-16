@@ -29,7 +29,7 @@ class Drops:
             qualidade = 'verde'
         else:
             qualidade = 'azul'
-        print(f'O item {self.nome_item} caiu do inimigo {inimigo}, a qualidade dele é {qualidade}!')
+        print(f'O item {self.nome_item} que caiu do inimigo {inimigo} possui a qualidade {qualidade}!')
         if qualidade == 'normal':
             return f'{self.nome_item + " normal"}', dinheiro, self.ajustar_dano(qualidade)
         elif qualidade == 'verde':

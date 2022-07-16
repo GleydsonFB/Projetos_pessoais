@@ -1,4 +1,5 @@
 from .Erros import remove_inv, valida_int
+from time import sleep
 
 
 class Inventario:
@@ -60,47 +61,60 @@ class Inventario:
         else:
             print('O espaço já se encontra vazio')
 
-    def equipar_arma(self):
+    def equipar_arma(self, base):
         """
-        Método usado para escolher uma arma do inventário.
+        Método usado Para escolher uma arma do inventário.
+        :param base: Recebe o ataque base do personagem.
         :return: Retorna o nome da arma escolhida.
         """
-        self.mostrar()
-        while True:
-            while True:
-                escolha = valida_int('Escolha o slot que possui a arma desejada: ', 'digite um número inteiro')
-                if escolha > self.tamanho or escolha <= 0:
-                    print('Opção inválida')
-                else:
-                    escolha -= 1
-                    break
-            if self.bag[escolha] != 'Vazio' and self.bag[escolha] != 'Poção':
-                v = 0
-                retorno = []
-                retorno_nome = ''
-                arma = []
-                nome_arma = []
-                slot = list(self.bag[escolha])
-                for d, p in enumerate(slot):
-                    temp = slot[d]
-                    temp = str(temp)
-                    if temp.isnumeric():
-                        retorno.append(temp)
-                    else:
-                        arma.append(temp)
-                while arma[v] != '-':
-                    nome_arma.append(arma[v])
-                    v += 1
-                for espacos in range(v - 1):
-                    tratamento = nome_arma[espacos]
-                    tratamento.replace("'", "")
-                    tratamento.replace('[', '')
-                    tratamento.replace(']', '')
-                    retorno_nome = retorno_nome+tratamento
-                if len(retorno) == 1:
-                    return int(retorno[0])
-                else:
-                    print(f'A arma {retorno_nome} foi equipada com sucesso!')
-                    return retorno_nome, int(str(retorno[0])+str(retorno[1]))
+        espaco_ocupado = 0
+        for item in range (self.tamanho):
+            if self.bag[item] == 'Vazio' or self.bag[item] == 'Poção':
+                pass
             else:
-                print('o slot escolhido não contem uma arma!')
+                espaco_ocupado += 1
+        if espaco_ocupado >= 1:
+            print('Defina a arma que será usada')
+            sleep(1)
+            self.mostrar()
+            while True:
+                while True:
+                    escolha = valida_int('Escolha o slot que possui a arma desejada: ', 'digite um número inteiro')
+                    if escolha > self.tamanho or escolha <= 0:
+                        print('Opção inválida')
+                    else:
+                        escolha -= 1
+                        break
+                if self.bag[escolha] != 'Vazio' and self.bag[escolha] != 'Poção':
+                    v = 0
+                    retorno = []
+                    retorno_nome = ''
+                    arma = []
+                    nome_arma = []
+                    slot = list(self.bag[escolha])
+                    for d, p in enumerate(slot):
+                        temp = slot[d]
+                        temp = str(temp)
+                        if temp.isnumeric():
+                            retorno.append(temp)
+                        else:
+                            arma.append(temp)
+                    while arma[v] != '-':
+                        nome_arma.append(arma[v])
+                        v += 1
+                    for espacos in range(v - 1):
+                        tratamento = nome_arma[espacos]
+                        tratamento.replace("'", "")
+                        tratamento.replace('[', '')
+                        tratamento.replace(']', '')
+                        retorno_nome = retorno_nome+tratamento
+                    if len(retorno) == 1:
+                        return int(retorno[0])
+                    else:
+                        print(f'A arma {retorno_nome} foi equipada com sucesso!')
+                        return retorno_nome, int(str(retorno[0])+str(retorno[1])) + base
+                else:
+                    print('o slot escolhido não contem uma arma!')
+        else:
+            print('Você não possui uma arma no seu inventário')
+            return 'Não possui arma', 0

@@ -3,6 +3,7 @@ from time import sleep
 from .Erros import valida_int
 from .Drop import Drops
 from .Inventario import Inventario
+from .UX import limpa_tela, texto_tela
 
 
 class Batalha:
@@ -11,25 +12,26 @@ class Batalha:
         self.nome = ator.nome
         self.atk = ator.atk
         self.df = ator.defe
-        self.dm = ator.defm
         self.soco = ator.soco
         self.chute = ator.chute
         self.hp2 = vilao.hp
         self.nome2 = vilao.nome
-        self.atk2 = vilao.atk
         self.df2 = vilao.defe
-        self.dm2 = vilao.defm
         self.soco2 = vilao.soco
         self.chute2 = vilao.chute
         self.nome_armav = vilao.nome_arma
         self.dano_armav = vilao.dano_arma
 
     def luta(self, mochila):
-        print('Defina a arma que será usada')
-        sleep(1)
-        arma = Inventario.equipar_arma(mochila)
-        turnos = 1
-        inicializa = 0
+        print('Hora de se preparar para o  combate.')
+        arma = Inventario.equipar_arma(mochila, self.atk)
+        if arma[1] == 0:
+            sleep(2)
+            print('A falta de uma arma pode ser fatal!')
+            sleep(2)
+        sleep(2)
+        limpa_tela()
+        inicializa, jogada, turnos, acoes = 0, 0, 1, 0
         while True:
             if inicializa == 0:
                 print('Combate inicializado!')
@@ -46,52 +48,77 @@ class Batalha:
                 if acao == 1:
                     print(f'{self.nome2} te ataca com um soco,',
                           f'causando {dano_v[0]} de dano!' if dano_v[0] > 0 else
-                          'sendo completamente bloqueado por você')
+                          'sendo completamente bloqueado por você.')
                     sleep(2)
                     if dano_v[0] > 0:
                         self.hp -= dano_v[0]
                 elif acao == 2:
                     print(f'{self.nome2} te ataca com um chute,',
                           f'causando {dano_v[1]} de dano!' if dano_v[1] > 0 else
-                          'sendo completamente bloqueado por você')
+                          'sendo completamente bloqueado por você.')
                     sleep(2)
                     if dano_v[1] > 0:
                         self.hp -= dano_v[1]
                 else:
                     print(f'{self.nome2} te ataca usando {self.nome_armav},',
                           f'causando {dano_v[2]} de dano!' if dano_v[2] > 0 else
-                          'sendo completamente bloqueado por você')
+                          'sendo completamente bloqueado por você.')
                     sleep(2)
                     if dano_v[2] > 0:
                         self.hp -= dano_v[2]
                 print('Sua vez, o que irá fazer?')
-                jogada = valida_int('Digite 1 para golpear com um soco, 2 para chute ou 3 para arma: ',
-                                    'Opção inválida, 1 soco, 2 chute, 3 arma: ', 3)
+                while jogada <= 0 or jogada > 3:
+                    jogada = valida_int('Digite 1 para golpear com um soco, 2 para chute ou 3 para arma: ',
+                                        'Opção inválida, 1 soco, 2 chute, 3 arma: ', 3)
+                    acoes += 1
+                    if acoes == 3:
+                        jogada = 0
+                        break
+                acoes = 0
                 if jogada == 1:
+                    sleep(1)
                     print(f'Você ataca {self.nome2} com um soco,',
                           f'causando {dano_j[0]} de dano!' if dano_j[0] > 0 else
                           f'sendo completamente bloqueado por {self.nome2}.')
+                    jogada = 0
                     sleep(2)
                     if dano_j[0] > 0:
                         self.hp2 -= dano_j[0]
                 elif jogada == 2:
+                    sleep(1)
                     print(f'Você ataca {self.nome2} com um chute,',
                           f'causando {dano_j[1]} de dano!' if dano_j[1] > 0 else
                           f'sendo completamente bloqueado por {self.nome2}.')
                     sleep(2)
+                    jogada = 0
                     if dano_j[1] > 0:
                         self.hp2 -= dano_j[1]
                 elif jogada == 3:
-                    print(f'Você ataca {self.nome2} usando {arma[0]},',
-                          f'causando {dano_j[2]} de dano!' if dano_j[2] > 0 else
-                          f'sendo completamente bloqueado por {self.nome2}.')
-                    if dano_j[2] > 0:
-                        self.hp2 -= dano_j[2]
+                    if arma[1] > 0:
+                        sleep(1)
+                        print(f'Você ataca {self.nome2} usando {arma[0]},',
+                              f'causando {dano_j[2]} de dano!' if dano_j[2] > 0 else
+                              f'sendo completamente bloqueado por {self.nome2}.')
+                        if dano_j[2] > 0:
+                            self.hp2 -= dano_j[2]
+                        sleep(3)
+                    else:
+                        sleep(1)
+                        print('Você não possui uma arma')
+                        sleep(1)
+                        print("Por conta dessa ação, você acabou perdendo a vez --'")
+                    jogada = 0
                 elif jogada == 0:
                     print(f'Você perdeu a vez de atacar =/')
                     sleep(2)
-            if self.hp <= 0 or self.hp2 <= 0:
-                break
+                if self.hp <= 0 or self.hp2 <= 0:
+                    limpa_tela()
+                    break
+                else:
+                    print(f'{self.nome2} ainda tem {self.hp2} de vida.')
+                    print(f'Já você, mantém {self.hp} ponto(s) de vida!')
+                    sleep(3.5)
+                    limpa_tela()
         sleep(2)
         print('Fim do combate!')
         sleep(2)
@@ -148,5 +175,7 @@ def final_luta(resultado, loot, mochila, nome_vilao):
             if escolha in 'Nn':
                 print(f'Por sua opção, você perdeu o item {item.nome_item}.')
             else:
+                sleep(2)
                 n_item = item.caiu(nome_vilao)
+                sleep(2)
                 Inventario.adicionar(mochila, n_item[0]+' - Dano: '+str(n_item[2]), n_item[1])

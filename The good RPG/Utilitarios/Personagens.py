@@ -3,12 +3,11 @@ from random import randint
 
 
 class Ator:
-    def __init__(self, nome, hp, atk, defe, defe_magica, valor_soco, valor_chute):
+    def __init__(self, nome, hp, atk, defe, valor_soco, valor_chute):
         self.nome = nome
         self.hp = hp
         self.atk = atk
         self.defe = defe
-        self.defm = defe_magica
         self.soco = valor_soco
         self.chute = valor_chute
 
@@ -18,8 +17,6 @@ class Ator:
         print(f'\tAtaque: {self.atk}')
         sleep(1.5)
         print(f'\tDefesa física: {self.defe}')
-        sleep(1.5)
-        print(f'\tDefesa mágica: {self.defm}')
         sleep(1.5)
 
 
@@ -83,7 +80,7 @@ class Npc:
 
 
 class Vilao(Ator):
-    def __init__(self, nome, hp, atk, defe, defe_magica, valor_soco, valor_chute, nome_arma, dano_arma):
-        super().__init__(nome, hp, atk, defe, defe_magica, valor_soco, valor_chute)
+    def __init__(self, nome, hp, atk, defe, valor_soco, valor_chute, nome_arma, dano_arma):
+        super().__init__(nome, hp, atk, defe, valor_soco, valor_chute)
         self.nome_arma = nome_arma
-        self.dano_arma = dano_arma
+        self.dano_arma = dano_arma + atk

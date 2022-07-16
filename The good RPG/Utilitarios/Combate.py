@@ -1,7 +1,6 @@
 from random import randint
 from time import sleep
-from .Erros import valida_int, valida_str
-from .UX import texto_tela
+from .Erros import valida_int
 from .Drop import Drops
 from .Inventario import Inventario
 
@@ -22,22 +21,28 @@ class Batalha:
         self.dm2 = vilao.defm
         self.soco2 = vilao.soco
         self.chute2 = vilao.chute
+        self.nome_armav = vilao.nome_arma
+        self.dano_armav = vilao.dano_arma
 
-    def luta(self):
+    def luta(self, mochila):
+        print('Defina a arma que será usada')
+        sleep(1)
+        arma = Inventario.equipar_arma(mochila)
         turnos = 1
         inicializa = 0
         while True:
             if inicializa == 0:
                 print('Combate inicializado!')
+                sleep(1)
                 inicializa += 1
             else:
                 sleep(2)
                 print(f'Turno {turnos}.')
                 sleep(2)
                 turnos += 1
-                acao = randint(1, 2)
-                dano_j = [self.soco - self.df2, self.chute - self.df2]
-                dano_v = [self.soco2 - self.df, self.chute2 - self.df]
+                acao = randint(1, 3)
+                dano_j = [self.soco - self.df2, self.chute - self.df2, arma[1] - self.df2]
+                dano_v = [self.soco2 - self.df, self.chute2 - self.df, self.dano_armav - self.df]
                 if acao == 1:
                     print(f'{self.nome2} te ataca com um soco,',
                           f'causando {dano_v[0]} de dano!' if dano_v[0] > 0 else
@@ -45,16 +50,23 @@ class Batalha:
                     sleep(2)
                     if dano_v[0] > 0:
                         self.hp -= dano_v[0]
-                else:
+                elif acao == 2:
                     print(f'{self.nome2} te ataca com um chute,',
                           f'causando {dano_v[1]} de dano!' if dano_v[1] > 0 else
                           'sendo completamente bloqueado por você')
                     sleep(2)
                     if dano_v[1] > 0:
                         self.hp -= dano_v[1]
+                else:
+                    print(f'{self.nome2} te ataca usando {self.nome_armav},',
+                          f'causando {dano_v[2]} de dano!' if dano_v[2] > 0 else
+                          'sendo completamente bloqueado por você')
+                    sleep(2)
+                    if dano_v[2] > 0:
+                        self.hp -= dano_v[2]
                 print('Sua vez, o que irá fazer?')
-                jogada = valida_int('Digite 1 para golpear com um soco ou 2 para chute: ',
-                                    'Opção inválida, 1 para soco ou 2 para chute: ', 3)
+                jogada = valida_int('Digite 1 para golpear com um soco, 2 para chute ou 3 para arma: ',
+                                    'Opção inválida, 1 soco, 2 chute, 3 arma: ', 3)
                 if jogada == 1:
                     print(f'Você ataca {self.nome2} com um soco,',
                           f'causando {dano_j[0]} de dano!' if dano_j[0] > 0 else
@@ -69,6 +81,12 @@ class Batalha:
                     sleep(2)
                     if dano_j[1] > 0:
                         self.hp2 -= dano_j[1]
+                elif jogada == 3:
+                    print(f'Você ataca {self.nome2} usando {arma[0]},',
+                          f'causando {dano_j[2]} de dano!' if dano_j[2] > 0 else
+                          f'sendo completamente bloqueado por {self.nome2}.')
+                    if dano_j[2] > 0:
+                        self.hp2 -= dano_j[2]
                 elif jogada == 0:
                     print(f'Você perdeu a vez de atacar =/')
                     sleep(2)
@@ -106,14 +124,15 @@ class Batalha:
                     return 2
 
 
-def final_luta(resultado, loot, nome_vilao):
+def final_luta(resultado, loot, mochila, nome_vilao):
     """
+    :param mochila: Recebe o objeto de inventário do personagem;
     :param resultado: Receberá o valor do resultado (1 para vitória ou 2 para derrota);
     :param loot: Recebe o drop do monstro, em caso de vitória;
     :param nome_vilao: Recebe o nome do oponente;
     :return: Retorna o resultado bem como a opção de inserir o drop no inventário.
     """
-    item = Drops(loot)
+    item = Drops(loot[0], loot[1])
     contador = 0
     if resultado == 1:
         print(f'De {nome_vilao} você obteve {item.nome_item}!')
@@ -130,4 +149,4 @@ def final_luta(resultado, loot, nome_vilao):
                 print(f'Por sua opção, você perdeu o item {item.nome_item}.')
             else:
                 n_item = item.caiu(nome_vilao)
-                return n_item
+                Inventario.adicionar(mochila, n_item[0]+' - Dano: '+str(n_item[2]), n_item[1])

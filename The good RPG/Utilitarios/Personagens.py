@@ -83,4 +83,7 @@ class Npc:
 
 
 class Vilao(Ator):
-    pass
+    def __init__(self, nome, hp, atk, defe, defe_magica, valor_soco, valor_chute, nome_arma, dano_arma):
+        super().__init__(nome, hp, atk, defe, defe_magica, valor_soco, valor_chute)
+        self.nome_arma = nome_arma
+        self.dano_arma = dano_arma

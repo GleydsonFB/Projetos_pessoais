@@ -15,26 +15,27 @@ def qualidade_item():
 
 
 class Drops:
-    def __init__(self, nome_item):
+    def __init__(self, nome_item, dano_item):
         self.nome_item = nome_item
         self.qualidade_item = qualidade_item()
+        self.dano = dano_item
 
     def caiu(self, inimigo):
         qualidade = self.qualidade_item
+        dinheiro = self.grana()
         if qualidade == 1:
             qualidade = 'normal'
         elif qualidade == 2:
             qualidade = 'verde'
         else:
             qualidade = 'azul'
-        print(f'O item {self.nome_item} caiu do inimigo {inimigo}, a qualidade dele é {qualidade}!\n'
-              f'Você também ganhou {self.grana()} moedas de ouro.')
+        print(f'O item {self.nome_item} caiu do inimigo {inimigo}, a qualidade dele é {qualidade}!')
         if qualidade == 'normal':
-            return f'{self.nome_item + " normal"}', self.grana()
+            return f'{self.nome_item + " normal"}', dinheiro, self.ajustar_dano(qualidade)
         elif qualidade == 'verde':
-            return f'{self.nome_item + " verde"}', self.grana()
+            return f'{self.nome_item + " verde"}', dinheiro, self.ajustar_dano(qualidade)
         else:
-            return f'{self.nome_item + " azul"}', self.grana()
+            return f'{self.nome_item + " azul"}', dinheiro, self.ajustar_dano(qualidade)
 
     def grana(self):
         if self.qualidade_item == 1:
@@ -43,3 +44,13 @@ class Drops:
             return random.randint(2, 5)
         else:
             return random.randint(4, 8)
+
+    def ajustar_dano(self, qualidade):
+        dano = self.dano
+        if qualidade == 'normal':
+            pass
+        elif qualidade == 'verde':
+            dano += 3
+        else:
+            dano += 5
+        return dano

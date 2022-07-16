@@ -75,18 +75,32 @@ class Inventario:
                     escolha -= 1
                     break
             if self.bag[escolha] != 'Vazio' and self.bag[escolha] != 'Poção':
+                v = 0
                 retorno = []
+                retorno_nome = ''
+                arma = []
+                nome_arma = []
                 slot = list(self.bag[escolha])
-                for d, l in enumerate(slot):
+                for d, p in enumerate(slot):
                     temp = slot[d]
                     temp = str(temp)
                     if temp.isnumeric():
                         retorno.append(temp)
                     else:
-                        pass
+                        arma.append(temp)
+                while arma[v] != '-':
+                    nome_arma.append(arma[v])
+                    v += 1
+                for espacos in range(v - 1):
+                    tratamento = nome_arma[espacos]
+                    tratamento.replace("'", "")
+                    tratamento.replace('[', '')
+                    tratamento.replace(']', '')
+                    retorno_nome = retorno_nome+tratamento
                 if len(retorno) == 1:
                     return int(retorno[0])
                 else:
-                    return int(str(retorno[0])+str(retorno[1]))
+                    print(f'A arma {retorno_nome} foi equipada com sucesso!')
+                    return retorno_nome, int(str(retorno[0])+str(retorno[1]))
             else:
                 print('o slot escolhido não contem uma arma!')

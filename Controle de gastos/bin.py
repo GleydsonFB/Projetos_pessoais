@@ -1,4 +1,4 @@
-import Banco
+from Banco import Bd
 
-bd = Banco.BancoDeDados('localhost', 'root', 'root', 'controle_de_gastos')
+bd = Bd.Conector('localhost', 'root', 'root', 'controle_de_gastos')
 conexao = bd.conectar()

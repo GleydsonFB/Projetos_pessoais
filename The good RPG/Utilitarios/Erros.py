@@ -35,7 +35,7 @@ def valida_float(valor, msg, limite=100):
             v = float(input(valor))
         except:
             print(msg)
-            contador += 1
+            return False
         else:
             return v
 

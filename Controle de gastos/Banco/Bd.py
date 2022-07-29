@@ -16,9 +16,9 @@ class Conector:
     def desconectar(self):
         self.conexao.close()
         if self.conexao.is_connected():
-            print('Desconexão falhou')
+            print('Desconexão falhou.')
         else:
-            print('Desconectado do banco')
+            print('Desconectado do banco.')
 
     def select_simples(self, coluna1, coluna2, tabela):
         if self.conexao.is_connected():
@@ -27,7 +27,7 @@ class Conector:
             for c1, c2 in self.cursor:
                 return c1, c2
         else:
-            print('Sem conexão com o servidor')
+            print('Sem conexão com o servidor.')
 
     def select_composto(self, total_colunas, tabela, coluna1, coluna2, colunap, pesquisa, *demais_colunas):
         if self.conexao.is_connected():
@@ -61,7 +61,7 @@ class Conector:
                     for c1, c2, c3, c4, c5 in self.cursor:
                         return c1, c2, c3, c4, c5
         else:
-            print('Sem conexão com servidor')
+            print('Sem conexão com servidor.')
 
     def somar_gasto(self, mes):
         if self.conexao.is_connected():
@@ -70,7 +70,7 @@ class Conector:
             for c1 in self.cursor:
                 return c1
         else:
-            print('Sem conexão com servidor')
+            print('Sem conexão com servidor.')
 
 
 class Categoria:
@@ -91,7 +91,7 @@ class Categoria:
                 self.conexao.commit()
                 print(f"Categoria {nome} adicionada com sucesso!")
         else:
-            print('Sem conexão com o servidor')
+            print('Sem conexão com o servidor.')
 
     def alterar_categoria(self, id_cat, nome='', limite='', minimo=''):
         if self.conexao.is_connected():
@@ -131,9 +131,16 @@ class Categoria:
                 self.conexao.commit()
                 print(f'Nome alterado para {nome} e com novo valor mínimo de R${minimo}!')
             else:
-                print('Opção inválida')
+                print('Opção inválida.')
 
-    #def deletar_categoria(self):
+    def deletar_categoria(self, id_cat, nome):
+        if self.conexao.is_connected():
+            sql = f'DELETE FROM categoria WHERE id_cat = {id_cat}'
+            self.cursor.execute(sql)
+            self.conexao.commit()
+            print(f'Categoria {nome} removida com sucesso!')
+        else:
+            print('Sem conexão com servidor.')
 
     def somar_gasto_cat(self, mes, categoria):
         if self.conexao.is_connected():
@@ -163,7 +170,29 @@ class Compra:
                 self.conexao.commit()
                 print('Valor inserido com sucesso!')
         else:
-            print('Sem conexão com o servidor')
+            print('Sem conexão com o servidor.')
+
+    def alterar_valor(self, novo_valor, id_valor, total_compra=''):
+        if self.conexao.is_connected():
+            if total_compra == '':
+                sql = 'UPDATE valor SET registro = "{}" WHERE id_valor = "{}"'.format(novo_valor, id_valor)
+                self.cursor.execute(sql)
+                self.conexao.commit()
+                print(f'Novo valor para a compra ID {id_valor} alterado para R${novo_valor}.')
+            else:
+                sql = 'UPDATE valor SET registro = "{}" WHERE total_compra = "{}"'.format(novo_valor, total_compra)
+                self.cursor.execute(sql)
+                self.conexao.commit()
+                print(f'Valor alterado para todas as parcelas vinculadas, sendo R${novo_valor} para cada uma.')
+        else:
+            print('Sem conexão com servidor.')
+
+    def deletar_valor(self, id_valor):
+        if self.conexao.is_connected():
+            sql = f'DELETE FROM valor WHERE id_valor = {id_valor}'
+            self.cursor.execute(sql)
+            self.conexao.commit()
+            print(f'Valor de id {id_valor} removido com sucesso.')
 
     def adicionar_compra_p(self, total_compra, parcelas):
         if self.conexao.is_connected():
@@ -173,7 +202,7 @@ class Compra:
             self.conexao.commit()
             print('Valor inserido com sucesso!')
         else:
-            print('Sem conexão com o servidor')
+            print('Sem conexão com o servidor.')
 
     def remover_compra_p(self, id_compra):
         if self.conexao.is_connected():
@@ -183,6 +212,6 @@ class Compra:
             self.conexao.commit()
             self.cursor.execute(sql2)
             self.conexao.commit()
-            print('Compra retirada com sucesso')
+            print('Compra retirada com sucesso.')
         else:
-            print('Erro no servidor')
+            print('Erro no servidor.')

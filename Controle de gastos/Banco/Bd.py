@@ -1,4 +1,8 @@
+import datetime
 import mysql.connector
+
+data = datetime.datetime.now()
+ano = data.date()
 
 
 class Conector:
@@ -15,10 +19,6 @@ class Conector:
 
     def desconectar(self):
         self.conexao.close()
-        if self.conexao.is_connected():
-            print('Desconexão falhou.')
-        else:
-            print('Desconectado do banco.')
 
     def select_simples(self, coluna1, coluna2, tabela):
         if self.conexao.is_connected():
@@ -29,7 +29,7 @@ class Conector:
         else:
             print('Sem conexão com o servidor.')
 
-    def select_composto(self, total_colunas, tabela, coluna1, coluna2, colunap, pesquisa, *demais_colunas):
+    def select_composto(self, total_colunas, tabela, coluna1, colunap, pesquisa, *demais_colunas):
         if self.conexao.is_connected():
             match total_colunas:
                 case 1:
@@ -38,19 +38,19 @@ class Conector:
                     for c1 in self.cursor:
                         return c1
                 case 2:
-                    sql = f"SELECT {coluna1}, {coluna2} FROM {tabela} WHERE {colunap} = {pesquisa};"
+                    sql = f"SELECT {coluna1}, {demais_colunas[0]} FROM {tabela} WHERE {colunap} = {pesquisa};"
                     self.cursor.execute(sql)
                     for c1, c2 in self.cursor:
                         return c1, c2
                 case 3:
                     sql = \
-                        f"SELECT {coluna1}, {coluna2}, {demais_colunas[0]} FROM {tabela} WHERE {colunap} = {pesquisa};"
+                        f"SELECT {coluna1}, {demais_colunas[0]}, {demais_colunas[1]} FROM {tabela} WHERE {colunap} = {pesquisa};"
                     self.cursor.execute(sql)
                     for c1, c2, c3 in self.cursor:
                         return c1, c2, c3
                 case 4:
                     sql = \
-                        f"SELECT {coluna1}, {coluna2}, {demais_colunas[0]}, {demais_colunas[1]} FROM {tabela} WHERE {colunap} = {pesquisa};"
+                        f"SELECT {coluna1}, {demais_colunas[0]}, {demais_colunas[1]}, {demais_colunas[2]} FROM {tabela} WHERE {colunap} = {pesquisa};"
                     self.cursor.execute(sql)
                     for c1, c2, c3, c4 in self.cursor:
                         return c1, c2, c3, c4
@@ -60,15 +60,6 @@ class Conector:
                     self.cursor.execute(sql)
                     for c1, c2, c3, c4, c5 in self.cursor:
                         return c1, c2, c3, c4, c5
-        else:
-            print('Sem conexão com servidor.')
-
-    def somar_gasto(self, mes):
-        if self.conexao.is_connected():
-            sql = f"SELECT SUM(registro) FROM valor WHERE mes = {mes};"
-            self.cursor.execute(sql)
-            for c1 in self.cursor:
-                return c1
         else:
             print('Sem conexão com servidor.')
 
@@ -158,8 +149,8 @@ class Compra:
     def adicionar_valor(self, valor, mes, categoria, total_compra=''):
         if self.conexao.is_connected():
             if total_compra != '':
-                sql = 'INSERT INTO valor (registro, mes, compra_total, categoria) VALUES ({}, {}, {}, {})' \
-                    .format(valor, mes, total_compra, categoria)
+                sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano) VALUES ({}, {}, {}, {})' \
+                    .format(valor, mes, total_compra, categoria, ano)
                 self.cursor.execute(sql)
                 self.conexao.commit()
                 print('Valor inserido com sucesso!')
@@ -215,3 +206,72 @@ class Compra:
             print('Compra retirada com sucesso.')
         else:
             print('Erro no servidor.')
+
+    def somar_gasto(self, mes):
+        if self.conexao.is_connected():
+            sql = f"SELECT SUM(registro) FROM valor WHERE mes = {mes};"
+            self.cursor.execute(sql)
+            for c1 in self.cursor:
+                return c1
+        else:
+            print('Sem conexão com servidor.')
+
+
+class SalarioRendimento:
+    def __init__(self, conexao):
+        self.conexao = conexao
+        self.cursor = self.conexao.cursor()
+
+    def inserir_salario(self, salario, mes):
+        if self.conexao.is_connected():
+            sql = 'INSERT INTO salario (pagamento, mes, ano) VALUES ("{}", "{}", "{}")'.format(salario, mes, ano.year)
+            self.cursor.execute(sql)
+            self.conexao.commit()
+            print('Salario inserido com sucesso!')
+        else:
+            print('Sem conexão com o servidor.')
+
+    def alterar_salario(self, salario, id_sal):
+        if self.conexao.is_connected():
+            sql = 'UPDATE salario SET pagamento = "{}" WHERE id_sal = "{}"'.format(salario, id_sal)
+            self.cursor.execute(sql)
+            self.conexao.commit()
+            print('Salário alterado com sucesso!')
+        else:
+            print('Sem conexão com servidor.')
+
+    def deletar_salario(self, id_sal):
+        if self.conexao.is_connected():
+            sql = f'DELETE FROM salario WHERE id_sal = {id_sal}'
+            self.cursor.execute(sql)
+            self.conexao.commit()
+            print('Salário deletado com sucesso!')
+        else:
+            print('Sem conexão com servidor.')
+
+    def inserir_rendimento(self, rendimento, mes):
+        if self.conexao.is_connected():
+            sql = 'INSERT INTO rendimento (valor, mes, ano) VALUES ("{}", "{}", "{}")'.format(rendimento, mes, ano.year)
+            self.cursor.execute(sql)
+            self.conexao.commit()
+            print('Rendimento (valor extra) inserido com sucesso!')
+        else:
+            print('Sem conexão com o servidor.')
+
+    def alterar_rendimento(self, rendimento, id_red):
+        if self.conexao.is_connected():
+            sql = 'UPDATE salario SET valor = "{}" WHERE id_red = "{}"'.format(rendimento, id_red)
+            self.cursor.execute(sql)
+            self.conexao.commit()
+            print('Rendimento (valor extra) alterado com sucesso!')
+        else:
+            print('Sem conexão com servidor.')
+
+    def deletar_rendimento(self, id_red):
+        if self.conexao.is_connected():
+            sql = f'DELETE FROM rendimento WHERE id_red = {id_red}'
+            self.cursor.execute(sql)
+            self.conexao.commit()
+            print('Rendimento (valor extra) deletado com sucesso!')
+        else:
+            print('Sem conexão com servidor.')

@@ -20,6 +20,13 @@ class Conector:
     def desconectar(self):
         self.conexao.close()
 
+    def select_ultimo(self, nome_id, tabela):
+        if self.conexao.is_connected():
+            sql = f'SELECT MAX({nome_id}) FROM {tabela}'
+            self.cursor.execute(sql)
+            for c1 in self.cursor:
+                return c1
+
     def select_simples(self, coluna1, coluna2, tabela):
         if self.conexao.is_connected():
             sql = f"SELECT {coluna1}, {coluna2} FROM {tabela};"
@@ -146,17 +153,16 @@ class Compra:
         self.conexao = conexao
         self.cursor = self.conexao.cursor()
 
-    def adicionar_valor(self, valor, mes, categoria, total_compra=''):
+    def adicionar_valor(self, valor, mes, categoria, total_compra=0):
         if self.conexao.is_connected():
-            if total_compra != '':
-                sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano) VALUES ({}, {}, {}, {})' \
-                    .format(valor, mes, total_compra, categoria, ano)
+            if total_compra != 0:
+                sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano) VALUES ("{}", "{}", "{}", "{}", "{} ")'\
+                    .format(valor, mes, total_compra, categoria, ano.year)
                 self.cursor.execute(sql)
                 self.conexao.commit()
-                print('Valor inserido com sucesso!')
             else:
-                sql = 'INSERT INTO valor (registro, mes, categoria) VALUES ({}, {}, {})' \
-                    .format(valor, mes, categoria)
+                sql = 'INSERT INTO valor (registro, mes, categoria, ano) VALUES ("{}", "{}", "{}", "{}")' \
+                    .format(valor, mes, categoria, ano.year)
                 self.cursor.execute(sql)
                 self.conexao.commit()
                 print('Valor inserido com sucesso!')
@@ -191,7 +197,6 @@ class Compra:
                 .format(total_compra, parcelas)
             self.cursor.execute(sql)
             self.conexao.commit()
-            print('Valor inserido com sucesso!')
         else:
             print('Sem conexão com o servidor.')
 

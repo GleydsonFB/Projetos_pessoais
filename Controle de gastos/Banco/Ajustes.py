@@ -2,10 +2,11 @@ import os
 from time import sleep
 
 
-def limpa_tela():
+def limpa_tela(espera=3):
     """
     :return: Gera um retorno para limpar o console.
     """
+    sleep(espera)
     os.system('cls')
 
 
@@ -55,10 +56,12 @@ def valida_float(valor, msg, limite=100):
         """
     contador = 0
     while True:
+        tratando = input(valor)
+        tratado = tratando.replace(',', '.')
         if contador >= limite:
             return 0
         try:
-            v = float(input(valor))
+            v = float(tratado)
         except:
             print(msg)
             contador += 1

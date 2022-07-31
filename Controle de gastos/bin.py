@@ -3,10 +3,10 @@ from Banco import Ajustes
 from time import sleep
 
 bd = Bd.Conector('localhost', 'root', 'root', 'controle_de_gastos')
-conexao = bd.conectar()
-categorias = Bd.Categoria(conexao)
-compras = Bd.Compra(conexao)
-contador, verificador = 0, 0
+categorias = Bd.Categoria(bd.conectar())
+compras = Bd.Compra(bd.conectar())
+contador = 0
+id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
 meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
          'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 while True:
@@ -19,13 +19,23 @@ while True:
         case 0:
             break
         case 1:
-            Ajustes.limpa_tela()
+            Ajustes.limpa_tela(0)
             print('Nesta seção temos as opções para lidar com compras')
             escolha = Ajustes.valida_int('O que você deseja?\n'
                                          '[1] INSERIR COMPRA - [2] - ALTERAR COMPRA - [3] - DELETAR COMPRA: ',
                                          'Digite um valor válido.', 10)
             if escolha == 1:
                 while True:
+                    if contador > 0:
+                        print('Deseja incluir nova compra?')
+                        novo = str(input('[S/N]: '))
+                        while novo not in 'SsNn':
+                            novo = str(input('Digite [S/N]: '))
+                        if novo in 'Ss':
+                            pass
+                        else:
+                            break
+                    Ajustes.limpa_tela(0)
                     print('Certo, primeiro determine o mês que irá conter a compra: ')
                     Ajustes.apresenta_mes()
                     mes = Ajustes.valida_int('Digite o mês correspondente: ', 'Opção inválida',
@@ -34,10 +44,9 @@ while True:
                         break
                     elif mes >= 13:
                         print('Valor não corresponde a nenhum mês.')
-                        sleep(2)
                         Ajustes.limpa_tela()
                     else:
-                        Ajustes.limpa_tela()
+                        Ajustes.limpa_tela(0)
                         print(f'A compra será inserida no mês {meses[mes - 1]}')
                         ver_cat = bd.select_simples('id_cat', 'nome', 'categoria')
                         if len(ver_cat) > 0:
@@ -47,13 +56,12 @@ while True:
                                     print(f'Código: {ver_cat[dado]} --- {ver_cat[dado + 1]}.')
                                 else:
                                     break
-                        escolha_cat = Ajustes.valida_int('Digite o código da categoria desejada', 'Opção inválida.',
+                        escolha_cat = Ajustes.valida_int('Digite o código da categoria desejada: ', 'Opção inválida.',
                                                          'Tentativas encerradas, retornando ao menu anterior', 10)
                         if escolha_cat == 0:
                             break
                         elif escolha_cat > (len(ver_cat) / 2):
                             print('Opção não corresponde a nenhuma categoria.')
-                            sleep(2)
                             Ajustes.limpa_tela()
                         else:
                             tipo_compra = Ajustes.valida_int('A compra será parcelada[1] ou à vista[2]? ', 'Opção inválida',
@@ -62,22 +70,48 @@ while True:
                                 break
                             elif tipo_compra == 1:
                                 limite = bd.select_composto(1, 'categoria', 'limite_gasto', 'id_cat', escolha_cat)
+                                limite_atual = limite[0]
                                 nome = bd.select_composto(1, 'categoria', 'nome', 'id_cat', escolha_cat)
                                 gasto_atual = categorias.somar_gasto_cat(mes, escolha_cat)
-                                if gasto_atual is None:
+                                if gasto_atual[0] is None:
                                     pass
                                 else:
-                                    limite = limite[0] - gasto_atual[0]
-                                valor = Ajustes.valida_float('Digite o valor da compra: ', 'Digite um número real.')
-                                if valor > limite:
-                                    print(f'O limite mensal da categoria {nome[0]} é de R${limite}.\n'
+                                    limite_atual = limite[0] - gasto_atual[0]
+                                valor = Ajustes.valida_float('Digite o valor da compra! R$: ', 'Digite um número real.')
+                                if valor > limite_atual:
+                                    print(f'O limite mensal da categoria {nome[0]} é de R${limite[0]}.\n'
                                           f'A compra inserida ultrapassa esse valor...\n'
                                           f'Retornando ao menu inicial de compras.')
-                                    sleep(3)
+                                    Ajustes.limpa_tela()
                                     break
                                 else:
-                                    parcela = Ajustes.valida_int('Digite a quantidade de parcelas', 'Digite um número inteiro', '')
+                                    parcela = Ajustes.valida_int('Digite a quantidade de parcelas ', 'Digite um número inteiro', '')
                                     total_valor = valor * parcela
                                     compras.adicionar_compra_p(total_valor, parcela)
-                                    
+                                    id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
+                                    for compra in range(parcela):
+                                        compras.adicionar_valor(valor, mes, escolha_cat, id_ultimo[0])
+                                    print('Valores inseridos com sucesso!')
+                                    Ajustes.limpa_tela()
+                                    contador += 1
+                            elif tipo_compra == 2:
+                                limite = bd.select_composto(1, 'categoria', 'limite_gasto', 'id_cat', escolha_cat)
+                                limite_atual = limite[0]
+                                nome = bd.select_composto(1, 'categoria', 'nome', 'id_cat', escolha_cat)
+                                gasto_atual = categorias.somar_gasto_cat(mes, escolha_cat)
+                                if gasto_atual[0] is None:
+                                    pass
+                                else:
+                                    limite_atual = limite[0] - gasto_atual[0]
+                                valor = Ajustes.valida_float('Digite o valor da compra! R$: ', 'Digite um número real.')
+                                if valor > limite_atual:
+                                    print(f'O limite mensal da categoria {nome[0]} é de R${limite[0]}.\n'
+                                          f'A compra inserida ultrapassa esse valor...\n'
+                                          f'Retornando ao menu inicial de compras.')
+                                    Ajustes.limpa_tela()
+                                    break
+                                else:
+                                    compras.adicionar_valor(valor, mes, escolha_cat)
+                                    Ajustes.limpa_tela()
+                                    contador += 1
 

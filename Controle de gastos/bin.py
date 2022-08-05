@@ -1,14 +1,14 @@
-from Banco import Bd
-from Banco import Ajustes
+from Banco import Bd, Ajustes, Funcao
 from time import sleep
 
 bd = Bd.Conector('localhost', 'root', 'root', 'controle_de_gastos')
 categorias = Bd.Categoria(bd.conectar())
 compras = Bd.Compra(bd.conectar())
-contador = 0
+contador, verificador = 0, 0
 id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
 meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
          'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+#a = Funcao.apresentar_compras(bd.conectar(), 5)
 while True:
     print('BEM VINDO(A) AO CONTROLE FINANCEIRO PESSOAL - by Gleydson\n'
           'DEFINA UMA DAS OPÇÕES ABAIXO:')
@@ -27,26 +27,16 @@ while True:
             if escolha == 1:
                 while True:
                     if contador > 0:
-                        print('Deseja incluir nova compra?')
-                        novo = str(input('[S/N]: '))
-                        while novo not in 'SsNn':
-                            novo = str(input('Digite [S/N]: '))
-                        if novo in 'Ss':
-                            pass
-                        else:
+                        c = Funcao.continuar(contador, 'inserir nova compra?')
+                        if c == 0:
+                            contador = 0
                             break
-                    Ajustes.limpa_tela(0)
                     print('Certo, primeiro determine o mês que irá conter a compra: ')
                     Ajustes.apresenta_mes()
-                    mes = Ajustes.valida_int('Digite o mês correspondente: ', 'Opção inválida',
-                                             'Devido as tentativas sem sucesso, a opção de inserir compra foi fechada.', 10)
+                    mes = Funcao.escolher_mes()
                     if mes == 0:
                         break
-                    elif mes >= 13:
-                        print('Valor não corresponde a nenhum mês.')
-                        Ajustes.limpa_tela()
                     else:
-                        Ajustes.limpa_tela(0)
                         print(f'A compra será inserida no mês {meses[mes - 1]}')
                         ver_cat = bd.select_simples('id_cat', 'nome', 'categoria')
                         if len(ver_cat) > 0:
@@ -90,7 +80,19 @@ while True:
                                     compras.adicionar_compra_p(total_valor, parcela)
                                     id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
                                     for compra in range(parcela):
-                                        compras.adicionar_valor(valor, mes, escolha_cat, id_ultimo[0])
+                                        if verificador == 0:
+                                            compras.adicionar_valor(valor, mes, escolha_cat, id_ultimo[0])
+                                            verificador += 1
+                                            mes += verificador
+                                        else:
+                                            if mes <= 12:
+                                                compras.adicionar_valor(valor, mes, escolha_cat, id_ultimo[0])
+                                                mes += verificador
+                                            else:
+                                                mes, verificador = 1, 1
+                                                compras.adicionar_valor(valor, mes, escolha_cat, id_ultimo[0])
+                                                mes += verificador
+                                    verificador = 0
                                     print('Valores inseridos com sucesso!')
                                     Ajustes.limpa_tela()
                                     contador += 1
@@ -114,4 +116,12 @@ while True:
                                     compras.adicionar_valor(valor, mes, escolha_cat)
                                     Ajustes.limpa_tela()
                                     contador += 1
+            elif escolha == 2:
+                while True:
+                    if contador > 0:
+                        c = Funcao.continuar(contador, 'alterar outra compra?')
+                        if c == 0:
+                            contador = 0
+                            break
+
 

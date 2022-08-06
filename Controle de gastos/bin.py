@@ -8,7 +8,7 @@ contador, verificador = 0, 0
 id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
 meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
          'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-#a = Funcao.apresentar_compras(bd.conectar(), 5)
+a = Funcao.apresentar_compras(bd.conectar(), 3)
 while True:
     print('BEM VINDO(A) AO CONTROLE FINANCEIRO PESSOAL - by Gleydson\n'
           'DEFINA UMA DAS OPÇÕES ABAIXO:')
@@ -123,5 +123,24 @@ while True:
                         if c == 0:
                             contador = 0
                             break
-
-
+                    else:
+                        Ajustes.limpa_tela(0)
+                        print('Perfeito, para isso agora defina o mês da compra a ser ajustada')
+                        Ajustes.apresenta_mes()
+                        mes = Funcao.escolher_mes()
+                        if mes == 0:
+                            break
+                        else:
+                            Ajustes.limpa_tela(1)
+                            tabela = Funcao.apresentar_compras(bd.conectar(), mes)
+                            if tabela == 0:
+                                Ajustes.limpa_tela(4)
+                                break
+                            else:
+                                escolher_alt = Funcao.escolher_compra_edit(bd.conectar(),
+                                                                           'Digite o ID que aparece na frente da compra que deseja mudar', mes)
+                                if escolher_alt == 0:
+                                    Ajustes.limpa_tela()
+                                    break
+                                else:
+                                    print('a')

@@ -37,33 +37,29 @@ def apresentar_compras(con, mes):
         cursor.execute(sql)
         execucao = []
         for c1 in cursor:
-            execucao.append(c1)
-        if execucao is None:
-            print('Não há valores no intervalo selecionado.')
+            execucao.append(c1[0])
+        if len(execucao) == 0:
+            print('Não há valores para o mês inserido.')
             return 0
         else:
-            print('ID\t Valor\t Total da compra(caso parcelada)\tCategoria')
+            cursor.execute(sql)
+            print("ID\t Valor\t Total da compra(caso parcelada)\tCategoria")
             for c1, c2, c3, c4 in cursor:
                 print(f'{c1}\tR${c2}\t \t\t\t\t\t\tR${c3}\t\t{c4}')
+                return execucao
     else:
         print('Sem conexão com servidor.')
 
 
-def escolher_compra_edit(con, ide, mes):
+def escolher_compra_edit(con, ide, mes, lista_id):
     conexao = con
     if conexao.is_connected():
         local = valida_int(ide, 'Digite um número inteiro', '')
-        sql = f'SELECT id_valor FROM valor WHERE mes = {mes}'
-        cursor = conexao.cursor()
-        cursor.execute(sql)
-        ids = []
-        for item in cursor:
-            ids.append(item)
-        if local not in ids:
-            print('ID digitado não está presente na selação')
-            return 0
+        if local not in lista_id:
+            print('ID digitado não está presente na selação. \nRetornando ao menu anterior.')
+            return 'n'
         else:
-            return ids[local]
+            return local
     else:
         print('Sem conexão com servidor.')
 

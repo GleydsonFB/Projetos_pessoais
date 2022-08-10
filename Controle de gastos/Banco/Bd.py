@@ -153,34 +153,38 @@ class Compra:
         self.conexao = conexao
         self.cursor = self.conexao.cursor()
 
-    def adicionar_valor(self, valor, mes, categoria, total_compra=0):
+    def adicionar_valor(self, valor, mes, categoria, an=ano.year, total_compra=0):
         if self.conexao.is_connected():
             if total_compra != 0:
                 sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano) VALUES ("{}", "{}", "{}", "{}", "{} ")'\
-                    .format(valor, mes, total_compra, categoria, ano.year)
+                    .format(valor, mes, total_compra, categoria, an)
                 self.cursor.execute(sql)
                 self.conexao.commit()
             else:
                 sql = 'INSERT INTO valor (registro, mes, categoria, ano) VALUES ("{}", "{}", "{}", "{}")' \
-                    .format(valor, mes, categoria, ano.year)
+                    .format(valor, mes, categoria, an)
                 self.cursor.execute(sql)
                 self.conexao.commit()
                 print('Valor inserido com sucesso!')
         else:
             print('Sem conexão com o servidor.')
 
-    def alterar_valor(self, novo_valor, id_valor, total_compra=''):
+    def alterar_valor(self, novo_valor, id_valor, total_compra=0, novo_valorc=0):
         if self.conexao.is_connected():
-            if total_compra == '':
+            if total_compra == 0:
                 sql = 'UPDATE valor SET registro = "{}" WHERE id_valor = "{}"'.format(novo_valor, id_valor)
                 self.cursor.execute(sql)
                 self.conexao.commit()
-                print(f'Novo valor para a compra ID {id_valor} alterado para R${novo_valor}.')
+                print(f'Novo valor para a compra ID {id_valor} alterado para R${novo_valor:.2f}.')
             else:
-                sql = 'UPDATE valor SET registro = "{}" WHERE total_compra = "{}"'.format(novo_valor, total_compra)
+                sql = 'UPDATE valor SET registro = "{}" WHERE compra_total = "{}";'.format(novo_valor, total_compra)
+                sql2 = 'UPDATE total_compra SET compra = "{}" WHERE id_compra = "{}"'.format(novo_valorc, total_compra)
                 self.cursor.execute(sql)
                 self.conexao.commit()
-                print(f'Valor alterado para todas as parcelas vinculadas, sendo R${novo_valor} para cada uma.')
+                self.cursor.execute(sql2)
+                self.conexao.commit()
+                print(f'Valor alterado para todas as parcelas vinculadas, sendo R${novo_valor:.2f} '
+                      f'para cada uma e o total da compra é de R${novo_valorc:.2f}.')
         else:
             print('Sem conexão com servidor.')
 
@@ -280,3 +284,5 @@ class SalarioRendimento:
             print('Rendimento (valor extra) deletado com sucesso!')
         else:
             print('Sem conexão com servidor.')
+
+

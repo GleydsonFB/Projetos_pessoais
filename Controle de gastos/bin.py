@@ -1,6 +1,8 @@
 from Banco import Bd, Ajustes, Funcao
-
-
+import datetime
+data = datetime.datetime.now()
+ano = data.date()
+an = int(ano.year)
 bd = Bd.Conector('localhost', 'root', 'root', 'controle_de_gastos')
 categorias = Bd.Categoria(bd.conectar())
 compras = Bd.Compra(bd.conectar())
@@ -8,7 +10,7 @@ contador, verificador = 0, 0
 id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
 meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
          'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-#a = Funcao.apresentar_compras(bd.conectar(), 6)
+#a = Funcao.apresentar_compras(bd.conectar(), 12, an)
 while True:
     print('BEM VINDO(A) AO CONTROLE FINANCEIRO PESSOAL - by Gleydson\n'
           'DEFINA UMA DAS OPÇÕES ABAIXO:')
@@ -82,17 +84,19 @@ while True:
                                         id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
                                         for compra in range(parcela):
                                             if verificador == 0:
-                                                compras.adicionar_valor(valor, mes, escolha_cat, id_ultimo[0])
+                                                compras.adicionar_valor(valor, mes, escolha_cat, an, id_ultimo[0])
                                                 verificador += 1
                                                 mes += verificador
                                             else:
                                                 if mes <= 12:
-                                                    compras.adicionar_valor(valor, mes, escolha_cat, id_ultimo[0])
+                                                    compras.adicionar_valor(valor, mes, escolha_cat, an, id_ultimo[0])
                                                     mes += verificador
                                                 else:
                                                     mes, verificador = 1, 1
-                                                    compras.adicionar_valor(valor, mes, escolha_cat, id_ultimo[0])
+                                                    an += 1
+                                                    compras.adicionar_valor(valor, mes, escolha_cat, an, id_ultimo[0])
                                                     mes += verificador
+                                        an = int(ano.year)
                                         verificador = 0
                                         print('Valores inseridos com sucesso!')
                                         Ajustes.limpa_tela()
@@ -132,19 +136,29 @@ while True:
                             if mes == 0:
                                 break
                             else:
-                                tabela = Funcao.apresentar_compras(bd.conectar(), mes)
+                                tabela = Funcao.apresentar_compras(bd.conectar(), mes, an)
+                                print('Observação: As alterações são feitas apenas dentro do ano vigente. Se precisar mudar mais que isso'
+                                      ', por favor, delete a compra e a insira novamente!')
                                 if tabela == 0:
                                     Ajustes.limpa_tela(4)
                                     break
                                 else:
                                     escolher_alt = Funcao.escolher_compra_edit(bd.conectar(),
-                                                                               'Digite o ID que aparece na frente da compra que deseja mudar: ', mes,
+                                                                               'Digite o ID que aparece na frente da compra que deseja mudar: ',
                                                                                tabela)
                                     if escolher_alt == 'n':
                                         Ajustes.limpa_tela()
                                         break
                                     else:
-                                        print(f'{escolher_alt}')
+                                        novo_valor = Ajustes.valida_float(f'Digite o valor novo para a compra ID({escolher_alt}) R$:', 'Digite um valor válido.')
+                                        id_gasto_t = bd.select_composto(1, 'valor', 'compra_total', 'id_valor', escolher_alt)
+                                        if id_gasto_t[0] is None:
+                                            compras.alterar_valor(novo_valor, escolher_alt)
+                                        else:
+                                            parcelas = bd.select_composto(1, 'total_compra', 't_parcela', 'id_compra', id_gasto_t[0])
+                                            compras.alterar_valor(novo_valor, escolher_alt, id_gasto_t[0], novo_valor * parcelas[0])
+                                            contador += 1
+                                            Ajustes.limpa_tela(4)
         case 3:
             print('a')
         case 4:

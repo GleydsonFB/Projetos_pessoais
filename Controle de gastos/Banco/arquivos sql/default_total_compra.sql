@@ -1,0 +1,3 @@
+#SE FAZ NECESSÁRIO CRIAR POR PADRÃO ESTE INSERT, PARA GERAR UMA VISUALIZAÇÃO CORRETA DOS DADOS FUTUROS;
+USE controle_de_gastos;
+INSERT INTO total_compra(id_compra, compra, t_parcela) VALUES (1, 0, 0);

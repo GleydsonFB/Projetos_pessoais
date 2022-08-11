@@ -6,6 +6,7 @@ an = int(ano.year)
 bd = Bd.Conector('localhost', 'root', 'root', 'controle_de_gastos')
 categorias = Bd.Categoria(bd.conectar())
 compras = Bd.Compra(bd.conectar())
+salarios = Bd.SalarioRendimento(bd.conectar())
 contador, verificador = 0, 0
 id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
 meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
@@ -34,6 +35,8 @@ while True:
                             if c == 0:
                                 contador = 0
                                 break
+                            else:
+                                contador = 0
                         print('Certo, primeiro determine o mês que irá conter a compra: ')
                         Ajustes.apresenta_mes()
                         mes = Funcao.escolher_mes()
@@ -128,6 +131,8 @@ while True:
                             if c == 0:
                                 contador = 0
                                 break
+                            else:
+                                contador = 0
                         else:
                             Ajustes.limpa_tela(0)
                             print('Perfeito, para isso agora defina o mês da compra a ser ajustada')
@@ -159,8 +164,267 @@ while True:
                                             compras.alterar_valor(novo_valor, escolher_alt, id_gasto_t[0], novo_valor * parcelas[0])
                                             contador += 1
                                             Ajustes.limpa_tela(4)
+                elif escolha == 3:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'deletar outra compra?')
+                            if c == 0:
+                                contador = 0
+                                break
+                            else:
+                                contador = 0
+                        else:
+                            Ajustes.limpa_tela(0)
+                            print('Deletar, né? Vamos definir primeiro o mês da compra.')
+                            Ajustes.apresenta_mes()
+                            mes = Funcao.escolher_mes()
+                            if mes == 0:
+                                break
+                            else:
+                                tabela = Funcao.apresentar_compras(bd.conectar(), mes)
+                                print('Lembre-se, para deletar valores de anos futuros ou passados, basta apenas escolher o mês onde o valor se encontra.')
+                                if tabela == 0:
+                                    Ajustes.limpa_tela(4)
+                                    break
+                                else:
+                                    deleta = Funcao.escolher_compra_edit(bd.conectar(), 'Digite o ID da compra que será deletada: ', tabela)
+                                    print(f'A remoção será de todas as parcelas atreladas a compra ID({deleta}). ')
+                                    c = Funcao.continuar(1, 'continuar? ')
+                                    if deleta == 'n':
+                                        Ajustes.limpa_tela()
+                                        break
+                                    if c == 1:
+                                        compras.deletar_valor(deleta)
+                                        Ajustes.limpa_tela(4)
+                                        contador += 1
+                                    else:
+                                        print('Retornando ao menu anterior')
+                                        Ajustes.limpa_tela()
+                                        break
+                elif escolha == 4:
+                    print('Certo, voltando ao menu anterior.')
+                    Ajustes.limpa_tela()
+                    break
+        case 2:
+            while True:
+                Ajustes.limpa_tela(0)
+                print('Nesta seção trataremos de salários.')
+                escolha = Ajustes.valida_int('O que você deseja?\n'
+                                             '[1] INSERIR SALÁRIO - [2] - ALTERAR SALÁRIO - [3] - DELETAR SALÁRIO - [4] - MENU ANTERIOR: ',
+                                             'Digite um valor válido.', 10)
+                if escolha == 1:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'inserir novo salário?')
+                            if c == 0:
+                                contador = 0
+                                break
+                            else:
+                                contador = 0
+                        print('Certo, primeiro determine o mês que irá conter o salário: ')
+                        Ajustes.apresenta_mes()
+                        mes = Funcao.escolher_mes()
+                        if mes == 0:
+                            break
+                        else:
+                            print(f'O salário será inserido no mês {meses[mes - 1]}')
+                            inserir_sal = Ajustes.valida_float('Digite o valor do salário: R$', 'Valor inválido.')
+                            while True:
+                                ano = Ajustes.valida_int('Digite o ano que o salário será incluído: ',
+                                                         'Digite um número inteiro', '')
+                                if ano < an:
+                                    print('Ano inválido, digite um valor maior ou igual ao ano atual.')
+                                else:
+                                    break
+                            salarios.inserir_salario(inserir_sal, mes, ano)
+                            Ajustes.limpa_tela()
+                            contador += 1
+                elif escolha == 2:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'alterar outro salário?')
+                            if c == 0:
+                                contador = 0
+                                break
+                            else:
+                                contador = 0
+                        else:
+                            Ajustes.limpa_tela(0)
+                            print('Perfeito, para isso agora defina o mês do salário a ser ajustado')
+                            Ajustes.apresenta_mes()
+                            mes = Funcao.escolher_mes()
+                            if mes == 0:
+                                break
+                            else:
+                                tabela = Funcao.apresentar_salarios(bd.conectar(), mes)
+                                if tabela == 0:
+                                    Ajustes.limpa_tela(4)
+                                    break
+                                else:
+                                    escolher_alt = Funcao.escolher_compra_edit(bd.conectar(),
+                                                                               'Digite o ID que aparece na frente do salário que deseja mudar: ',
+                                                                               tabela)
+                                    if escolher_alt == 'n':
+                                        Ajustes.limpa_tela()
+                                        break
+                                    else:
+                                        novo_valor = Ajustes.valida_float(
+                                            f'Digite o valor novo para o salário ID({escolher_alt}) R$:',
+                                            'Digite um valor válido.')
+                                        salarios.alterar_salario(novo_valor, escolher_alt)
+                                        contador += 1
+                                        Ajustes.limpa_tela(4)
+                elif escolha == 3:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'deletar outro salário?')
+                            if c == 0:
+                                contador = 0
+                                break
+                            else:
+                                contador = 0
+                        else:
+                            Ajustes.limpa_tela(0)
+                            print('Deletar, né? Vamos definir primeiro o mês do salário.')
+                            Ajustes.apresenta_mes()
+                            mes = Funcao.escolher_mes()
+                            if mes == 0:
+                                break
+                            else:
+                                tabela = Funcao.apresentar_salarios(bd.conectar(), mes)
+                                print(
+                                    'Lembre-se, para deletar valores de anos futuros ou passados, basta apenas escolher o mês onde o valor se encontra.')
+                                if tabela == 0:
+                                    Ajustes.limpa_tela(4)
+                                    break
+                                else:
+                                    deleta = Funcao.escolher_compra_edit(bd.conectar(),
+                                                                         'Digite o ID do salário que será deletado: ', tabela)
+                                    print(f'Salário de ID({deleta}) será deletado. ')
+                                    c = Funcao.continuar(1, 'continuar? ')
+                                    if c == 1:
+                                        salarios.deletar_salario(deleta)
+                                        Ajustes.limpa_tela(4)
+                                        contador += 1
+                                    else:
+                                        print('Retornando ao menu anterior')
+                                        Ajustes.limpa_tela()
+                                        break
+                else:
+                    print('Tudo bem, retornando ao menu anterior.')
+                    Ajustes.limpa_tela()
+                    break
+
         case 3:
-            print('a')
+            while True:
+                Ajustes.limpa_tela(0)
+                print('Nesta seção trataremos de rendimentos, que nada mais são (aqui) do que ganhos extras que você obtêm!')
+                escolha = Ajustes.valida_int('O que você deseja?\n'
+                                             '[1] INSERIR RENDIMENTO - [2] - ALTERAR RENDIMENTO - [3] - DELETAR RENDIMENTO - [4] - MENU ANTERIOR: ',
+                                             'Digite um valor válido.', 10)
+                if escolha == 1:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'inserir novo rendimento?')
+                            if c == 0:
+                                contador = 0
+                                break
+                            else:
+                                contador = 0
+                        print('Certo, primeiro determine o mês que irá conter o rendimento: ')
+                        Ajustes.apresenta_mes()
+                        mes = Funcao.escolher_mes()
+                        if mes == 0:
+                            break
+                        else:
+                            print(f'O rendimento será inserido no mês {meses[mes - 1]}')
+                            inserir_red = Ajustes.valida_float('Digite o valor do rendimento: R$', 'Valor inválido.')
+                            while True:
+                                ano = Ajustes.valida_int('Digite o ano que o rendimento será incluído: ',
+                                                         'Digite um número inteiro', '')
+                                if ano < an:
+                                    print('Ano inválido, digite um valor maior ou igual ao ano atual.')
+                                else:
+                                    break
+                            salarios.inserir_rendimento(inserir_red, mes, ano)
+                            Ajustes.limpa_tela()
+                            contador += 1
+                elif escolha == 2:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'alterar outro rendimento?')
+                            if c == 0:
+                                contador = 0
+                                break
+                            else:
+                                contador = 0
+                        else:
+                            Ajustes.limpa_tela(0)
+                            print('Perfeito, para isso agora defina o mês do rendimento a ser ajustado')
+                            Ajustes.apresenta_mes()
+                            mes = Funcao.escolher_mes()
+                            if mes == 0:
+                                break
+                            else:
+                                tabela = Funcao.apresentar_rendimentos(bd.conectar(), mes)
+                                if tabela == 0:
+                                    Ajustes.limpa_tela(4)
+                                    break
+                                else:
+                                    escolher_alt = Funcao.escolher_compra_edit(bd.conectar(),
+                                                                               'Digite o ID que aparece na frente do rendimento que deseja mudar: ',
+                                                                               tabela)
+                                    if escolher_alt == 'n':
+                                        Ajustes.limpa_tela()
+                                        break
+                                    else:
+                                        novo_valor = Ajustes.valida_float(
+                                            f'Digite o valor novo para o rendimento ID({escolher_alt}) R$:',
+                                            'Digite um valor válido.')
+                                        salarios.alterar_salario(novo_valor, escolher_alt)
+                                        contador += 1
+                                        Ajustes.limpa_tela(4)
+                elif escolha == 3:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'deletar outro rendimento?')
+                            if c == 0:
+                                contador = 0
+                                break
+                            else:
+                                contador = 0
+                        else:
+                            Ajustes.limpa_tela(0)
+                            print('Deletar, né? Vamos definir primeiro o mês do rendimento.')
+                            Ajustes.apresenta_mes()
+                            mes = Funcao.escolher_mes()
+                            if mes == 0:
+                                break
+                            else:
+                                tabela = Funcao.apresentar_rendimentos(bd.conectar(), mes)
+                                print(
+                                    'Lembre-se, para deletar valores de anos futuros ou passados, basta apenas escolher o mês onde o valor se encontra.')
+                                if tabela == 0:
+                                    Ajustes.limpa_tela(4)
+                                    break
+                                else:
+                                    deleta = Funcao.escolher_compra_edit(bd.conectar(),
+                                                                         'Digite o ID do rendimento que será deletado: ',
+                                                                         tabela)
+                                    print(f'Rendimento de ID({deleta}) será deletado. ')
+                                    c = Funcao.continuar(1, 'continuar? ')
+                                    if c == 1:
+                                        salarios.deletar_rendimento(deleta)
+                                        Ajustes.limpa_tela(4)
+                                        contador += 1
+                                    else:
+                                        print('Retornando ao menu anterior')
+                                        Ajustes.limpa_tela()
+                                        break
+                else:
+                    print('Tudo bem, retornando ao menu anterior.')
+                    Ajustes.limpa_tela()
+                    break
         case 4:
             print('Voltando ao menu inicial.')
             Ajustes.limpa_tela()

@@ -231,9 +231,9 @@ class SalarioRendimento:
         self.conexao = conexao
         self.cursor = self.conexao.cursor()
 
-    def inserir_salario(self, salario, mes):
+    def inserir_salario(self, salario, mes, an=ano.year):
         if self.conexao.is_connected():
-            sql = 'INSERT INTO salario (pagamento, mes, ano) VALUES ("{}", "{}", "{}")'.format(salario, mes, ano.year)
+            sql = 'INSERT INTO salario (pagamento, mes, ano) VALUES ("{}", "{}", "{}")'.format(salario, mes, an)
             self.cursor.execute(sql)
             self.conexao.commit()
             print('Salario inserido com sucesso!')
@@ -258,9 +258,9 @@ class SalarioRendimento:
         else:
             print('Sem conexão com servidor.')
 
-    def inserir_rendimento(self, rendimento, mes):
+    def inserir_rendimento(self, rendimento, mes, an=ano.year):
         if self.conexao.is_connected():
-            sql = 'INSERT INTO rendimento (valor, mes, ano) VALUES ("{}", "{}", "{}")'.format(rendimento, mes, ano.year)
+            sql = 'INSERT INTO rendimento (valor, mes, ano) VALUES ("{}", "{}", "{}")'.format(rendimento, mes, an)
             self.cursor.execute(sql)
             self.conexao.commit()
             print('Rendimento (valor extra) inserido com sucesso!')

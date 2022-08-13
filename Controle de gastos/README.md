@@ -1,2 +1,2 @@
 # Projeto controle de gastos
-Este projeto destina-se ao desenvolvimento de um programa capaz de auxiliar na gestão financeira de uma pessoa. Ao final do projeto irei disponibilizar um vídeo demonstrativo bem como uma FAQ.
+Este projeto destina-se ao desenvolvimento de um programa capaz de auxiliar na gestão financeira de uma pessoa. Ao final do projeto, irei disponibilizar um vídeo demonstrativo, bem como uma FAQ.

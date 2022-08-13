@@ -11,15 +11,15 @@ contador, verificador = 0, 0
 id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
 meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
          'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-#a = Funcao.apresentar_compras(bd.conectar(), 12, an)
 while True:
-    print('BEM VINDO(A) AO CONTROLE FINANCEIRO PESSOAL - by Gleydson\n'
+    print('BEM VINDO(A) AO CONTROLE FINANCEIRO PESSOAL - by Gleydson Freitas.\n'
           'DEFINA UMA DAS OPÇÕES ABAIXO:')
-    menu = Ajustes.valida_int('[1] GERIR COMPRAS - [2] GERIR SALARIO - [3] GERIR RENDIMENTO - [4] GERIR CATEGORIA: ',
+    menu = Ajustes.valida_int('[1] GERIR COMPRAS - [2] GERIR SALARIO - [3] GERIR RENDIMENTO - [4] GERIR CATEGORIA - [5] ESTATÍSTICAS - [0] FECHAR PROGRAMA: ',
                               'Digite um número inteiro',
                               'Devido as tentativas sem sucesso, o programa será encerrado...', 2)
     match menu:
         case 0:
+            bd.desconectar()
             break
         case 1:
             while True:
@@ -221,6 +221,7 @@ while True:
                                 break
                             else:
                                 contador = 0
+                        Ajustes.limpa_tela(0)
                         print('Certo, primeiro determine o mês que irá conter o salário: ')
                         Ajustes.apresenta_mes()
                         mes = Funcao.escolher_mes()
@@ -331,6 +332,7 @@ while True:
                                 break
                             else:
                                 contador = 0
+                        Ajustes.limpa_tela(0)
                         print('Certo, primeiro determine o mês que irá conter o rendimento: ')
                         Ajustes.apresenta_mes()
                         mes = Funcao.escolher_mes()
@@ -426,6 +428,125 @@ while True:
                     Ajustes.limpa_tela()
                     break
         case 4:
-            print('Voltando ao menu inicial.')
-            Ajustes.limpa_tela()
-            break
+            while True:
+                Ajustes.limpa_tela(0)
+                print(
+                    'Nesta seção trataremos de categorias, elas servem para ajuda-lo(a) a administrar suas compras, inserindo limites e afins!')
+                escolha = Ajustes.valida_int('O que você deseja?\n'
+                                             '[1] CRIAR CATEGORIA - [2] - ALTERAR CATEGORIA - [3] - ORIENTAÇÕES DE USO - [4] - MENU ANTERIOR: ',
+                                             'Digite um valor válido.', 10)
+                if escolha == 1:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'inserir nova categoria?')
+                            if c == 0:
+                                contador = 0
+                                break
+                            else:
+                                contador = 0
+                        Ajustes.limpa_tela(0)
+                        inserir_cat = str(input('Digite o nome da categoria: '))
+                        limite_min = Ajustes.valida_float(f'Qual será o limite mínimo para a categoria {inserir_cat} [0] para nenhum. R$:',
+                                                          'Digite um número real')
+                        limite_max = Ajustes.valida_float(f'Certo, agora qual o limite máximo da {inserir_cat}? R$:',
+                                                          'Digite um número real')
+                        categorias.inserir_categoria(inserir_cat, limite_max, limite_min)
+                        Ajustes.limpa_tela(4)
+                        contador += 1
+                elif escolha == 2:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'alterar outra categoria?')
+                            if c == 0:
+                                contador = 0
+                                break
+                            else:
+                                contador = 0
+                        else:
+                            Ajustes.limpa_tela(0)
+                            tabela = Funcao.apresentar_categorias(bd.conectar())
+                            if tabela == 0:
+                                Ajustes.limpa_tela(4)
+                                break
+                            else:
+                                escolher_alt = Funcao.escolher_compra_edit(bd.conectar(),
+                                                                           'Digite o ID que aparece na frente do rendimento que deseja mudar: ',
+                                                                           tabela)
+                                if escolher_alt == 'n':
+                                    Ajustes.limpa_tela()
+                                    break
+                                else:
+                                    nome_cat = bd.select_composto(1, 'categoria', 'nome', 'id_cat', escolher_alt)
+                                    escolha_mudanca = Ajustes.valida_int('O que deseja mudar? [1] - Nome - [2] - Gasto mínimo - [3] - Limite - [4] - Outros cenários: ', 'Digite um número válido', '')
+                                    match escolha_mudanca:
+                                        case 1:
+                                            novo_nome = str(input(f'Digite o novo nome para a categoria {nome_cat[0]}: '))
+                                            categorias.alterar_categoria(escolher_alt, novo_nome)
+                                            Ajustes.limpa_tela()
+                                        case 2:
+                                            novo_min = Ajustes.valida_float(f'Digite o gasto mínimo para a categoria {nome_cat[0]}. R$:', 'Digite um número real.')
+                                            categorias.alterar_categoria(escolher_alt, minimo=novo_min)
+                                            Ajustes.limpa_tela()
+                                        case 3:
+                                            novo_max = Ajustes.valida_float(f'Digite o novo limite para a categoria {nome_cat[0]}. R$:', 'Digite um número real.')
+                                            categorias.alterar_categoria(escolher_alt, limite=novo_max)
+                                            Ajustes.limpa_tela()
+                                        case 4:
+                                            novas_ops = Ajustes.valida_int('[1] - Nome e limite - [2] Limite e mínimo - [3] - Nome e mínimo - [4] - Tudo: ',
+                                                                           'Digite um número válido', '')
+                                            match novas_ops:
+                                                case 1:
+                                                    novo_nome = str(input(f'Digite o novo nome para a categoria {nome_cat[0]}: '))
+                                                    novo_max = Ajustes.valida_float(
+                                                        f'Digite o novo limite para a categoria {nome_cat[0]}. R$:',
+                                                        'Digite um número real.')
+                                                    categorias.alterar_categoria(escolher_alt, novo_nome, novo_max)
+                                                    Ajustes.limpa_tela()
+                                                case 2:
+                                                    novo_max = Ajustes.valida_float(
+                                                        f'Digite o novo limite para a categoria {nome_cat[0]}. R$:',
+                                                        'Digite um número real.')
+                                                    novo_min = Ajustes.valida_float(
+                                                        f'Digite o gasto mínimo para a categoria {nome_cat[0]}. R$:',
+                                                        'Digite um número real.')
+                                                    categorias.alterar_categoria(escolher_alt, limite=novo_max, minimo=novo_min)
+                                                    Ajustes.limpa_tela()
+                                                case 3:
+                                                    novo_nome = str(input(f'Digite o novo nome para a categoria {nome_cat[0]}: '))
+                                                    novo_min = Ajustes.valida_float(
+                                                        f'Digite o gasto mínimo para a categoria {nome_cat[0]}. R$:',
+                                                        'Digite um número real.')
+                                                    categorias.alterar_categoria(escolher_alt, novo_nome, minimo=novo_min)
+                                                    Ajustes.limpa_tela()
+                                                case 4:
+                                                    novo_nome = str(input(f'Digite o novo nome para a categoria {nome_cat[0]}: '))
+                                                    novo_max = Ajustes.valida_float(
+                                                        f'Digite o novo limite para a categoria {nome_cat[0]}. R$:',
+                                                        'Digite um número real.')
+                                                    novo_min = Ajustes.valida_float(
+                                                        f'Digite o gasto mínimo para a categoria {nome_cat[0]}. R$:',
+                                                        'Digite um número real.')
+                                                    categorias.alterar_categoria(escolher_alt, novo_nome, novo_max, novo_min)
+                                                    Ajustes.limpa_tela()
+                                                case _:
+                                                    print('Opção inválida.')
+                                                    Ajustes.limpa_tela()
+                                        case _:
+                                            print('Opção inválida.')
+                                            Ajustes.limpa_tela()
+                                    contador += 1
+                elif escolha == 3:
+                    Ajustes.limpa_tela(0)
+                    print('Gostaria de deixar algumas instruções que facilitarão seu uso das categorias.\n'
+                          '>Não é possível deletar uma categoria, se precisar de uma nova, sugiro alterar uma já existente na opção 2 do menu anterior.\n'
+                          '>Sempre preze pelos limites da categoria, colocandos de maneira real ao seus ganhos mensais.\n'
+                          '>Caso tenha inserido uma compra em uma categoria errada, basta deletar a compra no menu respectivo.\n'
+                          '>Maiores dúvidas você poderá conferir na FAQ, disposta no menu principal.\n'
+                          '...Em 30 segundos você retornará ao menu de categorias =)')
+                    Ajustes.limpa_tela(30)
+                else:
+                    print('Tudo bem, retornando ao menu anterior.')
+                    Ajustes.limpa_tela()
+                    break
+        case 5:
+            print('a')

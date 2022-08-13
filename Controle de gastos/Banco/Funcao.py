@@ -2,8 +2,8 @@ from .Ajustes import limpa_tela, valida_float, valida_int
 from .Bd import Conector
 
 
-def continuar(giros, mensagem):
-    if giros > 0:
+def continuar(contagem, mensagem):
+    if contagem > 0:
         print(f'Deseja {mensagem}')
         novo = str(input('[S/N]: '))
         while novo not in 'SsNn':
@@ -122,6 +122,26 @@ def apresentar_rendimentos(con, mes, gasto=False):
             print(f'ID\t\tVALOR\t\tANO')
             for c1, c2, c3 in cursor:
                 print(f'{c1}\t\tR${c2}\t\t{c3}')
+            return ides
+
+
+def apresentar_categorias(con):
+    conexao = con
+    if conexao.is_connected():
+        sql = 'SELECT id_cat, nome, limite_gasto, minimo_gasto FROM categoria;'
+        cursor = conexao.cursor()
+        cursor.execute(sql)
+        ides = []
+        for c1 in cursor:
+            ides.append(c1[0])
+        if len(ides) == 0:
+            print('Não há categorias cadastradas.')
+            return 0
+        else:
+            cursor.execute(sql)
+            print(f'ID\t\tNOME\t\tLIMITE\t\tGASTO MIN')
+            for c1, c2, c3, c4 in cursor:
+                print(f'{c1}\t\t{c2}\t\tR${c3}\t\t  R${c4}')
             return ides
 
 

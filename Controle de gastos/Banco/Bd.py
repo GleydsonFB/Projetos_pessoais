@@ -131,14 +131,6 @@ class Categoria:
             else:
                 print('Opção inválida.')
 
-    def deletar_categoria(self, id_cat, nome):
-        if self.conexao.is_connected():
-            sql = f'DELETE FROM categoria WHERE id_cat = {id_cat}'
-            self.cursor.execute(sql)
-            self.conexao.commit()
-            print(f'Categoria {nome} removida com sucesso!')
-        else:
-            print('Sem conexão com servidor.')
 
     def somar_gasto_cat(self, mes, categoria):
         if self.conexao.is_connected():

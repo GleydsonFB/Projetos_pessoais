@@ -48,10 +48,16 @@ while True:
                             if len(ver_cat) > 0:
                                 print('Escolha a categoria que a compra será inserida!')
                                 for dado, tup in enumerate(ver_cat):
-                                    if dado + 1 < len(ver_cat):
-                                        print(f'Código: {ver_cat[dado]} --- {ver_cat[dado + 1]}.')
+                                    if dado % 2 != 0:
+                                        verificador += 1
+                                        print(f'Código: {verificador} --- {ver_cat[dado]}.')
                                     else:
-                                        break
+                                        pass
+                                verificador = 0
+                            else:
+                                print('Você ainda não inseriu categorias, por favor, faça isso para seguir!')
+                                Ajustes.limpa_tela()
+                                break
                             escolha_cat = Ajustes.valida_int('Digite o código da categoria desejada: ', 'Opção inválida.',
                                                              'Tentativas encerradas, retornando ao menu anterior', 10)
                             if escolha_cat == 0:
@@ -83,16 +89,17 @@ while True:
                                     else:
                                         parcela = Ajustes.valida_int('Digite a quantidade de parcelas ', 'Digite um número inteiro', '')
                                         total_valor = valor * parcela
+                                        nome_compra = str(input('Digite o nome da compra[Caso não queira por um, apenas dê enter]: '))
                                         compras.adicionar_compra_p(total_valor, parcela)
                                         id_ultimo = bd.select_ultimo('id_compra', 'total_compra')
                                         for compra in range(parcela):
                                             if verificador == 0:
-                                                compras.adicionar_valor(valor, mes, escolha_cat, an, id_ultimo[0])
+                                                compras.adicionar_valor(valor, mes, escolha_cat, an, nome_compra, id_ultimo[0])
                                                 verificador += 1
                                                 mes += verificador
                                             else:
                                                 if mes <= 12:
-                                                    compras.adicionar_valor(valor, mes, escolha_cat, an, id_ultimo[0])
+                                                    compras.adicionar_valor(valor, mes, escolha_cat, an, nome_compra, id_ultimo[0])
                                                     mes += verificador
                                                 else:
                                                     mes, verificador = 1, 1
@@ -113,6 +120,7 @@ while True:
                                         pass
                                     else:
                                         limite_atual = limite[0] - gasto_atual[0]
+                                    limite_atual = float(limite_atual)
                                     valor = Ajustes.valida_float('Digite o valor da compra! R$: ', 'Digite um número real.')
                                     if valor > limite_atual:
                                         print(f'O limite mensal da categoria {nome[0]} é de R${limite[0]}.\n'
@@ -121,7 +129,9 @@ while True:
                                         Ajustes.limpa_tela()
                                         break
                                     else:
-                                        compras.adicionar_valor(valor, mes, escolha_cat)
+                                        nome_compra = str(input('Digite o nome da compra[Caso não queira por um, apenas dê enter]: '))
+                                        compras.adicionar_valor(valor, mes, escolha_cat, an, nome_compra)
+                                        print('Valor inserido com sucesso!')
                                         Ajustes.limpa_tela()
                                         contador += 1
                 elif escolha == 2:
@@ -141,7 +151,7 @@ while True:
                             if mes == 0:
                                 break
                             else:
-                                tabela = Funcao.apresentar_compras(bd.conectar(), mes, an)
+                                tabela = Funcao.apresentar_compras(bd.conectar(), mes, an, mostrar_id=True)
                                 print('Observação: As alterações são feitas apenas dentro do ano vigente. Se precisar mudar mais que isso'
                                       ', por favor, delete a compra e a insira novamente!')
                                 if tabela == 0:
@@ -157,7 +167,7 @@ while True:
                                     else:
                                         novo_valor = Ajustes.valida_float(f'Digite o valor novo para a compra ID({escolher_alt}) R$:', 'Digite um valor válido.')
                                         id_gasto_t = bd.select_composto(1, 'valor', 'compra_total', 'id_valor', escolher_alt)
-                                        if id_gasto_t[0] is None:
+                                        if id_gasto_t[0] == 1:
                                             compras.alterar_valor(novo_valor, escolher_alt)
                                         else:
                                             parcelas = bd.select_composto(1, 'total_compra', 't_parcela', 'id_compra', id_gasto_t[0])

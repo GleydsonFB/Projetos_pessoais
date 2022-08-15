@@ -12,7 +12,7 @@ class Conector:
         self.pasw = pword
         self.bd = bd
         self.conexao = mysql.connector.connect(host=self.host, database=self.bd, user=self.user, password=self.pasw)
-        self.cursor = self.conexao.cursor()
+        self.cursor = self.conexao.cursor(buffered=True)
 
     def conectar(self):
         return self.conexao
@@ -30,9 +30,12 @@ class Conector:
     def select_simples(self, coluna1, coluna2, tabela):
         if self.conexao.is_connected():
             sql = f"SELECT {coluna1}, {coluna2} FROM {tabela};"
+            retorno = []
             self.cursor.execute(sql)
             for c1, c2 in self.cursor:
-                return c1, c2
+                retorno.append(c1)
+                retorno.append(c2)
+            return retorno
         else:
             print('Sem conexão com o servidor.')
 
@@ -47,26 +50,44 @@ class Conector:
                 case 2:
                     sql = f"SELECT {coluna1}, {demais_colunas[0]} FROM {tabela} WHERE {colunap} = {pesquisa};"
                     self.cursor.execute(sql)
+                    retorno = []
                     for c1, c2 in self.cursor:
-                        return c1, c2
+                        retorno.append(c1)
+                        retorno.append(c2)
+                    return retorno
                 case 3:
                     sql = \
                         f"SELECT {coluna1}, {demais_colunas[0]}, {demais_colunas[1]} FROM {tabela} WHERE {colunap} = {pesquisa};"
                     self.cursor.execute(sql)
+                    retorno = []
                     for c1, c2, c3 in self.cursor:
-                        return c1, c2, c3
+                        retorno.append(c1)
+                        retorno.append(c2)
+                        retorno.append(c3)
+                    return retorno
                 case 4:
                     sql = \
                         f"SELECT {coluna1}, {demais_colunas[0]}, {demais_colunas[1]}, {demais_colunas[2]} FROM {tabela} WHERE {colunap} = {pesquisa};"
                     self.cursor.execute(sql)
+                    retorno = []
                     for c1, c2, c3, c4 in self.cursor:
-                        return c1, c2, c3, c4
+                        retorno.append(c1)
+                        retorno.append(c2)
+                        retorno.append(c3)
+                        retorno.append(c4)
+                    return retorno
                 case 5:
                     sql = \
                         f"SELECT * FROM {tabela} WHERE {colunap} = {pesquisa};"
                     self.cursor.execute(sql)
+                    retorno = []
                     for c1, c2, c3, c4, c5 in self.cursor:
-                        return c1, c2, c3, c4, c5
+                        retorno.append(c1)
+                        retorno.append(c2)
+                        retorno.append(c3)
+                        retorno.append(c4)
+                        retorno.append(c5)
+                    return retorno
         else:
             print('Sem conexão com servidor.')
 
@@ -145,11 +166,21 @@ class Compra:
         self.conexao = conexao
         self.cursor = self.conexao.cursor()
 
-    def adicionar_valor(self, valor, mes, categoria, an=ano.year, total_compra=0):
+    def adicionar_valor(self, valor, mes, categoria, an=ano.year, nome_compra='', total_compra=0):
         if self.conexao.is_connected():
-            if total_compra != 0:
-                sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano) VALUES ("{}", "{}", "{}", "{}", "{} ")'\
+            if total_compra != 0 and nome_compra != '':
+                sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano, nome_compra) VALUES ("{}", "{}", "{}", "{}", "{}", "{}")'\
+                    .format(valor, mes, total_compra, categoria, an, nome_compra)
+                self.cursor.execute(sql)
+                self.conexao.commit()
+            elif total_compra != 0 and nome_compra == '':
+                sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano) VALUES ("{}", "{}", "{}", "{}", "{}")' \
                     .format(valor, mes, total_compra, categoria, an)
+                self.cursor.execute(sql)
+                self.conexao.commit()
+            elif total_compra == 0 and nome_compra != '':
+                sql = 'INSERT INTO valor (registro, mes, categoria, ano, nome_compra) VALUES ("{}", "{}", "{}", "{}", "{}")' \
+                    .format(valor, mes, categoria, an, nome_compra)
                 self.cursor.execute(sql)
                 self.conexao.commit()
             else:
@@ -157,7 +188,6 @@ class Compra:
                     .format(valor, mes, categoria, an)
                 self.cursor.execute(sql)
                 self.conexao.commit()
-                print('Valor inserido com sucesso!')
         else:
             print('Sem conexão com o servidor.')
 

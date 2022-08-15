@@ -32,7 +32,7 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
     conexao = con
     if conexao.is_connected():
         if mostrar_id is True and ano != 'nenhum':
-            sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome, V.ano FROM valor V INNER JOIN total_compra C ' \
+            sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
                   f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes} AND V.ano = {ano};'
             cursor = conexao.cursor()
             cursor.execute(sql)
@@ -44,12 +44,12 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 return 0
             else:
                 cursor.execute(sql)
-                print("ID\t Valor\t Total da compra(0 se não for)\tCategoria\tAno da compra")
-                for c1, c2, c3, c4, c5 in cursor:
-                    print(f'{c1}\t R${c2}\t\t\t\t\t\t\tR${c3}\t  {c4} \t\t{c5}')
+                print("ID\t Valor\t Total da compra(0 se não for)\t Categoria\tAno da compra   Nome da compra")
+                for c1, c2, c3, c4, c5, c6 in cursor:
+                    print(f'{c1}\t R${c2}                       R${c3}\t\t{c4}     {c5}\t\t\t{c6}')
                 return execucao
         elif mostrar_id is False and ano != 'nenhum':
-            sql = f'SELECT V.registro, C.compra, CA.nome, V.ano FROM valor V INNER JOIN total_compra C ' \
+            sql = f'SELECT V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
                   f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes} AND V.ano = {ano};'
             cursor = conexao.cursor()
             cursor.execute(sql)
@@ -61,11 +61,11 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 return 0
             else:
                 cursor.execute(sql)
-                print("Valor\t Total da compra(0 se não for)\tCategoria\tAno da compra")
-                for c1, c2, c3, c4 in cursor:
-                    print(f'R${c1}\t\t\t\t\t\t\tR${c2}\t  {c3} \t\t{c4}')
+                print("Valor\t Total da compra(0 se não for)\tCategoria\tAno da compra\tNome da compra")
+                for c1, c2, c3, c4, c5 in cursor:
+                    print(f'R${c1}\t\t\t\t\t\t\tR${c2}\t  {c3} \t\t{c4}\t\t{c5}')
         else:
-            sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome FROM valor V INNER JOIN total_compra C ' \
+            sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
                   f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes};'
             cursor = conexao.cursor()
             cursor.execute(sql)
@@ -77,9 +77,9 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 return 0
             else:
                 cursor.execute(sql)
-                print("ID\tValor\t Total da compra(0 se não for)\tCategoria")
-                for c1, c2, c3, c4 in cursor:
-                    print(f'{c1}\tR${c2}\t\t\t\t\t\t\tR${c3}\t  {c4}')
+                print("ID\tValor\t Total da compra(0 se não for)\tCategoria\tNome da compra")
+                for c1, c2, c3, c4, c5 in cursor:
+                    print(f'{c1}\tR${c2}\t\t\t\t\t\t\tR${c3}\t  {c4}\t{c5}')
                 return execucao
     else:
         print('Sem conexão com servidor.')

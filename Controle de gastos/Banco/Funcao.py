@@ -127,6 +127,9 @@ def apresentar_rendimentos(con, mes, gasto=False):
 
 def apresentar_categorias(con):
     conexao = con
+    contagem, espaco1, espaco2 = 0, 0, 0
+    tamanho = []
+    tamanho2 = []
     if conexao.is_connected():
         sql = 'SELECT id_cat, nome, limite_gasto, minimo_gasto FROM categoria;'
         cursor = conexao.cursor()
@@ -134,14 +137,34 @@ def apresentar_categorias(con):
         ides = []
         for c1 in cursor:
             ides.append(c1[0])
+            tamanho.append(c1[1])
+            tamanho2.append(c1[2])
+        for item, lista in enumerate(tamanho):
+            if contagem == 0:
+                espaco1 = len(tamanho[item])
+                contagem += 1
+            else:
+                if len(tamanho[item]) > espaco1:
+                    espaco1 = len(tamanho[item])
+        contagem = 0
+        for item, lista in enumerate(tamanho2):
+            temp = str(tamanho2[item])
+            if contagem == 0:
+                espaco2 = len(temp)
+                contagem += 1
+            else:
+                if len(temp) > espaco2:
+                    espaco2 = len(temp)
+        contagem = 0
         if len(ides) == 0:
             print('Não há categorias cadastradas.')
             return 0
         else:
+            print(espaco1, espaco2)
             cursor.execute(sql)
             print(f'ID\t\tNOME\t\tLIMITE\t\tGASTO MIN')
             for c1, c2, c3, c4 in cursor:
-                print(f'{c1}\t\t{c2}\t\tR${c3}\t\t  R${c4}')
+                print(f'{c1}\t\t{c2}R${c3}R${c4}')
             return ides
 
 

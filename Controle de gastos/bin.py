@@ -2,6 +2,7 @@ from Banco import Bd, Ajustes, Funcao
 import datetime
 data = datetime.datetime.now()
 ano = data.date()
+mes_atual = int(ano.month)
 an = int(ano.year)
 bd = Bd.Conector('localhost', 'root', 'root', 'controle_de_gastos')
 categorias = Bd.Categoria(bd.conectar())
@@ -272,6 +273,7 @@ while True:
                                     Ajustes.limpa_tela(4)
                                     break
                                 else:
+                                    print('\n')
                                     escolher_alt = Funcao.escolher_compra_edit(bd.conectar(),
                                                                                'Digite o ID que aparece na frente do salário que deseja mudar: ',
                                                                                tabela)
@@ -383,6 +385,7 @@ while True:
                                     Ajustes.limpa_tela(4)
                                     break
                                 else:
+                                    print('\n')
                                     escolher_alt = Funcao.escolher_compra_edit(bd.conectar(),
                                                                                'Digite o ID que aparece na frente do rendimento que deseja mudar: ',
                                                                                tabela)
@@ -486,6 +489,7 @@ while True:
                                     Ajustes.limpa_tela()
                                     break
                                 else:
+                                    print('\n')
                                     nome_cat = bd.select_composto(1, 'categoria', 'nome', 'id_cat', escolher_alt)
                                     escolha_mudanca = Ajustes.valida_int('O que deseja mudar? [1] - Nome - [2] - Gasto mínimo - [3] - Limite - [4] - Outros cenários: ', 'Digite um número válido', '')
                                     match escolha_mudanca:
@@ -559,4 +563,18 @@ while True:
                     Ajustes.limpa_tela()
                     break
         case 5:
-            print('a')
+            while True:
+                Ajustes.limpa_tela(0)
+                print('Nesta seção iremos conferir os gastos e a situação atual!')
+                escolha = Ajustes.valida_int('O que você deseja?\n'
+                                             '[1] CONFERIR SITUAÇÃO DO MÊS ATUAL - [2] - CONFERIR SITUAÇÃO DE ALGUM MÊS - [3] - VERIFICAR GASTO POR CATEGORIAS - [4] - MENU ANTERIOR: ',
+                                             'Digite um valor válido.', 10)
+                if escolha == 1:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'verificar novamente?')
+                            if c == 0:
+                                contador = 0
+                                break
+
+

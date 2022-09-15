@@ -44,9 +44,10 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 return 0
             else:
                 cursor.execute(sql)
-                print("ID\t Valor\t Total da compra(0 se não for)\t Categoria\tAno da compra   Nome da compra")
+                print('\nConfira os detalhes abaixo:\n')
                 for c1, c2, c3, c4, c5, c6 in cursor:
-                    print(f'{c1}\t R${c2}                       R${c3}\t\t{c4}     {c5}\t\t\t{c6}')
+                    print(f'ID:{c1}\tValor: R${c2}\t\tTotal da compra (0 se não for parcelada): R${c3}\tCategoria: {c4}\tAno: {c5}\tNome da compra: {c6}.')
+                print('\n')
                 return execucao
         elif mostrar_id is False and ano != 'nenhum':
             sql = f'SELECT V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
@@ -61,9 +62,10 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 return 0
             else:
                 cursor.execute(sql)
-                print("Valor\t Total da compra(0 se não for)\tCategoria\tAno da compra\tNome da compra")
+                print('\nConfira os dados abaixo:\n')
                 for c1, c2, c3, c4, c5 in cursor:
-                    print(f'R${c1}\t\t\t\t\t\t\tR${c2}\t  {c3} \t\t{c4}\t\t{c5}')
+                    print(f'Valor: R${c1}\t\tTotal da compra(0 se não for parcelada): R${c2}\t  Categoria: {c3}\tAno: {c4}\tNome da compra: {c5}.')
+                return execucao
         else:
             sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
                   f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes};'
@@ -77,9 +79,9 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 return 0
             else:
                 cursor.execute(sql)
-                print("ID\tValor\t Total da compra(0 se não for)\tCategoria\tNome da compra")
+                print('\nConfira os detalhes abaixo:\n')
                 for c1, c2, c3, c4, c5 in cursor:
-                    print(f'{c1}\tR${c2}\t\t\t\t\t\t\tR${c3}\t  {c4}\t{c5}')
+                    print(f'ID:{c1}\tValor: R${c2}\t\tTotal da compra (0 se não for parcelada): R${c3}\t  Categoria: {c4}\tNome da compra: {c5}.')
                 return execucao
     else:
         print('Sem conexão com servidor.')
@@ -99,9 +101,9 @@ def apresentar_salarios(con, mes, gasto=False):
             return 0
         else:
             cursor.execute(sql)
-            print(f'ID\t\tPAGAMENTO\t\tANO')
+            print(f'\nConfira os detalhes abaixo:\n')
             for c1, c2, c3 in cursor:
-                print(f'{c1}\t\tR${c2}\t\t{c3}')
+                print(f'ID:{c1}\t\tSalário: R${c2}\t\tAno: {c3}')
             return ides
 
 
@@ -119,15 +121,14 @@ def apresentar_rendimentos(con, mes, gasto=False):
             return 0
         else:
             cursor.execute(sql)
-            print(f'ID\t\tVALOR\t\tANO')
+            print('\nconfira os detalhes abaixo:\n')
             for c1, c2, c3 in cursor:
-                print(f'{c1}\t\tR${c2}\t\t{c3}')
+                print(f'ID:{c1}\t\tValor: R${c2}\t\tAno: {c3}')
             return ides
 
 
 def apresentar_categorias(con):
     conexao = con
-    contagem, espaco1, espaco2 = 0, 0, 0
     tamanho = []
     tamanho2 = []
     if conexao.is_connected():
@@ -137,34 +138,14 @@ def apresentar_categorias(con):
         ides = []
         for c1 in cursor:
             ides.append(c1[0])
-            tamanho.append(c1[1])
-            tamanho2.append(c1[2])
-        for item, lista in enumerate(tamanho):
-            if contagem == 0:
-                espaco1 = len(tamanho[item])
-                contagem += 1
-            else:
-                if len(tamanho[item]) > espaco1:
-                    espaco1 = len(tamanho[item])
-        contagem = 0
-        for item, lista in enumerate(tamanho2):
-            temp = str(tamanho2[item])
-            if contagem == 0:
-                espaco2 = len(temp)
-                contagem += 1
-            else:
-                if len(temp) > espaco2:
-                    espaco2 = len(temp)
-        contagem = 0
         if len(ides) == 0:
             print('Não há categorias cadastradas.')
             return 0
         else:
-            print(espaco1, espaco2)
             cursor.execute(sql)
-            print(f'ID\t\tNOME\t\tLIMITE\t\tGASTO MIN')
+            print('\nSegue os dados das atuais categorias:\n')
             for c1, c2, c3, c4 in cursor:
-                print(f'{c1}\t\t{c2}R${c3}R${c4}')
+                print(f'ID: {c1}\tNome: {c2}\t\tLimite: R${c3}\t\tGasto mínimo: R${c4}.')
             return ides
 
 
@@ -180,4 +161,26 @@ def escolher_compra_edit(con, ide, lista_id):
     else:
         print('Sem conexão com servidor.')
 
+
+def estatistica_compras(con, mes, ano):
+    conexao = con
+    if conexao.is_connected():
+        sql = f'SELECT V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
+              f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes} AND V.ano = {ano};'
+        cursor = conexao.cursor()
+        cursor.execute(sql)
+        sql2 = f'SELECT pagamento FROM salario WHERE mes = {mes} AND ano = {ano}'
+        sql3 = f'SELECT valor FROM rendimento WHERE mes = {mes} AND ano = {ano}'
+        total_gastol = []
+        total_gasto, salario, rendimento = 0, 0, 0
+        for valor in cursor:
+            total_gastol.append(valor[0])
+        for valor in total_gastol:
+            total_gasto += total_gastol[valor]
+        print('\nConfira os detalhes abaixo:\n')
+        for c1, c2, c3, c4, c5 in cursor:
+            print(f'ID:{c1}\tValor: R${c2}\t\tTotal da compra (0 se não for parcelada): R${c3}\t  Categoria: {c4}\tNome da compra: {c5}.')
+        print(f'\nTotal gasto no mês até o momento: R${total_gasto}')
+        cursor.execute(sql2)
+        
 

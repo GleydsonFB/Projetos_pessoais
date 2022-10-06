@@ -1,6 +1,8 @@
 from .Ajustes import limpa_tela, valida_float, valida_int
 from .Bd import Conector
-
+import datetime
+data = datetime.datetime.now()
+ano = data.date()
 
 def continuar(contagem, mensagem):
     if contagem > 0:
@@ -162,25 +164,20 @@ def escolher_compra_edit(con, ide, lista_id):
         print('Sem conexão com servidor.')
 
 
-def estatistica_compras(con, mes, ano):
+def rendimentos_totais_mes_a(con, mes):
     conexao = con
+    totais = []
     if conexao.is_connected():
-        sql = f'SELECT V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
-              f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes} AND V.ano = {ano};'
+        sql = f'SELECT SUM(pagamento) FROM salario WHERE mes = {mes} AND ano = {ano.year}'
         cursor = conexao.cursor()
         cursor.execute(sql)
-        sql2 = f'SELECT pagamento FROM salario WHERE mes = {mes} AND ano = {ano}'
-        sql3 = f'SELECT valor FROM rendimento WHERE mes = {mes} AND ano = {ano}'
-        total_gastol = []
-        total_gasto, salario, rendimento = 0, 0, 0
-        for valor in cursor:
-            total_gastol.append(valor[0])
-        for valor in total_gastol:
-            total_gasto += total_gastol[valor]
-        print('\nConfira os detalhes abaixo:\n')
-        for c1, c2, c3, c4, c5 in cursor:
-            print(f'ID:{c1}\tValor: R${c2}\t\tTotal da compra (0 se não for parcelada): R${c3}\t  Categoria: {c4}\tNome da compra: {c5}.')
-        print(f'\nTotal gasto no mês até o momento: R${total_gasto}')
+        for c1 in cursor:
+            totais.append(c1)
+        sql2 = f'SELECT SUM(valor) FROM rendimento WHERE mes = {mes} AND ano = {ano.year}'
         cursor.execute(sql2)
-        
+        for c1 in cursor:
+            totais.append(c1)
+        return totais
+    else:
+        print('Sem conexão com o servidor.')
 

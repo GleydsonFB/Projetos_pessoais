@@ -1,3 +1,4 @@
+from time import sleep
 from Banco import Bd, Ajustes, Funcao
 import datetime
 data = datetime.datetime.now()
@@ -576,5 +577,17 @@ while True:
                             if c == 0:
                                 contador = 0
                                 break
+                        else:
+                            tabela = Funcao.apresentar_compras(bd.conectar(), mes_atual)
+                            gasto_mes = bd.somar_gasto_compra(mes_atual)
+                            rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), 3)
+                            print(rendimento_mes, gasto_mes[0])
+                            if tabela == 0:
+                                sleep(3)
+                                break
+                            else:
+                                rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes_atual)
+                                print(rendimento_mes[0], gasto_mes[0])
+
 
 

@@ -27,6 +27,13 @@ class Conector:
             for c1 in self.cursor:
                 return c1
 
+    def somar_gasto_compra(self, mes):
+        if self.conexao.is_connected():
+            sql = f'SELECT SUM(registro) FROM valor WHERE mes = {mes} AND ano = {ano.year}'
+            self.cursor.execute(sql)
+        for c1 in self.cursor:
+            return c1
+
     def select_simples(self, coluna1, coluna2, tabela):
         if self.conexao.is_connected():
             sql = f"SELECT {coluna1}, {coluna2} FROM {tabela};"
@@ -151,7 +158,6 @@ class Categoria:
                 print(f'Nome alterado para {nome} e com novo valor mínimo de R${minimo}!')
             else:
                 print('Opção inválida.')
-
 
     def somar_gasto_cat(self, mes, categoria):
         if self.conexao.is_connected():

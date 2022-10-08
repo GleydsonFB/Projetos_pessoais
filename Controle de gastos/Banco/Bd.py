@@ -46,6 +46,17 @@ class Conector:
         else:
             print('Sem conexão com o servidor.')
 
+    def select_simples_1col(self, tabela, coluna):
+        if self.conexao.is_connected():
+            sql = f"SELECT {coluna} FROM {tabela};"
+            retorno = []
+            self.cursor.execute(sql)
+            for c1 in self.cursor:
+                retorno.append(c1)
+            return retorno
+        else:
+            print('Sem conexão com o servidor.')
+
     def select_composto(self, total_colunas, tabela, coluna1, colunap, pesquisa, *demais_colunas):
         if self.conexao.is_connected():
             match total_colunas:

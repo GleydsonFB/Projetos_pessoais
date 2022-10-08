@@ -164,16 +164,16 @@ def escolher_compra_edit(con, ide, lista_id):
         print('Sem conexão com servidor.')
 
 
-def rendimentos_totais_mes_a(con, mes):
+def rendimentos_totais_mes_a(con, mes, an=ano.year):
     conexao = con
     totais = []
     if conexao.is_connected():
-        sql = f'SELECT SUM(pagamento) FROM salario WHERE mes = {mes} AND ano = {ano.year}'
+        sql = f'SELECT SUM(pagamento) FROM salario WHERE mes = {mes} AND ano = {an}'
         cursor = conexao.cursor()
         cursor.execute(sql)
         for c1 in cursor:
             totais.append(c1)
-        sql2 = f'SELECT SUM(valor) FROM rendimento WHERE mes = {mes} AND ano = {ano.year}'
+        sql2 = f'SELECT SUM(valor) FROM rendimento WHERE mes = {mes} AND ano = {an}'
         cursor.execute(sql2)
         for c1 in cursor:
             totais.append(c1)

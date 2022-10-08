@@ -245,7 +245,7 @@ while True:
                             while True:
                                 ano = Ajustes.valida_int('Digite o ano que o salário será incluído: ',
                                                          'Digite um número inteiro', '')
-                                if ano < an:
+                                if ano < 2022:
                                     print('Ano inválido, digite um valor maior ou igual ao ano atual.')
                                 else:
                                     break
@@ -602,12 +602,69 @@ while True:
                             c = Funcao.continuar(contador, 'verificar novamente?')
                             if c == 0:
                                 contador = 0
+                                Ajustes.limpa_tela(1)
                                 break
                         else:
                             print('Certo, agora defina o mês desejado: ')
-                            Ajustes.apresenta_mes()
-                            mes = Funcao.escolher_mes()
-                            tabela = Funcao.apresentar_compras(bd.conectar(), mes)
+                            while True:
+                                Ajustes.apresenta_mes()
+                                mes = Funcao.escolher_mes()
+                                if mes <= 12 or mes >= 1:
+                                    pass
+                                else:
+                                    break
+                            while True:
+                                ano = Ajustes.valida_int('Digite o ano desejado para verificação: ',
+                                                         'Digite um número inteiro', '')
+                                if ano < 2022:
+                                    print('Ano inválido, digite um valor maior ou igual ao ano atual.')
+                                else:
+                                    break
+                            tabela = Funcao.apresentar_compras(bd.conectar(), mes, ano=ano)
+                            if tabela == 0:
+                                sleep(3)
+                                break
+                            else:
+                                gasto_mes = bd.somar_gasto_compra(mes)
+                                rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes, ano)
+                                rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
+                                print(f'Total de rendimento do mês {mes}° de {ano} é de R$:{rendimento_total}.')
+                                if gasto_mes[0] is None:
+                                    print(f'Como não houve gasto, o saldo restante é de R$:{rendimento_total}.')
+                                    contador += 1
+                                else:
+                                    print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')
+                                    contador += 1
+                elif escolha == 3:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'verificar outra categoria?')
+                            if c == 0:
+                                contador = 0
+                                Ajustes.limpa_tela(1)
+                                break
+                        else:
+                            nomes_cat = bd.select_simples_1col('categoria', 'nome')
+                            cat = str(input('Digite o nome da categoria: '))
+                            for nome, tupla in enumerate(nomes_cat):
+                                if cat != nomes_cat[nome]:
+                                    verificador += 1
+                                else:
+                                    verificador = 0
+                                    break
+                            if verificador >= 1:
+                                print('Opção digitada é inválida, digite novamente.')
+                                sleep(3)
+                                verificador = 0
+                            else:
+                                print('a')
+
+
+
+
+
+
+
 
 
 

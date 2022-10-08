@@ -180,4 +180,3 @@ def rendimentos_totais_mes_a(con, mes):
         return totais
     else:
         print('Sem conexão com o servidor.')
-

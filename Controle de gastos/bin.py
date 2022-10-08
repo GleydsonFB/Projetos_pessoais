@@ -576,18 +576,39 @@ while True:
                             c = Funcao.continuar(contador, 'verificar novamente?')
                             if c == 0:
                                 contador = 0
+                                Ajustes.limpa_tela(1)
                                 break
                         else:
-                            tabela = Funcao.apresentar_compras(bd.conectar(), mes_atual)
+                            tabela = Funcao.apresentar_compras(bd.conectar(), mes_atual, ano=ano.year)
                             gasto_mes = bd.somar_gasto_compra(mes_atual)
-                            rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), 3)
-                            print(rendimento_mes, gasto_mes[0])
                             if tabela == 0:
                                 sleep(3)
                                 break
-                            else:
+                            if gasto_mes[0] is None:
                                 rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes_atual)
-                                print(rendimento_mes[0], gasto_mes[0])
+                                rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
+                                print(f'Rendimento total do mês: R${rendimento_total}.')
+                                print(f'Como não houve gasto, o saldo restante é de R$:{rendimento_total}.')
+                                contador += 1
+                            else:
+                                rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), 3)
+                                rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
+                                print(f'Rendimento total do mês: R${rendimento_total}.')
+                                print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')
+                                contador += 1
+                elif escolha == 2:
+                    while True:
+                        if contador > 0:
+                            c = Funcao.continuar(contador, 'verificar novamente?')
+                            if c == 0:
+                                contador = 0
+                                break
+                        else:
+                            print('Certo, agora defina o mês desejado: ')
+                            Ajustes.apresenta_mes()
+                            mes = Funcao.escolher_mes()
+                            tabela = Funcao.apresentar_compras(bd.conectar(), mes)
+
 
 
 

@@ -22,6 +22,8 @@ while True:
     match menu:
         case 0:
             bd.desconectar()
+            print('Fechando o programa, até mais!')
+            sleep(2)
             break
         case 1:
             while True:
@@ -217,6 +219,9 @@ while True:
                     print('Certo, voltando ao menu anterior.')
                     Ajustes.limpa_tela()
                     break
+                else:
+                    print('Opção inválida.')
+                    Ajustes.limpa_tela()
         case 2:
             while True:
                 Ajustes.limpa_tela(0)
@@ -324,11 +329,13 @@ while True:
                                         print('Retornando ao menu anterior')
                                         Ajustes.limpa_tela()
                                         break
-                else:
+                elif escolha == 4:
                     print('Tudo bem, retornando ao menu anterior.')
                     Ajustes.limpa_tela()
                     break
-
+                else:
+                    print('Opção inválida.')
+                    Ajustes.limpa_tela()
         case 3:
             while True:
                 Ajustes.limpa_tela(0)
@@ -437,10 +444,13 @@ while True:
                                         print('Retornando ao menu anterior')
                                         Ajustes.limpa_tela()
                                         break
-                else:
+                elif escolha == 4:
                     print('Tudo bem, retornando ao menu anterior.')
                     Ajustes.limpa_tela()
                     break
+                else:
+                    print('Opção inválida.')
+                    Ajustes.limpa_tela()
         case 4:
             while True:
                 Ajustes.limpa_tela(0)
@@ -559,10 +569,13 @@ while True:
                           '>Maiores dúvidas você poderá conferir na FAQ, disposta no menu principal.\n'
                           '...Em 30 segundos você retornará ao menu de categorias =)')
                     Ajustes.limpa_tela(30)
-                else:
+                elif escolha == 4:
                     print('Tudo bem, retornando ao menu anterior.')
                     Ajustes.limpa_tela()
                     break
+                else:
+                    print('Opção inválida.')
+                    Ajustes.limpa_tela()
         case 5:
             while True:
                 Ajustes.limpa_tela(0)
@@ -624,8 +637,8 @@ while True:
                                     break
                             tabela = Funcao.apresentar_compras(bd.conectar(), mes, ano=ano)
                             if tabela == 0:
+                                contador += 1
                                 sleep(3)
-                                break
                             else:
                                 gasto_mes = bd.somar_gasto_compra(mes)
                                 rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes, ano)
@@ -676,6 +689,24 @@ while True:
                                         Ajustes.limpa_tela(0)
                                         break
                                 tabela = Funcao.apresentar_categorias(bd.conectar(), cat, mes, ano)
+                                if tabela == 0:
+                                    contador += 1
+                                else:
+                                    rendimentos_totais = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes, ano)
+                                    receita = rendimentos_totais[0][0] + rendimentos_totais[1][0]
+                                    gasto_cat = bd.select_composto(0, 'categoria', 'limite_gasto', 'nome', cat)
+                                    print(f'Receitas obtidas no {mes}° de {ano} somam R$: {receita}.')
+                                    print(f'Para a categoria {cat} o limite mensal é de R${gasto_cat[0]}.')
+                                    print(f'Foram gastos R${tabela[0][0]} este mês!')
+                                    contador += 1
+                elif escolha == 4:
+                    print('Tudo bem, retornando ao menu anterior.')
+                    Ajustes.limpa_tela()
+                    break
+                else:
+                    print('Opção inválida.')
+                    Ajustes.limpa_tela()
+
 
 
 

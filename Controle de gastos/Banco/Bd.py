@@ -60,6 +60,11 @@ class Conector:
     def select_composto(self, total_colunas, tabela, coluna1, colunap, pesquisa, *demais_colunas):
         if self.conexao.is_connected():
             match total_colunas:
+                case 0:
+                    sql = f"SELECT {coluna1} FROM {tabela} WHERE {colunap} = '{pesquisa}'"
+                    self.cursor.execute(sql)
+                    for c1 in self.cursor:
+                        return c1
                 case 1:
                     sql = f"SELECT {coluna1} FROM {tabela} WHERE {colunap} = {pesquisa}"
                     self.cursor.execute(sql)

@@ -169,9 +169,10 @@ def apresentar_categorias(con, nome='nenhum', mes=ano.month, an=ano.year):
                 limpa_tela()
                 return 0
             else:
-                print(f'Confira os detalhes de gasto da categoria {nome} para o mês {mes}° de {an} abaixo:')
+                print(f'Confira os detalhes de gasto da categoria {nome} para o {mes}° mês de {an} abaixo:')
                 for c1, c2, c3, c4 in cursor:
-                    print(f'Valor: R${c1}\t\tTotal da compra(0 se não for parcelada): R${c3} Ano da compra: {c4}   Nome da compra: {c2}.')
+                    print(f'Valor: R${c1}\t\tTotal da compra(0 se não for parcelada): R${c3} Nome da compra: {c2}.')
+                return listagem
     else:
         print('Sem conexão com o servidor.')
 

@@ -129,26 +129,51 @@ def apresentar_rendimentos(con, mes, gasto=False):
             return ides
 
 
-def apresentar_categorias(con):
+def apresentar_categorias(con, nome='nenhum', mes=ano.month, an=ano.year):
     conexao = con
-    tamanho = []
-    tamanho2 = []
+    ide = 0
     if conexao.is_connected():
-        sql = 'SELECT id_cat, nome, limite_gasto, minimo_gasto FROM categoria;'
-        cursor = conexao.cursor()
-        cursor.execute(sql)
-        ides = []
-        for c1 in cursor:
-            ides.append(c1[0])
-        if len(ides) == 0:
-            print('Não há categorias cadastradas.')
-            return 0
-        else:
+        if nome == 'nenhum':
+            sql = 'SELECT id_cat, nome, limite_gasto, minimo_gasto FROM categoria;'
+            cursor = conexao.cursor()
             cursor.execute(sql)
-            print('\nSegue os dados das atuais categorias:\n')
-            for c1, c2, c3, c4 in cursor:
-                print(f'ID: {c1}\tNome: {c2}\t\tLimite: R${c3}\t\tGasto mínimo: R${c4}.')
-            return ides
+            ides = []
+            for c1 in cursor:
+                ides.append(c1[0])
+            if len(ides) == 0:
+                print('Não há categorias cadastradas.')
+                return 0
+            else:
+                cursor.execute(sql)
+                print('\nSegue os dados das atuais categorias:\n')
+                for c1, c2, c3, c4 in cursor:
+                    print(f'ID: {c1}\tNome: {c2}\t\tLimite: R${c3}\t\tGasto mínimo: R${c4}.')
+                return ides
+        else:
+            listagem = []
+            sql = f'SELECT id_cat FROM categoria WHERE nome = "{nome}"'
+            cursor = conexao.cursor()
+            cursor.execute(sql)
+            for c1 in cursor:
+                ide = c1
+                break
+            sql2 = f'SELECT SUM(registro) FROM valor WHERE categoria = {ide[0]} AND ano = {an} AND mes = {mes}'
+            cursor.execute(sql2)
+            for c1 in cursor:
+                listagem.append(c1)
+            sql3 = f'SELECT V.registro, V.nome_compra, C.compra, V.ano  FROM valor V INNER JOIN total_compra C ON V.compra_total = C.id_compra ' \
+                   f'WHERE categoria = {ide[0]} AND ano = {an} AND mes = {mes}'
+            cursor.execute(sql3)
+            if listagem[0][0] is None:
+                print('Não há gastos para o período selecionado.')
+                limpa_tela()
+                return 0
+            else:
+                print(f'Confira os detalhes de gasto da categoria {nome} para o mês {mes}° de {an} abaixo:')
+                for c1, c2, c3, c4 in cursor:
+                    print(f'Valor: R${c1}\t\tTotal da compra(0 se não for parcelada): R${c3} Ano da compra: {c4}   Nome da compra: {c2}.')
+    else:
+        print('Sem conexão com o servidor.')
 
 
 def escolher_compra_edit(con, ide, lista_id):

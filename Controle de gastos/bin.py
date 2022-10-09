@@ -610,15 +610,17 @@ while True:
                                 Ajustes.apresenta_mes()
                                 mes = Funcao.escolher_mes()
                                 if mes <= 12 or mes >= 1:
-                                    pass
-                                else:
                                     break
+                                else:
+                                    print('Digite uma opção válida.')
+                                    pass
                             while True:
                                 ano = Ajustes.valida_int('Digite o ano desejado para verificação: ',
                                                          'Digite um número inteiro', '')
                                 if ano < 2022:
                                     print('Ano inválido, digite um valor maior ou igual ao ano atual.')
                                 else:
+                                    Ajustes.limpa_tela(0)
                                     break
                             tabela = Funcao.apresentar_compras(bd.conectar(), mes, ano=ano)
                             if tabela == 0:
@@ -636,6 +638,7 @@ while True:
                                     print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')
                                     contador += 1
                 elif escolha == 3:
+                    nomes_cat = bd.select_simples_1col('categoria', 'nome')
                     while True:
                         if contador > 0:
                             c = Funcao.continuar(contador, 'verificar outra categoria?')
@@ -644,10 +647,9 @@ while True:
                                 Ajustes.limpa_tela(1)
                                 break
                         else:
-                            nomes_cat = bd.select_simples_1col('categoria', 'nome')
                             cat = str(input('Digite o nome da categoria: '))
                             for nome, tupla in enumerate(nomes_cat):
-                                if cat != nomes_cat[nome]:
+                                if cat != nomes_cat[nome][0]:
                                     verificador += 1
                                 else:
                                     verificador = 0
@@ -657,7 +659,23 @@ while True:
                                 sleep(3)
                                 verificador = 0
                             else:
-                                print('a')
+                                while True:
+                                    Ajustes.apresenta_mes()
+                                    mes = Funcao.escolher_mes()
+                                    if mes <= 12 or mes >= 1:
+                                        break
+                                    else:
+                                        print('Digite uma opção válida.')
+                                        pass
+                                while True:
+                                    ano = Ajustes.valida_int('Digite o ano desejado para verificação: ',
+                                                             'Digite um número inteiro', '')
+                                    if ano < 2022:
+                                        print('Ano inválido, digite um valor maior ou igual ao ano atual.')
+                                    else:
+                                        Ajustes.limpa_tela(0)
+                                        break
+                                tabela = Funcao.apresentar_categorias(bd.conectar(), cat, mes, ano)
 
 
 

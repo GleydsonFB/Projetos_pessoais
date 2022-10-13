@@ -18,16 +18,17 @@ def continuar(contagem, mensagem):
 
 
 def escolher_mes():
-    mes = valida_int('Digite o mês correspondente: ', 'Opção inválida',
-                     'Devido as tentativas sem sucesso, a opção foi fechada.', 10)
-    if mes == 0:
-        return 0
-    elif mes >= 13:
-        print('Valor não corresponde a nenhum mês.')
-        limpa_tela()
-    else:
-        limpa_tela(0)
-        return mes
+    while True:
+        mes = valida_int('Digite o mês correspondente: ', 'Opção inválida',
+                         'Devido as tentativas sem sucesso, a opção foi fechada.', 10)
+        if mes == 0:
+            return 0
+        elif mes >= 13:
+            print('Valor não corresponde a nenhum mês.')
+            limpa_tela()
+        else:
+            limpa_tela(0)
+            return mes
 
 
 def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):

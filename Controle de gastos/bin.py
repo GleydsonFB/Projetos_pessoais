@@ -173,6 +173,8 @@ while True:
                                         id_gasto_t = bd.select_composto(1, 'valor', 'compra_total', 'id_valor', escolher_alt)
                                         if id_gasto_t[0] == 1:
                                             compras.alterar_valor(novo_valor, escolher_alt)
+                                            sleep(4)
+                                            contador += 1
                                         else:
                                             parcelas = bd.select_composto(1, 'total_compra', 't_parcela', 'id_compra', id_gasto_t[0])
                                             compras.alterar_valor(novo_valor, escolher_alt, id_gasto_t[0], novo_valor * parcelas[0])

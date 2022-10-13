@@ -69,7 +69,7 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                     print(f'Valor: R${c1}\t\tTotal da compra(0 se não for parcelada): R${c2}\t  Categoria: {c3}\tAno: {c4}\tNome da compra: {c5}.')
                 return execucao
         else:
-            sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
+            sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
                   f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes};'
             cursor = conexao.cursor()
             cursor.execute(sql)
@@ -82,8 +82,8 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
             else:
                 cursor.execute(sql)
                 print('\nConfira os detalhes abaixo:\n')
-                for c1, c2, c3, c4, c5 in cursor:
-                    print(f'ID:{c1}\tValor: R${c2}\t\tTotal da compra (0 se não for parcelada): R${c3}\t  Categoria: {c4}\tNome da compra: {c5}.')
+                for c1, c2, c3, c4, c5, c6 in cursor:
+                    print(f'ID:{c1}\tValor: R${c2}\t\tTotal da compra (0 se não for parcelada): R${c3}\t  Categoria: {c4}\t Ano {c5}\t Nome da compra: {c6}.')
                 return execucao
     else:
         print('Sem conexão com servidor.')

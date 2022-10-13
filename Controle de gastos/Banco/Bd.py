@@ -177,7 +177,7 @@ class Categoria:
 
     def somar_gasto_cat(self, mes, categoria):
         if self.conexao.is_connected():
-            sql = f"SELECT SUM(registro) FROM valor WHERE mes = {mes} AND categoria = {categoria};"
+            sql = f"SELECT SUM(registro) FROM valor WHERE mes = {mes} AND categoria = {categoria} AND ano = {ano.year};"
             self.cursor.execute(sql)
             for c1 in self.cursor:
                 return c1

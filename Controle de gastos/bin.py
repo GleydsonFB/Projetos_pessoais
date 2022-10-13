@@ -596,17 +596,24 @@ while True:
                         else:
                             tabela = Funcao.apresentar_compras(bd.conectar(), mes_atual, ano=ano.year)
                             gasto_mes = bd.somar_gasto_compra(mes_atual)
+                            rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes_atual)
                             if tabela == 0:
                                 sleep(3)
                                 break
                             if gasto_mes[0] is None:
-                                rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes_atual)
                                 rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
                                 print(f'Rendimento total do mês: R${rendimento_total}.')
                                 print(f'Como não houve gasto, o saldo restante é de R$:{rendimento_total}.')
                                 contador += 1
+                            elif rendimento_mes[0][0] is None:
+                                print('Não temos um salário registrado para este mês.')
+                                contador += 1
+                            elif rendimento_mes[1][0] is None:
+                                rendimento_total = rendimento_mes[0][0]
+                                print(f'Saldo total do mês: R${rendimento_total}.')
+                                print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')
+                                contador += 1
                             else:
-                                rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), 3)
                                 rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
                                 print(f'Rendimento total do mês: R${rendimento_total}.')
                                 print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')

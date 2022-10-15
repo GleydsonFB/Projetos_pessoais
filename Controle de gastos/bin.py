@@ -205,14 +205,20 @@ while True:
                                 else:
                                     deleta = Funcao.escolher_compra_edit(bd.conectar(), 'Digite o ID da compra que será deletada: ', tabela)
                                     print(f'A remoção será de todas as parcelas atreladas a compra ID({deleta}). ')
+                                    t_compra = bd.select_composto(0, 'valor', 'compra_total', 'id_valor', deleta)
                                     c = Funcao.continuar(1, 'continuar? ')
                                     if deleta == 'n':
                                         Ajustes.limpa_tela()
                                         break
                                     if c == 1:
-                                        compras.deletar_valor(deleta)
-                                        Ajustes.limpa_tela(4)
-                                        contador += 1
+                                        if t_compra[0] == 1:
+                                            compras.deletar_valor(deleta)
+                                            Ajustes.limpa_tela(4)
+                                            contador += 1
+                                        else:
+                                            compras.remover_compra_p(t_compra[0])
+                                            Ajustes.limpa_tela(4)
+                                            contador += 1
                                     else:
                                         print('Retornando ao menu anterior')
                                         Ajustes.limpa_tela()
@@ -395,9 +401,8 @@ while True:
                                     Ajustes.limpa_tela(4)
                                     break
                                 else:
-                                    print('\n')
                                     escolher_alt = Funcao.escolher_compra_edit(bd.conectar(),
-                                                                               'Digite o ID que aparece na frente do rendimento que deseja mudar: ',
+                                                                               '\nDigite o ID que aparece na frente do rendimento que deseja mudar: ',
                                                                                tabela)
                                     if escolher_alt == 'n':
                                         Ajustes.limpa_tela()
@@ -593,6 +598,8 @@ while True:
                                 contador = 0
                                 Ajustes.limpa_tela(1)
                                 break
+                            else:
+                                contador = 0
                         else:
                             tabela = Funcao.apresentar_compras(bd.conectar(), mes_atual, ano=ano.year)
                             gasto_mes = bd.somar_gasto_compra(mes_atual)
@@ -600,22 +607,23 @@ while True:
                             if tabela == 0:
                                 sleep(3)
                                 break
-                            if gasto_mes[0] is None:
-                                rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
-                                print(f'Rendimento total do mês: R${rendimento_total}.')
-                                print(f'Como não houve gasto, o saldo restante é de R$:{rendimento_total}.')
+                            if gasto_mes[0] is None and rendimento_mes[0][0] is None:
+                                print('\nNão foram apresentados valores de rendimento e nem compras para esse mês.')
                                 contador += 1
                             elif rendimento_mes[0][0] is None:
-                                print('Não temos um salário registrado para este mês.')
+                                print('\nNão temos um salário registrado para este mês.')
+                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
                                 contador += 1
                             elif rendimento_mes[1][0] is None:
                                 rendimento_total = rendimento_mes[0][0]
-                                print(f'Saldo total do mês: R${rendimento_total}.')
+                                print(f'\nSaldo total do mês: R${rendimento_total}.')
+                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
                                 print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')
                                 contador += 1
                             else:
                                 rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
-                                print(f'Rendimento total do mês: R${rendimento_total}.')
+                                print(f'\nRendimento total do mês: R${rendimento_total}.')
+                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
                                 print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')
                                 contador += 1
                 elif escolha == 2:
@@ -626,6 +634,8 @@ while True:
                                 contador = 0
                                 Ajustes.limpa_tela(1)
                                 break
+                            else:
+                                contador = 0
                         else:
                             print('Certo, agora defina o mês desejado: ')
                             while True:
@@ -645,20 +655,29 @@ while True:
                                     Ajustes.limpa_tela(0)
                                     break
                             tabela = Funcao.apresentar_compras(bd.conectar(), mes, ano=ano)
+                            gasto_mes = bd.somar_gasto_compra(mes)
+                            rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes, ano)
                             if tabela == 0:
                                 contador += 1
                                 sleep(3)
+                            elif gasto_mes[0] is None:
+                                print('\nNão houve gastos neste mês.')
+                                contador += 1
+                            elif rendimento_mes[0][0] is None:
+                                print(f'\nO total de gasto foi de R${gasto_mes[0]}.')
+                                print('Não foi registrado um salário para este mês, por tanto não é possível calcular a sobra.')
+                                contador += 1
+                            elif rendimento_mes[1][0] is None:
+                                print(f'\nRendimento total do mês é de R${rendimento_mes[0][0]}.')
+                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
+                                print(f'O saldo deste mês é de R$:{rendimento_mes[0][0] - gasto_mes[0]}.')
+                                contador += 1
                             else:
-                                gasto_mes = bd.somar_gasto_compra(mes)
-                                rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes, ano)
                                 rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
-                                print(f'Total de rendimento do mês {mes}° de {ano} é de R$:{rendimento_total}.')
-                                if gasto_mes[0] is None:
-                                    print(f'Como não houve gasto, o saldo restante é de R$:{rendimento_total}.')
-                                    contador += 1
-                                else:
-                                    print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')
-                                    contador += 1
+                                print(f'\nO total de rendimentos para este mês foi de R${rendimento_total}.')
+                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
+                                print(f'O saldo restante é de R${rendimento_total - gasto_mes[0]}.')
+                                contador += 1
                 elif escolha == 3:
                     nomes_cat = bd.select_simples_1col('categoria', 'nome')
                     while True:
@@ -668,6 +687,8 @@ while True:
                                 contador = 0
                                 Ajustes.limpa_tela(1)
                                 break
+                            else:
+                                contador = 0
                         else:
                             cat = str(input('Digite o nome da categoria: '))
                             for nome, tupla in enumerate(nomes_cat):
@@ -698,15 +719,16 @@ while True:
                                         Ajustes.limpa_tela(0)
                                         break
                                 tabela = Funcao.apresentar_categorias(bd.conectar(), cat, mes, ano)
+                                gasto_cat = bd.select_composto(0, 'categoria', 'limite_gasto', 'nome', cat)
                                 if tabela == 0:
                                     contador += 1
+                                elif gasto_cat[0] is None:
+                                    print('\nNão foram registradas compras para este mês nesta categoria.')
+                                    contador += 1
                                 else:
-                                    rendimentos_totais = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes, ano)
-                                    receita = rendimentos_totais[0][0] + rendimentos_totais[1][0]
-                                    gasto_cat = bd.select_composto(0, 'categoria', 'limite_gasto', 'nome', cat)
-                                    print(f'Receitas obtidas no {mes}° de {ano} somam R$: {receita}.')
                                     print(f'Para a categoria {cat} o limite mensal é de R${gasto_cat[0]}.')
                                     print(f'Foram gastos R${tabela[0][0]} este mês!')
+                                    print(f'O saldo temporário considerando a diferença com o limite é de R${gasto_cat[0] - tabela[0][0]}.')
                                     contador += 1
                 elif escolha == 4:
                     print('Tudo bem, retornando ao menu anterior.')

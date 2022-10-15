@@ -4,6 +4,7 @@ import datetime
 data = datetime.datetime.now()
 ano = data.date()
 
+
 def continuar(contagem, mensagem):
     if contagem > 0:
         print(f'Deseja {mensagem}')

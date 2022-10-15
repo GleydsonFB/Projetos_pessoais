@@ -11,8 +11,8 @@ class Conector:
         self.user = user
         self.pasw = pword
         self.bd = bd
-        self.conexao = mysql.connector.connect(host=self.host, database=self.bd, user=self.user, password=self.pasw)
-        self.cursor = self.conexao.cursor(buffered=True)
+        self.conexao = mysql.connector.connect(host=self.host, database=self.bd, user=self.user, password=self.pasw, buffered=True)
+        self.cursor = self.conexao.cursor()
 
     def conectar(self):
         return self.conexao
@@ -61,7 +61,7 @@ class Conector:
         if self.conexao.is_connected():
             match total_colunas:
                 case 0:
-                    sql = f"SELECT {coluna1} FROM {tabela} WHERE {colunap} = '{pesquisa}'"
+                    sql = f'SELECT {coluna1} FROM {tabela} WHERE {colunap} = "{pesquisa}"'
                     self.cursor.execute(sql)
                     for c1 in self.cursor:
                         return c1
@@ -256,7 +256,7 @@ class Compra:
             self.conexao.commit()
             self.cursor.execute(sql2)
             self.conexao.commit()
-            print('Compra retirada com sucesso.')
+            print('Compra removida de todos os meses atrelados.')
         else:
             print('Erro no servidor.')
 

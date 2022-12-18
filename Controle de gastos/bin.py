@@ -108,7 +108,7 @@ while True:
                                                 else:
                                                     mes, verificador = 1, 1
                                                     an += 1
-                                                    compras.adicionar_valor(valor, mes, escolha_cat, an, id_ultimo[0])
+                                                    compras.adicionar_valor(valor, mes, escolha_cat, an, nome_compra, id_ultimo[0])
                                                     mes += verificador
                                         an = int(ano.year)
                                         verificador = 0
@@ -737,15 +737,3 @@ while True:
                 else:
                     print('Opção inválida.')
                     Ajustes.limpa_tela()
-
-
-
-
-
-
-
-
-
-
-
-

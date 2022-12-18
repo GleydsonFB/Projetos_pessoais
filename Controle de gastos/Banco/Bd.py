@@ -260,6 +260,49 @@ class Compra:
         else:
             print('Erro no servidor.')
 
+    def antecipar_compra_p(self, id_compra, mes_atual, ano_atual):
+        if self.conexao.is_connected():
+            sql = f'SELECT V.registro, T.compra, V.mes, V.ano, V.nome_compra, C.nome FROM valor V INNER JOIN total_compra T ON V.compra_total = T.id_compra' \
+                  f'INNER JOIN categoria C ON V.categoria = C.id_cat WHERE V.compra_total = {id_compra}'
+            registros = []
+            self.cursor.execute(sql)
+            for c1, c2, c3, c4, c5, c6 in self.cursor:
+                registros.append(c1)
+                registros.append(c2)
+                registros.append(c3)
+                registros.append(c4)
+                registros.append(c5)
+                registros.append(c6)
+            teste, teste1 = 0, 0
+            for epoca in registros[3]:
+                if epoca == 1:
+                    teste = registros[3][epoca - 1]
+                else:
+                    if teste <= registros[3][epoca - 1]:
+                        pass
+                    else:
+                        teste = registros[3][epoca - 1]
+            for mes in registros[2]:
+                if registros[3][mes - 1] == teste:
+                    teste1 = registros[2][mes - 1]
+                    for p_mes in registros[2]:
+                        if teste1 <= registros[2][p_mes - 1]:
+                            pass
+                        else:
+                            teste1 = registros[2][p_mes - 1]
+                    break
+                else:
+                    pass
+            conta = ((ano_atual - teste) * 12) + (mes_atual - teste1)
+            if conta == 0:
+                self.remover_compra_p(id_compra)
+            else:
+                self.remover_compra_p(id_compra)
+                self.adicionar_compra_p(registros[0][0] * conta, conta)
+
+        else:
+            print('Erro no servidor.')
+
     def somar_gasto(self, mes):
         if self.conexao.is_connected():
             sql = f"SELECT SUM(registro) FROM valor WHERE mes = {mes};"
@@ -328,5 +371,3 @@ class SalarioRendimento:
             print('Rendimento (valor extra) deletado com sucesso!')
         else:
             print('Sem conexão com servidor.')
-
-

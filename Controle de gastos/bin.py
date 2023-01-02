@@ -601,7 +601,7 @@ while True:
                             else:
                                 contador = 0
                         else:
-                            tabela = Funcao.apresentar_compras(bd.conectar(), mes_atual, ano=ano.year)
+                            tabela = Funcao.apresentar_compras(bd.conectar(), mes_atual, an)
                             gasto_mes = bd.somar_gasto_compra(mes_atual)
                             rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes_atual)
                             if tabela == 0:
@@ -655,7 +655,7 @@ while True:
                                     Ajustes.limpa_tela(0)
                                     break
                             tabela = Funcao.apresentar_compras(bd.conectar(), mes, ano=ano)
-                            gasto_mes = bd.somar_gasto_compra(mes)
+                            gasto_mes = bd.somar_gasto_compra(mes, ano)
                             rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes, ano)
                             if tabela == 0:
                                 contador += 1

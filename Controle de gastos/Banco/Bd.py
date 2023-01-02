@@ -27,9 +27,9 @@ class Conector:
             for c1 in self.cursor:
                 return c1
 
-    def somar_gasto_compra(self, mes):
+    def somar_gasto_compra(self, mes, an=ano.year):
         if self.conexao.is_connected():
-            sql = f'SELECT SUM(registro) FROM valor WHERE mes = {mes} AND ano = {ano.year}'
+            sql = f'SELECT SUM(registro) FROM valor WHERE mes = {mes} AND ano = {an}'
             self.cursor.execute(sql)
         for c1 in self.cursor:
             return c1

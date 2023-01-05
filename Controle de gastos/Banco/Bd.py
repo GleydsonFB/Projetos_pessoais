@@ -239,6 +239,14 @@ class Compra:
             self.conexao.commit()
             print(f'Valor de id {id_valor} removido com sucesso.')
 
+    def deletar_valor_mes(self, mes, ano_del, id_compra):
+        if self.conexao.is_connected():
+            sql = f'DELETE FROM valor WHERE mes = {mes} AND ano = {ano_del} AND compra_total = {id_compra}'
+            self.cursor.execute(sql)
+            self.conexao.commit()
+        else:
+            print('Sem conexão com servidor.')
+
     def adicionar_compra_p(self, total_compra, parcelas):
         if self.conexao.is_connected():
             sql = 'INSERT INTO total_compra (compra, t_parcela) VALUES ("{}", "{}")' \
@@ -260,46 +268,50 @@ class Compra:
         else:
             print('Erro no servidor.')
 
-    def antecipar_compra_p(self, id_compra, mes_atual, ano_atual):
+    def antecipar_compra_p(self, id_compra, mes_atual, ano_atual, total_ante):
         if self.conexao.is_connected():
-            sql = f'SELECT V.registro, T.compra, V.mes, V.ano, V.nome_compra, C.nome FROM valor V INNER JOIN total_compra T ON V.compra_total = T.id_compra' \
-                  f'INNER JOIN categoria C ON V.categoria = C.id_cat WHERE V.compra_total = {id_compra}'
+            sql = f'SELECT V.registro, T.compra, V.mes, V.ano FROM valor V INNER JOIN total_compra T ON V.compra_total = T.id_compra' \
+                  f'WHERE V.compra_total = {id_compra}'
             registros = []
+            mes_final, contador = 0, 0
+            analise_ano = ano_atual
             self.cursor.execute(sql)
-            for c1, c2, c3, c4, c5, c6 in self.cursor:
+            for c1, c2, c3, c4 in self.cursor:
                 registros.append(c1)
                 registros.append(c2)
                 registros.append(c3)
                 registros.append(c4)
-                registros.append(c5)
-                registros.append(c6)
-            teste, teste1 = 0, 0
-            for epoca in registros[3]:
-                if epoca == 1:
-                    teste = registros[3][epoca - 1]
-                else:
-                    if teste <= registros[3][epoca - 1]:
-                        pass
-                    else:
-                        teste = registros[3][epoca - 1]
-            for mes in registros[2]:
-                if registros[3][mes - 1] == teste:
-                    teste1 = registros[2][mes - 1]
-                    for p_mes in registros[2]:
-                        if teste1 <= registros[2][p_mes - 1]:
-                            pass
-                        else:
-                            teste1 = registros[2][p_mes - 1]
-                    break
+            for dado in registros:
+                if analise_ano < registros[3][dado - 1]:
+                    analise_ano = registros[3][dado - 1]
                 else:
                     pass
-            conta = ((ano_atual - teste) * 12) + (mes_atual - teste1)
-            if conta == 0:
-                self.remover_compra_p(id_compra)
+            for meses_finais in registros:
+                if registros[3][meses_finais - 1] == analise_ano:
+                    mes_final += 1
+                else:
+                    pass
+            if analise_ano > ano_atual:
+                pendentes = (((analise_ano - ano_atual) * 12) - mes_atual) + mes_final
             else:
-                self.remover_compra_p(id_compra)
-                self.adicionar_compra_p(registros[0][0] * conta, conta)
-
+                pendentes = mes_final - mes_atual
+            if pendentes < 0:
+                return print('Não há parcelas para serem antecipadas.')
+            elif pendentes < total_ante:
+                return print('Quantia de parcelas a serem antecipadas supera o total de pendentes, não sendo possível seguir.')
+            else:
+                for m in range(0, total_ante):
+                    if contador >= 12:
+                        ano_atual += 1
+                    if mes_atual == 12:
+                        self.deletar_valor_mes(m, ano_atual + 1, id_compra)
+                        contador += 1
+                    else:
+                        for me in range(0, total_ante):
+                            if mes_atual + me > 12:
+                                ano_atual += 1
+                            else:
+                                self.deletar_valor_mes(mes_atual + me, ano_atual, id_compra)
         else:
             print('Erro no servidor.')
 
@@ -356,7 +368,7 @@ class SalarioRendimento:
 
     def alterar_rendimento(self, rendimento, id_red):
         if self.conexao.is_connected():
-            sql = 'UPDATE salario SET valor = "{}" WHERE id_red = "{}"'.format(rendimento, id_red)
+            sql = 'UPDATE rendimento SET valor = "{}" WHERE id_red = "{}"'.format(rendimento, id_red)
             self.cursor.execute(sql)
             self.conexao.commit()
             print('Rendimento (valor extra) alterado com sucesso!')

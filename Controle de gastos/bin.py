@@ -155,9 +155,8 @@ while True:
                             if mes == 0:
                                 break
                             else:
-                                tabela = Funcao.apresentar_compras(bd.conectar(), mes, an, mostrar_id=True)
-                                print('Observação: As alterações são feitas apenas dentro do ano vigente. Se precisar mudar mais que isso'
-                                      ', por favor, delete a compra e a insira novamente!')
+                                ano_a = int(input('Digite o ano desejado: '))
+                                tabela = Funcao.apresentar_compras(bd.conectar(), mes, ano_a, mostrar_id=True)
                                 if tabela == 0:
                                     Ajustes.limpa_tela(4)
                                     break
@@ -211,6 +210,10 @@ while True:
                                         Ajustes.limpa_tela()
                                         break
                                     if c == 1:
+                                        ante = Funcao.continuar(1, 'antecipar? ')
+                                        #if ante == 1:
+                                            #compras.antecipar_compra_p(t_compra, mes, an)
+
                                         if t_compra[0] == 1:
                                             compras.deletar_valor(deleta)
                                             Ajustes.limpa_tela(4)
@@ -411,7 +414,7 @@ while True:
                                         novo_valor = Ajustes.valida_float(
                                             f'Digite o valor novo para o rendimento ID({escolher_alt}) R$:',
                                             'Digite um valor válido.')
-                                        salarios.alterar_salario(novo_valor, escolher_alt)
+                                        salarios.alterar_rendimento(novo_valor, escolher_alt)
                                         contador += 1
                                         Ajustes.limpa_tela(4)
                 elif escolha == 3:

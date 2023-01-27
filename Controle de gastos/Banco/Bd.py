@@ -270,48 +270,50 @@ class Compra:
 
     def antecipar_compra_p(self, id_compra, mes_atual, ano_atual, total_ante):
         if self.conexao.is_connected():
-            sql = f'SELECT V.registro, T.compra, V.mes, V.ano FROM valor V INNER JOIN total_compra T ON V.compra_total = T.id_compra' \
-                  f'WHERE V.compra_total = {id_compra}'
-            registros = []
-            mes_final, contador = 0, 0
-            analise_ano = ano_atual
+            sql = f'SELECT V.ano FROM valor V INNER JOIN total_compra T ON V.compra_total = T.id_compra WHERE V.compra_total = {id_compra}'
+            sql2 = f'SELECT MIN(V.mes) as mes, MIN(V.ano) as ano FROM valor V INNER JOIN total_compra T ON V.compra_total = T.id_compra WHERE V.compra_total = {id_compra}'
+            parcelas = []
+            ano_inicial, mes_inicial = '', ''
             self.cursor.execute(sql)
-            for c1, c2, c3, c4 in self.cursor:
-                registros.append(c1)
-                registros.append(c2)
-                registros.append(c3)
-                registros.append(c4)
-            for dado in registros:
-                if analise_ano < registros[3][dado - 1]:
-                    analise_ano = registros[3][dado - 1]
+            for c1 in self.cursor:
+                parcelas.append(c1)
+            total_parcelas = len(parcelas)
+            parcelas_pagas = 0
+            self.cursor.execute(sql2)
+            for c1, c2 in self.cursor:
+                mes_inicial = c1
+                ano_inicial = c2
+            if ano_atual - ano_inicial > 1:
+                conta = ((ano_atual - ano_inicial) - 1) * 12
+                conta = conta - mes_inicial
+                parcelas_pagas = conta + mes_atual
+            elif ano_atual - ano_inicial == 1:
+                parcelas_pagas = (12 - mes_inicial) + mes_atual
+            elif ano_atual - ano_atual < 0:
+                return print('Opção inválida.')
+            else:
+                parcelas_pagas = mes_atual - mes_inicial
+                if parcelas_pagas < 0:
+                    return print('Não é possível antecipar uma compra que não teve seu início ainda.')
                 else:
                     pass
-            for meses_finais in registros:
-                if registros[3][meses_finais - 1] == analise_ano:
-                    mes_final += 1
-                else:
-                    pass
-            if analise_ano > ano_atual:
-                pendentes = (((analise_ano - ano_atual) * 12) - mes_atual) + mes_final
+            parcelas_restantes = total_parcelas - parcelas_pagas
+            if total_ante > parcelas_restantes:
+                return print('Não é possível antecipar mais parcelas do que o restante.')
             else:
-                pendentes = mes_final - mes_atual
-            if pendentes < 0:
-                return print('Não há parcelas para serem antecipadas.')
-            elif pendentes < total_ante:
-                return print('Quantia de parcelas a serem antecipadas supera o total de pendentes, não sendo possível seguir.')
+                for registro in range(total_ante):
+                    id_del = 0
+                    sql3 = f'SELECT id_valor FROM valor WHERE id_valor AND compra_total = {id_compra} ORDER BY id_valor DESC LIMIT 1'
+                    self.cursor.execute(sql3)
+                    for c1 in self.cursor:
+                        id_del = c1
+                    sql4 = f'DELETE FROM valor WHERE id_valor = {id_del[0]}'
+                    self.cursor.execute(sql4)
+                    self.conexao.commit()
+            if total_ante - parcelas_restantes == 0:
+                return print('Todas as parcelas restantes foram pagas!')
             else:
-                for m in range(0, total_ante):
-                    if contador >= 12:
-                        ano_atual += 1
-                    if mes_atual == 12:
-                        self.deletar_valor_mes(m, ano_atual + 1, id_compra)
-                        contador += 1
-                    else:
-                        for me in range(0, total_ante):
-                            if mes_atual + me > 12:
-                                ano_atual += 1
-                            else:
-                                self.deletar_valor_mes(mes_atual + me, ano_atual, id_compra)
+                return print(f'Foram antecipadas {total_ante} parcelas desta compra!')
         else:
             print('Erro no servidor.')
 

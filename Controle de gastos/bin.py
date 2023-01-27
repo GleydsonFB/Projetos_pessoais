@@ -203,17 +203,23 @@ while True:
                                     break
                                 else:
                                     deleta = Funcao.escolher_compra_edit(bd.conectar(), 'Digite o ID da compra que será deletada: ', tabela)
-                                    print(f'A remoção será de todas as parcelas atreladas a compra ID({deleta}). ')
                                     t_compra = bd.select_composto(0, 'valor', 'compra_total', 'id_valor', deleta)
-                                    c = Funcao.continuar(1, 'continuar? ')
                                     if deleta == 'n':
                                         Ajustes.limpa_tela()
                                         break
-                                    if c == 1:
+                                    print(f'A remoção será de todas as parcelas atreladas a compra ID({deleta}). ')
+                                    c = Funcao.continuar(1, 'continuar? ')
+                                    if c == 1 and t_compra[0] != 1:
                                         ante = Funcao.continuar(1, 'antecipar? ')
-                                        #if ante == 1:
-                                            #compras.antecipar_compra_p(t_compra, mes, an)
-
+                                        if ante == 1:
+                                            t_ant = Funcao.valida_int('Quantas parcelas deseja antecipar? ', 'digite um valor válido', 10)
+                                            if t_ant == 0:
+                                                print('Tentativas excedidas.')
+                                                Ajustes.limpa_tela()
+                                            else:
+                                                compras.antecipar_compra_p(t_compra[0], mes, an, t_ant)
+                                                sleep(4)
+                                    elif c == 1 and t_compra[0] == 1:
                                         if t_compra[0] == 1:
                                             compras.deletar_valor(deleta)
                                             Ajustes.limpa_tela(4)

@@ -219,7 +219,9 @@ while True:
                                             else:
                                                 compras.antecipar_compra_p(t_compra[0], mes, an, t_ant)
                                                 sleep(4)
-                                    elif c == 1 and t_compra[0] == 1:
+                                        else:
+                                            pass
+                                    if c == 1:
                                         if t_compra[0] == 1:
                                             compras.deletar_valor(deleta)
                                             Ajustes.limpa_tela(4)

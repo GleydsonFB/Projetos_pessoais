@@ -11,7 +11,8 @@ class Conector:
         self.user = user
         self.pasw = pword
         self.bd = bd
-        self.conexao = mysql.connector.connect(host=self.host, database=self.bd, user=self.user, password=self.pasw, buffered=True)
+        self.conexao = mysql.connector.connect(host=self.host, database=self.bd, user=self.user, password=self.pasw,
+                                               buffered=True)
         self.cursor = self.conexao.cursor()
 
     def conectar(self):
@@ -123,7 +124,9 @@ class Categoria:
     def inserir_categoria(self, nome, limite, minimo=0):
         if self.conexao.is_connected():
             if minimo != 0:
-                sql = 'INSERT INTO categoria (nome, limite_gasto, minimo_gasto) VALUES ("{}", "{}", "{}")'.format(nome, limite, minimo)
+                sql = 'INSERT INTO categoria (nome, limite_gasto, minimo_gasto) VALUES ("{}", "{}", "{}")'.format(nome,
+                                                                                                                  limite,
+                                                                                                                  minimo)
                 self.cursor.execute(sql)
                 self.conexao.commit()
                 print(f"Categoria {nome} adicionada com sucesso!")
@@ -143,12 +146,14 @@ class Categoria:
                 self.conexao.commit()
                 print(f'Novo nome da categoria definido como {nome}!')
             elif nome != '' and limite != '' and minimo == '':
-                sql = 'UPDATE categoria SET nome = "{}", limite_gasto = "{}" WHERE id_cat = "{}"'.format(nome, limite, id_cat)
+                sql = 'UPDATE categoria SET nome = "{}", limite_gasto = "{}" WHERE id_cat = "{}"'.format(nome, limite,
+                                                                                                         id_cat)
                 self.cursor.execute(sql)
                 self.conexao.commit()
                 print(f'Alterado nome e limite para: {nome} e {limite}!')
             elif nome != '' and limite != '' and minimo != '':
-                sql = 'UPDATE categoria SET nome = "{}", limite_gasto = "{}", minimo_gasto = "{}" WHERE id_cat = "{}"'.format(nome, limite, minimo, id_cat)
+                sql = 'UPDATE categoria SET nome = "{}", limite_gasto = "{}", minimo_gasto = "{}" WHERE id_cat = "{}"'.format(
+                    nome, limite, minimo, id_cat)
                 self.cursor.execute(sql)
                 self.conexao.commit()
                 print(f'Alterado nome, limite e minimo gasto para: {nome}, R${limite} e R${minimo}!')
@@ -158,7 +163,9 @@ class Categoria:
                 self.conexao.commit()
                 print(f'Novo limite definido para R${limite}!')
             elif nome == '' and limite != '' and minimo != '':
-                sql = 'UPDATE categoria SET limite_gasto = "{}", minimo_gasto = "{}" WHERE id_cat = "{}"'.format(limite, minimo, id_cat)
+                sql = 'UPDATE categoria SET limite_gasto = "{}", minimo_gasto = "{}" WHERE id_cat = "{}"'.format(limite,
+                                                                                                                 minimo,
+                                                                                                                 id_cat)
                 self.cursor.execute(sql)
                 self.conexao.commit()
                 print(f'Novo limite definido para R${limite} e mínimo de R${minimo}!')
@@ -168,7 +175,8 @@ class Categoria:
                 self.conexao.commit()
                 print(f'Novo valor mínimo definido para R${minimo}!')
             elif nome != '' and limite == '' and minimo != '':
-                sql = 'UPDATE categoria SET nome = "{}", minimo_gasto = "{}" WHERE id_cat = "{}"'.format(nome, minimo, id_cat)
+                sql = 'UPDATE categoria SET nome = "{}", minimo_gasto = "{}" WHERE id_cat = "{}"'.format(nome, minimo,
+                                                                                                         id_cat)
                 self.cursor.execute(sql)
                 self.conexao.commit()
                 print(f'Nome alterado para {nome} e com novo valor mínimo de R${minimo}!')
@@ -191,7 +199,7 @@ class Compra:
     def adicionar_valor(self, valor, mes, categoria, an=ano.year, nome_compra='', total_compra=0):
         if self.conexao.is_connected():
             if total_compra != 0 and nome_compra != '':
-                sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano, nome_compra) VALUES ("{}", "{}", "{}", "{}", "{}", "{}")'\
+                sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano, nome_compra) VALUES ("{}", "{}", "{}", "{}", "{}", "{}")' \
                     .format(valor, mes, total_compra, categoria, an, nome_compra)
                 self.cursor.execute(sql)
                 self.conexao.commit()
@@ -278,18 +286,17 @@ class Compra:
             for c1 in self.cursor:
                 parcelas.append(c1)
             total_parcelas = len(parcelas)
-            parcelas_pagas = 0
             self.cursor.execute(sql2)
             for c1, c2 in self.cursor:
                 mes_inicial = c1
                 ano_inicial = c2
             if ano_atual - ano_inicial > 1:
-                conta = ((ano_atual - ano_inicial) - 1) * 12
+                conta = (ano_atual - ano_inicial) * 12
                 conta = conta - mes_inicial
                 parcelas_pagas = conta + mes_atual
             elif ano_atual - ano_inicial == 1:
                 parcelas_pagas = (12 - mes_inicial) + mes_atual
-            elif ano_atual - ano_atual < 0:
+            elif ano_atual - ano_inicial < 0:
                 return print('Opção inválida.')
             else:
                 parcelas_pagas = mes_atual - mes_inicial
@@ -300,6 +307,8 @@ class Compra:
             parcelas_restantes = total_parcelas - parcelas_pagas
             if total_ante > parcelas_restantes:
                 return print('Não é possível antecipar mais parcelas do que o restante.')
+            elif total_ante - parcelas_restantes == 1:
+                return print('Só falta uma parcela, então não tem como antecipar.')
             else:
                 for registro in range(total_ante):
                     id_del = 0
@@ -310,10 +319,8 @@ class Compra:
                     sql4 = f'DELETE FROM valor WHERE id_valor = {id_del[0]}'
                     self.cursor.execute(sql4)
                     self.conexao.commit()
-            if total_ante - parcelas_restantes == 0:
-                return print('Todas as parcelas restantes foram pagas!')
-            else:
-                return print(f'Foram antecipadas {total_ante} parcelas desta compra!')
+                print(f'Foram antecipadas {total_ante} parcelas com sucesso!')
+                return total_ante
         else:
             print('Erro no servidor.')
 

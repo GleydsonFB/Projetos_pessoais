@@ -217,8 +217,17 @@ while True:
                                                 print('Tentativas excedidas.')
                                                 Ajustes.limpa_tela()
                                             else:
-                                                compras.antecipar_compra_p(t_compra[0], mes, an, t_ant)
-                                                sleep(4)
+                                                dados_compra = bd.select_composto(3, 'valor', 'registro', 'id_valor',
+                                                                                  deleta, 'categoria', 'nome_compra')
+                                                ajuste_compra = compras.antecipar_compra_p(t_compra[0], mes, an, t_ant)
+                                                if ajuste_compra is None:
+                                                    sleep(4)
+                                                    break
+                                                else:
+                                                    compras.adicionar_valor(dados_compra[0] * ajuste_compra, mes, dados_compra[1], nome_compra='Antecipação - ' + dados_compra[2])
+                                                    print(f'Saldo para quitação R${dados_compra[0] * ajuste_compra} (sem desconto considerado) foi aplicado no mês atual e na mesma categoria.')
+                                                    sleep(4)
+                                                    break
                                         else:
                                             pass
                                     if c == 1:

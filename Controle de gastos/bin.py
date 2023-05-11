@@ -207,7 +207,7 @@ while True:
                                     if deleta == 'n':
                                         Ajustes.limpa_tela()
                                         break
-                                    print(f'A remoção será de todas as parcelas atreladas a compra ID({deleta}). ')
+                                    print(f'A remoção será de todas as parcelas atreladas a compra ID({deleta}).')
                                     c = Funcao.continuar(1, 'continuar? ')
                                     if c == 1 and t_compra[0] != 1:
                                         ante = Funcao.continuar(1, 'antecipar? ')
@@ -228,8 +228,14 @@ while True:
                                                     print(f'Saldo para quitação R${dados_compra[0] * ajuste_compra} (sem desconto considerado) foi aplicado no mês atual e na mesma categoria.')
                                                     sleep(4)
                                                     break
-                                        else:
-                                            pass
+                                        if ante == 0:
+                                            remover_resto = Funcao.continuar(1, 'remover todas ou só as futuras incluíndo esta?\n[S para as futuras ou N para todas]')
+                                            if remover_resto == 1:
+                                                compras.remover_compras_r(mes, an, t_compra[0])
+                                                sleep(4)
+                                                break
+                                            else:
+                                                pass
                                     if c == 1:
                                         if t_compra[0] == 1:
                                             compras.deletar_valor(deleta)

@@ -255,6 +255,15 @@ class Compra:
         else:
             print('Sem conexão com servidor.')
 
+    def remover_compras_r(self, mes_atual, ano_atual, id_compra):
+        if self.conexao.is_connected():
+            sql = f'DELETE FROM valor WHERE compra_total = {id_compra} AND mes >= {mes_atual} AND ano >= {ano_atual}'
+            self.cursor.execute(sql)
+            self.conexao.commit()
+            print('Todas as compras futuras atreladas (incluindo o mês informado) foram apagadas!')
+        else:
+            print('Sem conexão com servidor.')
+
     def adicionar_compra_p(self, total_compra, parcelas):
         if self.conexao.is_connected():
             sql = 'INSERT INTO total_compra (compra, t_parcela) VALUES ("{}", "{}")' \

@@ -188,9 +188,12 @@ class Window_category:
     def __init__(self):
         window2 = tkinter.Toplevel()
         self.frame1, self.list, self.scrollbar_list = None, None, None
+        self.label, self.label2, self.scrollbar_listh = None, None, None
         self.window = window2
         self.frame()
         self.tree_view()
+        self.field()
+        self.entry_button()
         self.screen()
         self.window.mainloop()
 
@@ -202,21 +205,47 @@ class Window_category:
         self.window.minsize(width=321, height=321)
 
     def frame(self):
-        self.frame1 = Frame(self.window, bg=colors(2), bd=1, highlightbackground=colors(3), highlightthickness=2)
+        self.frame1 = Frame(self.window, bg=colors(1))
         self.frame1.place(relx=0.10, rely=0.10, relwidth=0.80, relheight=0.80)
 
     def tree_view(self):
+        style = ttk.Style()
+        style.theme_use('clam')
+        style.configure("Treeview.Heading", background=colors(5), foreground=colors(1))
+        style.configure('Treeview', background=colors(4), foreground=colors(2), fieldbackground=colors(1))
+        style.map('Treeview', background=[('selected', colors(3))])
+        style.configure('Scrollbar', background='black')
         self.list = ttk.Treeview(self.frame1, height=3, columns=('Nome da categoria', 'Meta'), selectmode='browse',
                                  show='headings')
         self.list.heading('#0', text='')
-        self.list.heading('#1', text='Categorias')
-        self.list.heading('#2', text='Metas')
+        self.list.heading('Nome da categoria', text='Categoria')
+        self.list.heading('Meta', text='Meta')
         self.list.column('#0', width=1, minwidth=1, stretch=NO)
-        self.list.column('#1', width=130, minwidth=130, stretch=NO)
-        self.list.column('#2', width=90, minwidth=90, stretch=NO)
-        self.list.place(relx=0.04, rely=0.4, relwidth=0.92, relheight=0.58)
-        #self.scrollbar_list = Scrollbar(self.frame1, orient='vertical')
-        #self.scrollbar_list.place(relx=0.94, rely=0.40, relwidth=0.06, relheight=0.579)
+        self.list.column('Nome da categoria', width=130, minwidth=130, stretch=NO)
+        self.list.column('Meta', width=100, minwidth=100, stretch=NO)
+        self.list.place(relx=0.04, rely=0.35, relwidth=0.92, relheight=0.58)
 
+        #scrollbar vertical
+        self.scrollbar_list = Scrollbar(self.frame1, orient='vertical', command=self.list.yview)
+        self.scrollbar_list.place(relx=0.94, rely=0.35, relwidth=0.06, relheight=0.64)
+
+        #scrollbar horizontal
+        self.scrollbar_listh = Scrollbar(self.frame1, orient='horizontal', command=self.list.xview)
+        self.scrollbar_listh.place(relx=0.04, rely=0.93, relwidth=0.92, relheight=0.06)
+        self.list.configure(yscrollcommand=self.scrollbar_list.set, xscrollcommand=self.scrollbar_listh.set)
+
+        for a in range(0, 6):
+            self.list.insert("", 'end', values=('a', 'b', 'c'))
+            self.list.insert("", 'end', values=('a', 'd', 'e'))
+
+    def field(self):
+        self.label = Label(self.frame1, text='Digite o nome', font=('Calibri', 10, 'bold'), fg=colors(5), bg=colors(1))
+        self.label.place(relx=0.04, rely=0.10)
+
+    def entry_button(self):
+        entry1 = Entry(self.frame1)
+        entry1.place(relx=0.05, rely=0.20, relwidth=0.30, relheight=0.10)
+        button1 = Button(self.frame1, text='Inserir')
+        button1.place(relx=0.40, rely=0.20, relheight=0.10)
 
 a = Window_main()

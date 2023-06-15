@@ -1,7 +1,7 @@
-import tkinter
 import datetime
 import database
 from tkinter import *
+from tkinter import colorchooser
 from tkinter import ttk
 
 date = datetime.datetime.now()
@@ -51,7 +51,7 @@ def colors(scale):
             return '#c1d4d9'
 
 
-class Window_main:
+class Main_window:
     def __init__(self):
         window = Tk()
         self.frame1, self.category, self.frame2 = None, None, None
@@ -81,11 +81,11 @@ class Window_main:
 
     def button(self):
         self.category = Button(self.frame1, text='Gerenciar categorias', bd=2, bg=colors(4), fg=colors(1),
-                               font=('Calibri', 10, 'bold'), command=Window_category)
+                               font=('Calibri', 10, 'bold'), command=Category_window)
         self.category.place(relx=0.25, rely=0.47, relwidth=0.50)
         self.category = Button(self.frame1, text='Consultar agenda', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'),
-                               command=Window_schedule)
+                               command=Schedule_window)
         self.category.place(relx=0.25, rely=0.57, relwidth=0.50)
         self.category = Button(self.frame1, text='Definir regras', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'))
@@ -107,32 +107,21 @@ class Window_main:
                             font=('Calibri', 12))
         self.label2.place(relx=0.12, rely=0.37)
 
-    #def menu(self):
-        #menubar = Menu(self.window)
-        #self.window.config(menu=menubar)
-        #filemenu = Menu(menubar, tearoff=0)
-        #filemenu2 = Menu(menubar, tearoff=0)
-
-        #def quit():
-            #self.window.destroy()
-
-        #menubar.add_cascade(label='Opções', menu=filemenu)
-        #menubar.add_cascade(label='Idioma', menu=filemenu2)
-        #filemenu.add_command(label='Sair', command=quit)
-        #filemenu2.add_command(label='Português')
-        #filemenu2.add_command(label='Inglês')
+    def quit(self):
+        self.window.destroy()
 
 
-class Window_schedule:
+class Schedule_window:
     def __init__(self):
         self.all_days, self.number_day, self.name_day = None, None, None
         self.frame1, self.label1, self.frame2 = None, None, None
-        window1 = tkinter.Toplevel()
+        window1 = Toplevel()
         self.window = window1
         self.screen()
         self.frame()
         self.label()
         self.days_month()
+        self.button()
         self.window.mainloop()
 
     def screen(self):
@@ -154,6 +143,11 @@ class Window_schedule:
                             font=('Calibri', 15, 'bold'),
                             bg=colors(2))
         self.label1.place(relx=0.35, relwidth=0.30)
+
+    def button(self):
+        button1 = Button(self.frame1, text='Registrar estudo', fg=colors(5), font=('Calibri', 11, 'bold'),
+                         bg=colors(2), command=Registry_window)
+        button1.place(relx=0.45, rely=0.95, relwidth=0.10)
 
     def days_month(self):
         self.all_days, self.number_day, self.name_day = [], [], []
@@ -184,11 +178,10 @@ class Window_schedule:
                     relx = 0.02
 
 
-class Window_category:
+class Category_window:
     def __init__(self):
-        window2 = tkinter.Toplevel()
-        self.frame1, self.list, self.scrollbar_list = None, None, None
-        self.label, self.label2, self.scrollbar_listh = None, None, None
+        window2 = Toplevel()
+        self.hex_col, self.frame1 = None, None
         self.window = window2
         self.frame()
         self.tree_view()
@@ -208,6 +201,10 @@ class Window_category:
         self.frame1 = Frame(self.window, bg=colors(1))
         self.frame1.place(relx=0.10, rely=0.10, relwidth=0.80, relheight=0.80)
 
+    def color_tree(self):
+        color = colorchooser.askcolor()
+        self.hex_col = color[1]
+
     def tree_view(self):
         style = ttk.Style()
         style.theme_use('clam')
@@ -215,37 +212,71 @@ class Window_category:
         style.configure('Treeview', background=colors(4), foreground=colors(2), fieldbackground=colors(1))
         style.map('Treeview', background=[('selected', colors(3))])
         style.configure('Scrollbar', background='black')
-        self.list = ttk.Treeview(self.frame1, height=3, columns=('Nome da categoria', 'Meta'), selectmode='browse',
-                                 show='headings')
-        self.list.heading('#0', text='')
-        self.list.heading('Nome da categoria', text='Categoria')
-        self.list.heading('Meta', text='Meta')
-        self.list.column('#0', width=1, minwidth=1, stretch=NO)
-        self.list.column('Nome da categoria', width=130, minwidth=130, stretch=NO)
-        self.list.column('Meta', width=100, minwidth=100, stretch=NO)
-        self.list.place(relx=0.04, rely=0.35, relwidth=0.92, relheight=0.58)
+        listt = ttk.Treeview(self.frame1, height=3, columns=('Nome da categoria', 'Cor'), selectmode='browse',
+                             show='headings')
+        listt.heading('#0', text='')
+        listt.heading('Nome da categoria', text='Categoria')
+        listt.heading('Cor', text='Cor')
+        listt.column('#0', width=1, minwidth=1, stretch=NO)
+        listt.column('Nome da categoria', width=130, minwidth=130, stretch=NO)
+        listt.column('Cor', width=100, minwidth=100, stretch=NO)
+        listt.place(relx=0.04, rely=0.35, relwidth=0.92, relheight=0.58)
 
         #scrollbar vertical
-        self.scrollbar_list = Scrollbar(self.frame1, orient='vertical', command=self.list.yview)
-        self.scrollbar_list.place(relx=0.94, rely=0.35, relwidth=0.06, relheight=0.64)
+        scrollbar_list = Scrollbar(self.frame1, orient='vertical', command=listt.yview)
+        scrollbar_list.place(relx=0.94, rely=0.35, relwidth=0.06, relheight=0.64)
 
         #scrollbar horizontal
-        self.scrollbar_listh = Scrollbar(self.frame1, orient='horizontal', command=self.list.xview)
-        self.scrollbar_listh.place(relx=0.04, rely=0.93, relwidth=0.92, relheight=0.06)
-        self.list.configure(yscrollcommand=self.scrollbar_list.set, xscrollcommand=self.scrollbar_listh.set)
+        scrollbar_listh = Scrollbar(self.frame1, orient='horizontal', command=listt.xview)
+        scrollbar_listh.place(relx=0.04, rely=0.93, relwidth=0.92, relheight=0.06)
+        listt.configure(yscrollcommand=scrollbar_list.set, xscrollcommand=scrollbar_listh.set)
 
-        for a in range(0, 6):
-            self.list.insert("", 'end', values=('a', 'b', 'c'))
-            self.list.insert("", 'end', values=('a', 'd', 'e'))
+        for bs in range(0, 6):
+            listt.insert("", 'end', values=('a', 'b', 'c'))
+            listt.insert("", 'end', values=('a', 'd', 'e'))
 
     def field(self):
-        self.label = Label(self.frame1, text='Digite o nome', font=('Calibri', 10, 'bold'), fg=colors(5), bg=colors(1))
-        self.label.place(relx=0.04, rely=0.10)
+        label = Label(self.frame1, text='Digite o nome', font=('Calibri', 10, 'bold'), fg=colors(5), bg=colors(1))
+        label.place(relx=0.04, rely=0.10)
 
     def entry_button(self):
         entry1 = Entry(self.frame1)
         entry1.place(relx=0.05, rely=0.20, relwidth=0.30, relheight=0.10)
         button1 = Button(self.frame1, text='Inserir')
-        button1.place(relx=0.40, rely=0.20, relheight=0.10)
+        button1.place(relx=0.75, rely=0.20, relheight=0.10)
+        button2 = Button(self.frame1, text='Escolha a cor', command=self.color_tree)
+        button2.place(relx=0.40, rely=0.20, relheight=0.10)
 
-a = Window_main()
+
+class Registry_window:
+    def __init__(self):
+        window3 = Toplevel()
+        self.frame1 = None
+        self.window = window3
+        self.screen()
+        self.frame()
+        self.insert_time()
+        self.window.mainloop()
+
+    def screen(self):
+        self.window.title('Registrar estudo')
+        self.window.configure(background=colors(1))
+        width = (self.window.winfo_screenwidth() * 0.5)
+        self.window.geometry(f'321x321+{width:.0f}+50')
+        self.window.maxsize(width=321, height=321)
+        self.window.minsize(width=321, height=321)
+
+    def frame(self):
+        self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
+        self.frame1.place(relx=0.04, rely=0.04, relwidth=0.92, relheight=0.92)
+
+    def insert_time(self):
+        #for tests
+        listt = ['English', 'Physic', 'Programing']
+        combo = ttk.Combobox(self.frame1, values=listt)
+        combo.set(listt[0])
+        combo.place(relx=0.04, rely=0.04)
+
+
+
+a = Main_window()

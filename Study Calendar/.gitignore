@@ -1,1 +1,4 @@
 **estudos interface
+build/
+*.spec
+dist/

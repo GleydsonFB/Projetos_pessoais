@@ -1,8 +1,8 @@
 import datetime
-import database
 from tkinter import *
 from tkinter import colorchooser
 from tkinter import ttk
+from tkinter import messagebox
 
 date = datetime.datetime.now()
 month = date.month
@@ -51,6 +51,13 @@ def colors(scale):
             return '#c1d4d9'
 
 
+def max_char(limit, arg, field, parent):
+    arg = arg.get()
+    if len(arg) >= limit:
+        messagebox.showerror('Erro', f'O campo em questão só permite {limit} caracteres', parent=parent)
+        field.delete(0, END)
+
+
 class Main_window:
     def __init__(self):
         window = Tk()
@@ -70,6 +77,7 @@ class Main_window:
         self.window.maxsize(width=321, height=532)
         self.window.minsize(width=321, height=532)
         self.window.resizable(False, False)
+        self.window.iconbitmap('girl.ico')
 
     def frame(self):
         self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
@@ -131,6 +139,7 @@ class Schedule_window:
         altura = self.window.winfo_screenheight()
         self.window.geometry(f'{largura}x{altura}')
         self.window.state('zoomed')
+        self.window.iconbitmap('girl.ico')
 
     def frame(self):
         self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
@@ -196,6 +205,7 @@ class Category_window:
         self.window.geometry('321x321+400+50')
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=321, height=321)
+        self.window.iconbitmap('girl.ico')
 
     def frame(self):
         self.frame1 = Frame(self.window, bg=colors(1))
@@ -231,6 +241,7 @@ class Category_window:
         scrollbar_listh.place(relx=0.04, rely=0.93, relwidth=0.92, relheight=0.06)
         listt.configure(yscrollcommand=scrollbar_list.set, xscrollcommand=scrollbar_listh.set)
 
+        #for tests
         for bs in range(0, 6):
             listt.insert("", 'end', values=('a', 'b', 'c'))
             listt.insert("", 'end', values=('a', 'd', 'e'))
@@ -252,6 +263,7 @@ class Registry_window:
     def __init__(self):
         window3 = Toplevel()
         self.frame1 = None
+        self.var = StringVar()
         self.window = window3
         self.screen()
         self.frame()
@@ -265,6 +277,7 @@ class Registry_window:
         self.window.geometry(f'321x321+{width:.0f}+50')
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=321, height=321)
+        self.window.iconbitmap('girl.ico')
 
     def frame(self):
         self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
@@ -273,9 +286,16 @@ class Registry_window:
     def insert_time(self):
         #for tests
         listt = ['English', 'Physic', 'Programing']
-        combo = ttk.Combobox(self.frame1, values=listt)
+
+        #combo and entry
+        combo = ttk.Combobox(self.frame1, values=listt, state='readonly', background=colors(5))
         combo.set(listt[0])
-        combo.place(relx=0.04, rely=0.04)
+        combo.place(relx=0.25, rely=0.10, relwidth=0.50)
+        entry = Entry(self.frame1, textvariable=self.var, bg=colors(5))
+        entry.place(relx=0.375, rely=0.30, relwidth=0.25)
+        button = Button(self.frame1, text='Inserir', command=lambda: max_char(5, self.var, entry, self.window),
+                        bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'))
+        button.place(relx=0.425, rely=0.50, relwidth=0.15)
 
 
 

@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import colorchooser
 from tkinter import ttk
 from tkinter import messagebox
+import webbrowser
 
 date = datetime.datetime.now()
 month = date.month
@@ -51,11 +52,13 @@ def colors(scale):
             return '#c1d4d9'
 
 
-def max_char(limit, arg, field, parent):
+def max_char(limit, arg, field, parent, color, treeview):
     arg = arg.get()
     if len(arg) >= limit:
         messagebox.showerror('Erro', f'O campo em questão só permite {limit} caracteres', parent=parent)
         field.delete(0, END)
+    treeview.tag_configure('changing', background=colors(1), foreground=color)
+    treeview.insert('', 'end', values=(arg, 'a', 'a'), tags=('changing',))
 
 
 class Main_window:
@@ -90,20 +93,20 @@ class Main_window:
     def button(self):
         self.category = Button(self.frame1, text='Gerenciar categorias', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'), command=Category_window)
-        self.category.place(relx=0.25, rely=0.47, relwidth=0.50)
+        self.category.place(relx=0.225, rely=0.47, relwidth=0.55)
         self.category = Button(self.frame1, text='Consultar agenda', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'),
                                command=Schedule_window)
-        self.category.place(relx=0.25, rely=0.57, relwidth=0.50)
+        self.category.place(relx=0.225, rely=0.57, relwidth=0.55)
         self.category = Button(self.frame1, text='Definir regras', bd=2, bg=colors(4), fg=colors(1),
+                               font=('Calibri', 10, 'bold'), command=Rule_window)
+        self.category.place(relx=0.225, rely=0.67, relwidth=0.55)
+        self.category = Button(self.frame1, text='Feedback/FAQ', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'))
-        self.category.place(relx=0.25, rely=0.67, relwidth=0.50)
-        self.category = Button(self.frame1, text='Enviar feedback', bd=2, bg=colors(4), fg=colors(1),
-                               font=('Calibri', 10, 'bold'))
-        self.category.place(relx=0.25, rely=0.77, relwidth=0.50)
-        self.category = Button(self.frame1, text='Conferir a FAQ', bd=2, bg=colors(4), fg=colors(1),
-                               font=('Calibri', 10, 'bold'))
-        self.category.place(relx=0.25, rely=0.87, relwidth=0.50)
+        self.category.place(relx=0.225, rely=0.77, relwidth=0.55)
+        self.category = Button(self.frame1, text='LinkedIn do desenvolvedor', bd=2, bg=colors(4), fg=colors(1),
+                               font=('Calibri', 10, 'bold'), command=lambda: webbrowser.open('https://www.linkedin.com/in/gleydsonfreitas/', new=2))
+        self.category.place(relx=0.225, rely=0.87, relwidth=0.55)
 
     def additional(self):
         self.label1 = Label(self.frame1,
@@ -190,7 +193,8 @@ class Schedule_window:
 class Category_window:
     def __init__(self):
         window2 = Toplevel()
-        self.hex_col, self.frame1 = None, None
+        self.hex_col, self.frame1, self.listt = None, None, None
+        self.var = StringVar()
         self.window = window2
         self.frame()
         self.tree_view()
@@ -205,6 +209,7 @@ class Category_window:
         self.window.geometry('321x321+400+50')
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=321, height=321)
+        self.window.resizable(False, False)
         self.window.iconbitmap('girl.ico')
 
     def frame(self):
@@ -214,49 +219,50 @@ class Category_window:
     def color_tree(self):
         color = colorchooser.askcolor()
         self.hex_col = color[1]
+        print(self.hex_col)
 
     def tree_view(self):
         style = ttk.Style()
         style.theme_use('clam')
         style.configure("Treeview.Heading", background=colors(5), foreground=colors(1))
-        style.configure('Treeview', background=colors(4), foreground=colors(2), fieldbackground=colors(1))
+        style.configure('Treeview', foreground='black', fieldbackground=colors(1), font=('calibri', 12, 'bold'))
         style.map('Treeview', background=[('selected', colors(3))])
-        style.configure('Scrollbar', background='black')
-        listt = ttk.Treeview(self.frame1, height=3, columns=('Nome da categoria', 'Cor'), selectmode='browse',
-                             show='headings')
-        listt.heading('#0', text='')
-        listt.heading('Nome da categoria', text='Categoria')
-        listt.heading('Cor', text='Cor')
-        listt.column('#0', width=1, minwidth=1, stretch=NO)
-        listt.column('Nome da categoria', width=130, minwidth=130, stretch=NO)
-        listt.column('Cor', width=100, minwidth=100, stretch=NO)
-        listt.place(relx=0.04, rely=0.35, relwidth=0.92, relheight=0.58)
+        style.configure('Scrollbar')
+        self.listt = ttk.Treeview(self.frame1, height=3, columns=('Nome da categoria', 'vazio'), selectmode='browse',
+                                  show='headings')
+        self.listt.heading('#0', text='')
+        self.listt.heading('Nome da categoria', text='Categorias cadastradas')
+        self.listt.heading('vazio', text='')
+        self.listt.column('#0', width=1, minwidth=1, stretch=NO)
+        self.listt.column('Nome da categoria', width=230, minwidth=230, stretch=NO)
+        self.listt.column('vazio', width=1, minwidth=1, stretch=NO)
+        self.listt.place(relx=0.04, rely=0.35, relwidth=0.92, relheight=0.58)
 
         #scrollbar vertical
-        scrollbar_list = Scrollbar(self.frame1, orient='vertical', command=listt.yview)
+        scrollbar_list = Scrollbar(self.frame1, orient='vertical', command=self.listt.yview)
         scrollbar_list.place(relx=0.94, rely=0.35, relwidth=0.06, relheight=0.64)
 
         #scrollbar horizontal
-        scrollbar_listh = Scrollbar(self.frame1, orient='horizontal', command=listt.xview)
+        scrollbar_listh = Scrollbar(self.frame1, orient='horizontal', command=self.listt.xview)
         scrollbar_listh.place(relx=0.04, rely=0.93, relwidth=0.92, relheight=0.06)
-        listt.configure(yscrollcommand=scrollbar_list.set, xscrollcommand=scrollbar_listh.set)
-
-        #for tests
-        for bs in range(0, 6):
-            listt.insert("", 'end', values=('a', 'b', 'c'))
-            listt.insert("", 'end', values=('a', 'd', 'e'))
+        self.listt.configure(yscrollcommand=scrollbar_list.set, xscrollcommand=scrollbar_listh.set)
 
     def field(self):
         label = Label(self.frame1, text='Digite o nome', font=('Calibri', 10, 'bold'), fg=colors(5), bg=colors(1))
         label.place(relx=0.04, rely=0.10)
+        label1 = Label(self.window, text='Gerenciamento de categorias', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(1))
+        label1.place(relx=0.125, relwidth=0.75, rely=0.05)
 
     def entry_button(self):
-        entry1 = Entry(self.frame1)
+        entry1 = Entry(self.frame1, textvariable=self.var, bg=colors(5))
         entry1.place(relx=0.05, rely=0.20, relwidth=0.30, relheight=0.10)
-        button1 = Button(self.frame1, text='Inserir')
-        button1.place(relx=0.75, rely=0.20, relheight=0.10)
-        button2 = Button(self.frame1, text='Escolha a cor', command=self.color_tree)
+        button2 = Button(self.frame1, text='Escolha a cor', command=self.color_tree, bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'))
         button2.place(relx=0.40, rely=0.20, relheight=0.10)
+        button1 = Button(self.frame1, text='Insira', bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'),
+                         command=lambda: max_char(12, self.var, entry1, self.window, self.hex_col, self.listt))
+        button1.place(relx=0.75, rely=0.20, relheight=0.10)
+        button3 = Button(self.window, text='Remover selecionada', bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'))
+        button3.place(relx=0.20, rely=0.90, relwidth=0.60)
 
 
 class Registry_window:
@@ -277,6 +283,7 @@ class Registry_window:
         self.window.geometry(f'321x321+{width:.0f}+50')
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=321, height=321)
+        self.window.resizable(False, False)
         self.window.iconbitmap('girl.ico')
 
     def frame(self):
@@ -297,6 +304,22 @@ class Registry_window:
                         bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'))
         button.place(relx=0.425, rely=0.50, relwidth=0.15)
 
+
+class Rule_window:
+    def __init__(self):
+        window4 = Toplevel()
+        self.window = window4
+        self.screen()
+        self.window.mainloop()
+
+    def screen(self):
+        self.window.title('Definir regras')
+        self.window.configure(background=colors(1))
+        self.window.geometry(f'300x300+725+50')
+        self.window.maxsize(width=321, height=321)
+        self.window.minsize(width=300, height=300)
+        self.window.resizable(False, False)
+        self.window.iconbitmap('girl.ico')
 
 
 a = Main_window()

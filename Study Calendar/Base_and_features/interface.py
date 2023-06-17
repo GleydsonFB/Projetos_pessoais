@@ -1,64 +1,9 @@
-import datetime
+from functions_interface import *
 from tkinter import *
-from tkinter import colorchooser
 from tkinter import ttk
-from tkinter import messagebox
 import webbrowser
 
-date = datetime.datetime.now()
-month = date.month
-year = date.year
-
-
-def date_month():
-    match month:
-        case 1:
-            return 'janeiro', 31
-        case 2:
-            return 'fevereiro', 28
-        case 3:
-            return 'março', 31
-        case 4:
-            return 'abril', 30
-        case 5:
-            return 'maio', 31
-        case 6:
-            return 'junho', 30
-        case 7:
-            return 'julho', 31
-        case 8:
-            return 'agosto', 31
-        case 9:
-            return 'setembro', 30
-        case 10:
-            return 'outubro', 31
-        case 11:
-            return 'novembro', 30
-        case 12:
-            return 'dezembro', 31
-
-
-def colors(scale):
-    match scale:
-        case 1:
-            return '#224459'
-        case 2:
-            return '#58788c'
-        case 3:
-            return '#819ba6'
-        case 4:
-            return '#a8bbbf'
-        case 5:
-            return '#c1d4d9'
-
-
-def max_char(limit, arg, field, parent, color, treeview):
-    arg = arg.get()
-    if len(arg) >= limit:
-        messagebox.showerror('Erro', f'O campo em questão só permite {limit} caracteres', parent=parent)
-        field.delete(0, END)
-    treeview.tag_configure('changing', background=colors(1), foreground=color)
-    treeview.insert('', 'end', values=(arg, 'a', 'a'), tags=('changing',))
+color_helper = Complementar_tree()
 
 
 class Main_window:
@@ -99,7 +44,7 @@ class Main_window:
                                command=Schedule_window)
         self.category.place(relx=0.225, rely=0.57, relwidth=0.55)
         self.category = Button(self.frame1, text='Definir regras', bd=2, bg=colors(4), fg=colors(1),
-                               font=('Calibri', 10, 'bold'), command=Rule_window)
+                               font=('Calibri', 10, 'bold'), command=Rule_goal_window)
         self.category.place(relx=0.225, rely=0.67, relwidth=0.55)
         self.category = Button(self.frame1, text='Feedback/FAQ', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'))
@@ -159,7 +104,10 @@ class Schedule_window:
     def button(self):
         button1 = Button(self.frame1, text='Registrar estudo', fg=colors(5), font=('Calibri', 11, 'bold'),
                          bg=colors(2), command=Registry_window)
-        button1.place(relx=0.45, rely=0.95, relwidth=0.10)
+        button1.place(relx=0.40, rely=0.945, relwidth=0.10)
+        button2 = Button(self.frame1, text='Apagar estudo', fg=colors(5), font=('Calibri', 11, 'bold'),
+                         bg=colors(2), command=Remove_elem_window)
+        button2.place(relx=0.50, rely=0.945, relwidth=0.10)
 
     def days_month(self):
         self.all_days, self.number_day, self.name_day = [], [], []
@@ -216,11 +164,6 @@ class Category_window:
         self.frame1 = Frame(self.window, bg=colors(1))
         self.frame1.place(relx=0.10, rely=0.10, relwidth=0.80, relheight=0.80)
 
-    def color_tree(self):
-        color = colorchooser.askcolor()
-        self.hex_col = color[1]
-        print(self.hex_col)
-
     def tree_view(self):
         style = ttk.Style()
         style.theme_use('clam')
@@ -234,7 +177,7 @@ class Category_window:
         self.listt.heading('Nome da categoria', text='Categorias cadastradas')
         self.listt.heading('vazio', text='')
         self.listt.column('#0', width=1, minwidth=1, stretch=NO)
-        self.listt.column('Nome da categoria', width=230, minwidth=230, stretch=NO)
+        self.listt.column('Nome da categoria', width=230, minwidth=230, stretch=NO, anchor='c')
         self.listt.column('vazio', width=1, minwidth=1, stretch=NO)
         self.listt.place(relx=0.04, rely=0.35, relwidth=0.92, relheight=0.58)
 
@@ -248,7 +191,7 @@ class Category_window:
         self.listt.configure(yscrollcommand=scrollbar_list.set, xscrollcommand=scrollbar_listh.set)
 
     def field(self):
-        label = Label(self.frame1, text='Digite o nome', font=('Calibri', 10, 'bold'), fg=colors(5), bg=colors(1))
+        label = Label(self.frame1, text='Digite o nome da nova categoria', font=('Calibri', 10, 'bold'), fg=colors(5), bg=colors(1))
         label.place(relx=0.04, rely=0.10)
         label1 = Label(self.window, text='Gerenciamento de categorias', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(1))
         label1.place(relx=0.125, relwidth=0.75, rely=0.05)
@@ -256,12 +199,13 @@ class Category_window:
     def entry_button(self):
         entry1 = Entry(self.frame1, textvariable=self.var, bg=colors(5))
         entry1.place(relx=0.05, rely=0.20, relwidth=0.30, relheight=0.10)
-        button2 = Button(self.frame1, text='Escolha a cor', command=self.color_tree, bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'))
+        button2 = Button(self.frame1, text='Escolha a cor', command=color_helper.tree_color, bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'))
         button2.place(relx=0.40, rely=0.20, relheight=0.10)
         button1 = Button(self.frame1, text='Insira', bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'),
-                         command=lambda: max_char(12, self.var, entry1, self.window, self.hex_col, self.listt))
+                         command=lambda: color_helper.tree_insert(12, self.var, entry1, self.window, self.listt))
         button1.place(relx=0.75, rely=0.20, relheight=0.10)
-        button3 = Button(self.window, text='Remover selecionada', bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'))
+        button3 = Button(self.window, text='Remover selecionada', bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'),
+                         command=lambda: color_helper.tree_delete(self.listt, self.window))
         button3.place(relx=0.20, rely=0.90, relwidth=0.60)
 
 
@@ -274,6 +218,7 @@ class Registry_window:
         self.screen()
         self.frame()
         self.insert_time()
+        self.label()
         self.window.mainloop()
 
     def screen(self):
@@ -288,7 +233,7 @@ class Registry_window:
 
     def frame(self):
         self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
-        self.frame1.place(relx=0.04, rely=0.04, relwidth=0.92, relheight=0.92)
+        self.frame1.place(relx=0.04, rely=0.06, relwidth=0.92, relheight=0.88)
 
     def insert_time(self):
         #for tests
@@ -297,18 +242,62 @@ class Registry_window:
         #combo and entry
         combo = ttk.Combobox(self.frame1, values=listt, state='readonly', background=colors(5))
         combo.set(listt[0])
-        combo.place(relx=0.25, rely=0.10, relwidth=0.50)
+        combo.place(relx=0.25, rely=0.18, relwidth=0.50)
         entry = Entry(self.frame1, textvariable=self.var, bg=colors(5))
-        entry.place(relx=0.375, rely=0.30, relwidth=0.25)
+        entry.place(relx=0.375, rely=0.38, relwidth=0.25)
         button = Button(self.frame1, text='Inserir', command=lambda: max_char(5, self.var, entry, self.window),
-                        bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'))
-        button.place(relx=0.425, rely=0.50, relwidth=0.15)
+                        bg=colors(2), fg=colors(5), font=('Calibri', 13, 'bold'))
+        button.place(relx=0.375, rely=0.80, relwidth=0.25)
+
+        #date registry
+        list_day = []
+        for days in range(1, date_month()[1] + 1):
+            list_day.append(str(days))
+        combo1 = ttk.Combobox(self.frame1, values=list_day, state='readonly', background=colors(5))
+        combo1.set(list_day[date_month()[2] - 1])
+        combo1.place(relx=0.25, rely=0.60, relwidth=0.15)
+
+    def label(self):
+        label1 = Label(self.frame1, text='Escolha a categoria', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label1.place(relx=0.25, relwidth=0.50, rely=0.05)
+        label2 = Label(self.frame1, text='Defina o tempo estudado', font=('Calibri', 12, 'bold'), fg=colors(5),
+                       bg=colors(2))
+        label2.place(relx=0.125, rely=0.25, relwidth=0.75)
+        label3 = Label(self.frame1, text='Determine a data do estudo', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label3.place(relx=0.15, rely=0.45)
+        label4 = Label(self.frame1, text=f'/{date_month()[0]}/{year}', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label4.place(relx=0.40, rely=0.60)
 
 
-class Rule_window:
+class Remove_elem_window:
     def __init__(self):
         window4 = Toplevel()
+        self.frame1 = None
+        self.var = StringVar()
         self.window = window4
+        self.screen()
+        self.frame()
+        self.window.mainloop()
+
+    def screen(self):
+        self.window.title('Apagar estudo')
+        self.window.configure(background=colors(1))
+        width = (self.window.winfo_screenwidth() * 0.5) + 322
+        self.window.geometry(f'321x321+{width:.0f}+50')
+        self.window.maxsize(width=321, height=321)
+        self.window.minsize(width=321, height=321)
+        self.window.resizable(False, False)
+        self.window.iconbitmap('girl.ico')
+
+    def frame(self):
+        self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
+        self.frame1.place(relx=0.04, rely=0.06, relwidth=0.92, relheight=0.88)
+
+
+class Rule_goal_window:
+    def __init__(self):
+        window5 = Toplevel()
+        self.window = window5
         self.screen()
         self.window.mainloop()
 

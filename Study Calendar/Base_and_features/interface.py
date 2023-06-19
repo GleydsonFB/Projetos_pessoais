@@ -1,9 +1,13 @@
 from functions_interface import *
 from tkinter import *
 from tkinter import ttk
+from database import *
 import webbrowser
 
 color_helper = Complementar_tree()
+base = Database()
+base.connect()
+base.table_create()
 
 
 class Main_window:
@@ -25,7 +29,7 @@ class Main_window:
         self.window.maxsize(width=321, height=532)
         self.window.minsize(width=321, height=532)
         self.window.resizable(False, False)
-        self.window.iconbitmap('girl.ico')
+        self.window.iconbitmap('images/girl.ico')
 
     def frame(self):
         self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
@@ -87,7 +91,7 @@ class Schedule_window:
         altura = self.window.winfo_screenheight()
         self.window.geometry(f'{largura}x{altura}')
         self.window.state('zoomed')
-        self.window.iconbitmap('girl.ico')
+        self.window.iconbitmap('images/girl.ico')
 
     def frame(self):
         self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
@@ -102,8 +106,9 @@ class Schedule_window:
         self.label1.place(relx=0.35, relwidth=0.30)
 
     def button(self):
+        bt_left = PhotoImage(file='images/b_left_schudule.png')
         button1 = Button(self.frame1, text='Registrar estudo', fg=colors(5), font=('Calibri', 11, 'bold'),
-                         bg=colors(2), command=Registry_window)
+                         bg=colors(2), command=Registry_window, image=bt_left)
         button1.place(relx=0.40, rely=0.945, relwidth=0.10)
         button2 = Button(self.frame1, text='Apagar estudo', fg=colors(5), font=('Calibri', 11, 'bold'),
                          bg=colors(2), command=Remove_elem_window)
@@ -113,9 +118,9 @@ class Schedule_window:
         self.all_days, self.number_day, self.name_day = [], [], []
         control, relx, rely = 0, 0.02, 0.02
         max_width = 100
-        for day in range(1, date_month()[1] + 1):
-            self.number_day.append(day)
-            self.name_day.append(day)
+        for days in range(1, date_month()[1] + 1):
+            self.number_day.append(days)
+            self.name_day.append(days)
         for number in range(len(self.number_day)):
             self.all_days.append(number)
             self.all_days[number] = Frame(self.frame2, bd=1, bg=colors(4))
@@ -158,7 +163,7 @@ class Category_window:
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=321, height=321)
         self.window.resizable(False, False)
-        self.window.iconbitmap('girl.ico')
+        self.window.iconbitmap('images/girl.ico')
 
     def frame(self):
         self.frame1 = Frame(self.window, bg=colors(1))
@@ -180,6 +185,7 @@ class Category_window:
         self.listt.column('Nome da categoria', width=230, minwidth=230, stretch=NO, anchor='c')
         self.listt.column('vazio', width=1, minwidth=1, stretch=NO)
         self.listt.place(relx=0.04, rely=0.35, relwidth=0.92, relheight=0.58)
+        show_tree(self.listt)
 
         #scrollbar vertical
         scrollbar_list = Scrollbar(self.frame1, orient='vertical', command=self.listt.yview)
@@ -205,7 +211,7 @@ class Category_window:
                          command=lambda: color_helper.tree_insert(12, self.var, entry1, self.window, self.listt))
         button1.place(relx=0.75, rely=0.20, relheight=0.10)
         button3 = Button(self.window, text='Remover selecionada', bg=colors(2), fg=colors(5), font=('Calibri', 9, 'bold'),
-                         command=lambda: color_helper.tree_delete(self.listt, self.window))
+                         command=lambda: color_helper.delete_tree(self.listt, self.window))
         button3.place(relx=0.20, rely=0.90, relwidth=0.60)
 
 
@@ -229,7 +235,7 @@ class Registry_window:
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=321, height=321)
         self.window.resizable(False, False)
-        self.window.iconbitmap('girl.ico')
+        self.window.iconbitmap('images/girl.ico')
 
     def frame(self):
         self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
@@ -287,7 +293,7 @@ class Remove_elem_window:
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=321, height=321)
         self.window.resizable(False, False)
-        self.window.iconbitmap('girl.ico')
+        self.window.iconbitmap('images/girl.ico')
 
     def frame(self):
         self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
@@ -308,7 +314,7 @@ class Rule_goal_window:
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=300, height=300)
         self.window.resizable(False, False)
-        self.window.iconbitmap('girl.ico')
+        self.window.iconbitmap('images/girl.ico')
 
 
 a = Main_window()

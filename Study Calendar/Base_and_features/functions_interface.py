@@ -2,11 +2,13 @@ import datetime
 from tkinter import messagebox
 from tkinter import *
 from tkinter import colorchooser
+from database import *
 
 date = datetime.datetime.now()
 month = date.month
 year = date.year
 day = date.day
+bd = Database()
 
 
 def date_month():
@@ -58,6 +60,19 @@ def max_char(limit, arg, field, parent):
         field.delete(0, END)
 
 
+def show_tree(treeview):
+    bd.connect()
+    total = bd.simple_select('CATEGORY', 'id_cat')
+    if total == 0:
+        pass
+    else:
+        items = bd.show_cat()
+        for cate in range(0, total):
+            treeview.tag_configure(f'{items[cate - 1][1]}', background=colors(1), foreground=items[cate - 1][1])
+            treeview.insert('', 'end', values=(items[cate - 1][0], 'a', 'a'), tags=(f'{items[cate - 1][1]}',))
+    bd.disconnect()
+
+
 class Complementar_tree:
     def __init__(self):
         self.hex_col, self.selection = None, None
@@ -76,13 +91,19 @@ class Complementar_tree:
         else:
             treeview.tag_configure(f'{self.hex_col}', background=colors(1), foreground=self.hex_col)
             treeview.insert('', 'end', values=(arg, 'a', 'a'), tags=(f'{self.hex_col}',))
+            bd.connect()
+            bd.insert_cat(arg, self.hex_col)
             self.hex_col = None
+            bd.disconnect()
 
-    def tree_delete(self, treeview, parent):
+    def delete_tree(self, treeview, parent):
         try:
             self.selection = treeview.selection()[0]
         except IndexError:
             messagebox.showerror('Erro', 'Nenhuma categoria selecionada para exclusão.', parent=parent)
         else:
             treeview.delete(self.selection)
+            bd.connect()
+            bd.delete_cat(self.selection)
+            bd.disconnect()
             self.selection = None

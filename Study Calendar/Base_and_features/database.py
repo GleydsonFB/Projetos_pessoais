@@ -49,7 +49,7 @@ class Database:
         total = []
         for item in self.mouse:
             total.append(item[0])
-        return len(total)
+        return len(total), total
 
     def insert_cat(self, name, color):
         sql = 'INSERT INTO category(name, color) VALUES ("{}", "{}");'.format(name, color)

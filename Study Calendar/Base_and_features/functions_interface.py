@@ -63,14 +63,37 @@ def max_char(limit, arg, field, parent):
 def show_tree(treeview):
     bd.connect()
     total = bd.simple_select('CATEGORY', 'id_cat')
-    if total == 0:
+    if total[0] == 0:
         pass
     else:
         items = bd.show_cat()
-        for cate in range(0, total):
+        for cate in range(0, total[0]):
             treeview.tag_configure(f'{items[cate - 1][1]}', background=colors(1), foreground=items[cate - 1][1])
             treeview.insert('', 'end', values=(items[cate - 1][0], 'a', 'a'), tags=(f'{items[cate - 1][1]}',))
     bd.disconnect()
+
+
+def insert_combo():
+    bd.connect()
+    total = bd.simple_select('CATEGORY', 'name')
+    if total[0] == 0:
+        pass
+    else:
+        return total[1]
+    bd.disconnect()
+
+
+def month_combo():
+    mon = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro',
+           'outubro', 'novembro', 'dezembro']
+    return mon
+
+
+def year_combo():
+    y = []
+    for i in range(year, year + 51):
+        y.append(i)
+    return y
 
 
 class Complementar_tree:

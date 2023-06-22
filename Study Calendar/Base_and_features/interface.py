@@ -2,6 +2,7 @@ from functions_interface import *
 from tkinter import *
 from tkinter import ttk
 from database import *
+from PIL import Image, ImageTk
 import webbrowser
 
 color_helper = Complementar_tree()
@@ -47,8 +48,8 @@ class Main_window:
                                font=('Calibri', 10, 'bold'),
                                command=Schedule_window)
         self.category.place(relx=0.225, rely=0.57, relwidth=0.55)
-        self.category = Button(self.frame1, text='Definir regras', bd=2, bg=colors(4), fg=colors(1),
-                               font=('Calibri', 10, 'bold'), command=Rule_goal_window)
+        self.category = Button(self.frame1, text='Definir metas', bd=2, bg=colors(4), fg=colors(1),
+                               font=('Calibri', 10, 'bold'), command=Goal_window)
         self.category.place(relx=0.225, rely=0.67, relwidth=0.55)
         self.category = Button(self.frame1, text='Feedback/FAQ', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'))
@@ -67,14 +68,12 @@ class Main_window:
                             font=('Calibri', 12))
         self.label2.place(relx=0.12, rely=0.37)
 
-    def quit(self):
-        self.window.destroy()
-
 
 class Schedule_window:
     def __init__(self):
         self.all_days, self.number_day, self.name_day = None, None, None
         self.frame1, self.label1, self.frame2 = None, None, None
+        self.bt_left, self.bt_right = None, None
         window1 = Toplevel()
         self.window = window1
         self.screen()
@@ -106,13 +105,27 @@ class Schedule_window:
         self.label1.place(relx=0.35, relwidth=0.30)
 
     def button(self):
-        bt_left = PhotoImage(file='images/b_left_schudule.png')
+        #images for buttons
+        load_img1 = Image.open('images/b_left_schudule.png')
+        resize_img1 = load_img1.resize((40, 40))
+        self.bt_left = ImageTk.PhotoImage(resize_img1)
+        load_img2 = Image.open('images/b_right_schedule.png')
+        resize_img2 = load_img2.resize((40, 40))
+        self.bt_right = ImageTk.PhotoImage(resize_img2)
+
+        #simple buttons
         button1 = Button(self.frame1, text='Registrar estudo', fg=colors(5), font=('Calibri', 11, 'bold'),
-                         bg=colors(2), command=Registry_window, image=bt_left)
+                         bg=colors(2), command=Registry_window)
         button1.place(relx=0.40, rely=0.945, relwidth=0.10)
         button2 = Button(self.frame1, text='Apagar estudo', fg=colors(5), font=('Calibri', 11, 'bold'),
                          bg=colors(2), command=Remove_elem_window)
         button2.place(relx=0.50, rely=0.945, relwidth=0.10)
+
+        #custom buttons
+        button3 = Button(self.window, image=self.bt_left, bg=colors(2), borderwidth=0)
+        button3.place(relx=0.045, rely=0.042)
+        button4 = Button(self.window, image=self.bt_right, bg=colors(2), borderwidth=0)
+        button4.place(relx=0.925, rely=0.042)
 
     def days_month(self):
         self.all_days, self.number_day, self.name_day = [], [], []
@@ -300,21 +313,59 @@ class Remove_elem_window:
         self.frame1.place(relx=0.04, rely=0.06, relwidth=0.92, relheight=0.88)
 
 
-class Rule_goal_window:
+class Goal_window:
     def __init__(self):
         window5 = Toplevel()
+        self.frame1, self.label1, self.label2 = None, None, None
+        self.label3 = None
         self.window = window5
         self.screen()
+        self.frame()
+        self.label()
+        self.button()
         self.window.mainloop()
 
     def screen(self):
-        self.window.title('Definir regras')
+        self.window.title('Definir metas')
         self.window.configure(background=colors(1))
         self.window.geometry(f'300x300+725+50')
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=300, height=300)
         self.window.resizable(False, False)
         self.window.iconbitmap('images/girl.ico')
+
+    def frame(self):
+        self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
+        self.frame1.place(relx=0.04, rely=0.04, relwidth=0.92, relheight=0.92)
+
+    def label(self):
+        self.label1 = Label(self.frame1, text='Escolha a categoria', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        self.label1.place(relx=0.10, rely=0.05)
+        self.label2 = Label(self.frame1, text='Tempo de estudo mensal', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        self.label2.place(relx=0.10, rely=0.30)
+        self.label3 = Label(self.frame1, text='em minutos', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        self.label3.place(relx=0.21, rely=0.45)
+        label4 = Label(self.frame1, text='Escolha o mês e o ano', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label4.place(relx=0.10, rely=0.60)
+
+    def button(self):
+        content_combo = insert_combo()
+        combo = ttk.Combobox(self.frame1, values=content_combo, state='readonly', background=colors(5))
+        combo.place(relx=0.10, rely=0.20)
+        entry = Entry(self.frame1, bg=colors(5))
+        entry.place(relx=0.10, rely=0.45, relwidth=0.10)
+        mon = month_combo()
+        combo2 = ttk.Combobox(self.frame1, values=mon, state='readonly', background=colors(5))
+        combo2.set(mon[month - 1])
+        combo2.place(relx=0.10, rely=0.70, relwidth=0.30)
+        yea = year_combo()
+        combo3 = ttk.Combobox(self.frame1, values=yea, state='readonly', background=colors(5))
+        combo3.set(yea[year - 2023])
+        combo3.place(relx=0.45, rely=0.70, relwidth=0.20)
+        button = Button(self.frame1, text='Registrar meta',
+                        bg=colors(2), fg=colors(5), font=('Calibri', 12, 'bold'))
+        button.place(relx=0.30, relwidth=0.40, rely=0.85)
+
 
 
 a = Main_window()

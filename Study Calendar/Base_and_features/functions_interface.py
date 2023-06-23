@@ -96,6 +96,31 @@ def year_combo():
     return y
 
 
+def insert_goal(arg, field, parent, months, years, category):
+    ctg = str(arg.get())
+    if ctg.isnumeric():
+        bd.connect()
+        cat = bd.choose_two('category', 'id_cat', 'name', 'name', category)
+        if len(cat) == 0:
+            messagebox.showerror('Erro no registro', 'Escolha uma categoria para receber a meta.', parent=parent)
+            bd.disconnect()
+        else:
+            insert = bd.insert_goal(ctg, months, years, cat[0])
+            if insert == 1:
+                messagebox.showinfo('Sucesso!', f'meta para a categoria {category} no mês {months} de {years} foi definida como'
+                                                f' sendo {ctg} minuto(s).', parent=parent)
+                bd.disconnect()
+            else:
+                messagebox.showerror('Erro no registro de meta', 'As informações preenchidas no campo de minutos estão inválidas.'
+                                     , parent=parent)
+                field.delete(0, END)
+                bd.disconnect()
+    else:
+        messagebox.showerror('Erro no registro dos minutos', 'Valor passado não é composto por um número inteiro.',
+                             parent=parent)
+        field.delete(0, END)
+
+
 class Complementar_tree:
     def __init__(self):
         self.hex_col, self.selection = None, None

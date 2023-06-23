@@ -14,13 +14,13 @@ class Database:
         self.con.close()
 
     def table_create(self):
-        self.mouse.execute('CREATE TABLE IF NOT EXISTS CATEGORY('
+        self.mouse.execute('CREATE TABLE IF NOT EXISTS category('
                            'id_cat integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
                            'name TEXT UNIQUE,'
                            'color VARCHAR(255)'
                            ');')
 
-        self.mouse.execute('CREATE TABLE IF NOT EXISTS CALENDAR ('
+        self.mouse.execute('CREATE TABLE IF NOT EXISTS calendar('
                            'id_cal integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
                            'time INT NOT NULL,'
                            'day INT NOT NULL,'
@@ -29,19 +29,24 @@ class Database:
                            'cat_ref INT,'
                            'FOREIGN KEY(cat_ref) REFERENCES CATEGORY(id_cat));')
 
-        self.mouse.execute('CREATE TABLE IF NOT EXISTS COMENTARY('
+        self.mouse.execute('CREATE TABLE IF NOT EXISTS comentary('
                            'id_com integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
                            'description VARCHAR(255),'
                            'cal_ref INT,'
                            'FOREIGN KEY (cal_ref) REFERENCES CALENDAR(id_cal));')
 
-        self.mouse.execute('CREATE TABLE IF NOT EXISTS GOAL('
+        self.mouse.execute('CREATE TABLE IF NOT EXISTS goal('
                            'id_goa integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
                            'objective INT NOT NULL,'
                            'month INT NOT NULL,'
                            'year INT NOT NULL,'
                            'cate_ref INT NOT NULL,'
                            'FOREIGN KEY (cate_ref) REFERENCES CATEGORY(id_cat));')
+
+        self.mouse.execute('CREATE TABLE IF NOT EXISTS dayOff('
+                           'id_day integer NOT NULL PRIMARY KEY AUTOINCREMENT,'
+                           'scale INT NOT NULL,'
+                           'day INT NOT NULL);')
 
     def simple_select(self, table, name_col):
         sql = f'SELECT {name_col} FROM {table};'
@@ -50,6 +55,15 @@ class Database:
         for item in self.mouse:
             total.append(item[0])
         return len(total), total
+
+    def choose_two(self, table, name_col, name_col2, col_search, search):
+        sql = F'SELECT {name_col}, {name_col2} FROM {table} WHERE {col_search} = "{search}"'
+        self.mouse.execute(sql)
+        r = []
+        for ids, name in self.mouse:
+            r.append(ids)
+            r.append(name)
+        return r
 
     def insert_cat(self, name, color):
         sql = 'INSERT INTO category(name, color) VALUES ("{}", "{}");'.format(name, color)
@@ -76,3 +90,14 @@ class Database:
         sql1 = f'DELETE FROM category WHERE name = "{cats[choose][0]}";'
         self.mouse.execute(sql1)
         self.con.commit()
+
+    def insert_goal(self, objective, month, year, category):
+        sql = 'INSERT INTO goal(objective, month, year, cate_ref) VALUES("{}", "{}", "{}", "{}")' \
+            .format(objective, month, year, category)
+        try:
+            self.mouse.execute(sql)
+            self.con.commit()
+        except:
+            pass
+        else:
+            return 1

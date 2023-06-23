@@ -38,35 +38,38 @@ class Main_window:
         self.frame2 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
         self.frame2.place(relx=0.08, rely=0.76, relwidth=0.84, relheight=0.22)
         self.frame3 = Frame(self.frame1, bd=1, bg=colors(3), highlightbackground=colors(4), highlightthickness=2)
-        self.frame3.place(relx=0.20, rely=0.45, relwidth=0.60, relheight=0.52)
+        self.frame3.place(relx=0.20, rely=0.38, relwidth=0.60, relheight=0.61)
 
     def button(self):
         self.category = Button(self.frame1, text='Gerenciar categorias', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'), command=Category_window)
-        self.category.place(relx=0.225, rely=0.47, relwidth=0.55)
+        self.category.place(relx=0.225, rely=0.40, relwidth=0.55)
         self.category = Button(self.frame1, text='Consultar agenda', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'),
                                command=Schedule_window)
-        self.category.place(relx=0.225, rely=0.57, relwidth=0.55)
+        self.category.place(relx=0.225, rely=0.50, relwidth=0.55)
         self.category = Button(self.frame1, text='Definir metas', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'), command=Goal_window)
-        self.category.place(relx=0.225, rely=0.67, relwidth=0.55)
+        self.category.place(relx=0.225, rely=0.60, relwidth=0.55)
+        self.category = Button(self.frame1, text='Escolher regras', bd=2, bg=colors(4), fg=colors(1),
+                               font=('Calibri', 10, 'bold'), command=Goal_window)
+        self.category.place(relx=0.225, rely=0.70, relwidth=0.55)
         self.category = Button(self.frame1, text='Feedback/FAQ', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'))
-        self.category.place(relx=0.225, rely=0.77, relwidth=0.55)
+        self.category.place(relx=0.225, rely=0.80, relwidth=0.55)
         self.category = Button(self.frame1, text='LinkedIn do desenvolvedor', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'), command=lambda: webbrowser.open('https://www.linkedin.com/in/gleydsonfreitas/', new=2))
-        self.category.place(relx=0.225, rely=0.87, relwidth=0.55)
+        self.category.place(relx=0.225, rely=0.90, relwidth=0.55)
 
     def additional(self):
         self.label1 = Label(self.frame1,
                             text=f'BEM VINDO(A) AO \nAPLICATIVO QUE TE AJUDA A\nORGANIZAR SUA \nVIDA ACADÊMICA!',
                             fg=colors(5), bg=colors(2),
                             font=('Calibri', 15, 'bold'))
-        self.label1.place(relx=0.05, rely=0.02)
+        self.label1.place(relx=0.05, rely=0.01)
         self.label2 = Label(self.frame1, text='Selecione uma das opções abaixo', fg=colors(5), bg=colors(2),
                             font=('Calibri', 12))
-        self.label2.place(relx=0.12, rely=0.37)
+        self.label2.place(relx=0.12, rely=0.30)
 
 
 class Schedule_window:
@@ -316,8 +319,8 @@ class Remove_elem_window:
 class Goal_window:
     def __init__(self):
         window5 = Toplevel()
-        self.frame1, self.label1, self.label2 = None, None, None
-        self.label3 = None
+        self.frame1 = None
+        self.var, self.category, self.month, self.year = StringVar(), StringVar(), StringVar(), StringVar()
         self.window = window5
         self.screen()
         self.frame()
@@ -339,33 +342,34 @@ class Goal_window:
         self.frame1.place(relx=0.04, rely=0.04, relwidth=0.92, relheight=0.92)
 
     def label(self):
-        self.label1 = Label(self.frame1, text='Escolha a categoria', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
-        self.label1.place(relx=0.10, rely=0.05)
-        self.label2 = Label(self.frame1, text='Tempo de estudo mensal', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
-        self.label2.place(relx=0.10, rely=0.30)
-        self.label3 = Label(self.frame1, text='em minutos', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
-        self.label3.place(relx=0.21, rely=0.45)
+        label1 = Label(self.frame1, text='Escolha a categoria', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label1.place(relx=0.10, rely=0.05)
+        label2 = Label(self.frame1, text='Tempo de estudo mensal', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label2.place(relx=0.10, rely=0.30)
+        label3 = Label(self.frame1, text='em minutos', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label3.place(relx=0.21, rely=0.45)
         label4 = Label(self.frame1, text='Escolha o mês e o ano', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
         label4.place(relx=0.10, rely=0.60)
 
     def button(self):
         content_combo = insert_combo()
-        combo = ttk.Combobox(self.frame1, values=content_combo, state='readonly', background=colors(5))
+        combo = ttk.Combobox(self.frame1, values=content_combo, state='readonly', background=colors(5), textvariable=self.category)
         combo.place(relx=0.10, rely=0.20)
-        entry = Entry(self.frame1, bg=colors(5))
+        entry = Entry(self.frame1, bg=colors(5), textvariable=self.var)
         entry.place(relx=0.10, rely=0.45, relwidth=0.10)
         mon = month_combo()
-        combo2 = ttk.Combobox(self.frame1, values=mon, state='readonly', background=colors(5))
+        combo2 = ttk.Combobox(self.frame1, values=mon, state='readonly', background=colors(5), textvariable=self.month)
         combo2.set(mon[month - 1])
         combo2.place(relx=0.10, rely=0.70, relwidth=0.30)
         yea = year_combo()
-        combo3 = ttk.Combobox(self.frame1, values=yea, state='readonly', background=colors(5))
+        combo3 = ttk.Combobox(self.frame1, values=yea, state='readonly', background=colors(5), textvariable=self.year)
         combo3.set(yea[year - 2023])
         combo3.place(relx=0.45, rely=0.70, relwidth=0.20)
-        button = Button(self.frame1, text='Registrar meta',
-                        bg=colors(2), fg=colors(5), font=('Calibri', 12, 'bold'))
+        button = Button(self.frame1, text='Registrar meta', bg=colors(2), fg=colors(5),
+                        font=('Calibri', 12, 'bold'), command=lambda: insert_goal(self.var, entry, self.window, self.month.get(), self.year.get()
+                                                                                  , self.category.get()))
         button.place(relx=0.30, relwidth=0.40, rely=0.85)
 
 
-
 a = Main_window()
+base.disconnect()

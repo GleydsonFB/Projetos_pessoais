@@ -11,32 +11,70 @@ day = date.day
 bd = Database()
 
 
-def date_month():
-    match month:
-        case 1:
-            return 'janeiro', 31, day
-        case 2:
-            return 'fevereiro', 28, day
-        case 3:
-            return 'março', 31, day
-        case 4:
-            return 'abril', 30, day
-        case 5:
-            return 'maio', 31, day
-        case 6:
-            return 'junho', 30, day
-        case 7:
-            return 'julho', 31, day
-        case 8:
-            return 'agosto', 31, day
-        case 9:
-            return 'setembro', 30, day
-        case 10:
-            return 'outubro', 31, day
-        case 11:
-            return 'novembro', 30, day
-        case 12:
-            return 'dezembro', 31, day
+class Issue_date:
+    def __init__(self):
+        self.months = month
+
+    def date_month(self, *back_time):
+        if len(back_time) == 0:
+            match self.months:
+                case 1:
+                    return 'janeiro', 31, day
+                case 2:
+                    return 'fevereiro', 28, day
+                case 3:
+                    return 'março', 31, day
+                case 4:
+                    return 'abril', 30, day
+                case 5:
+                    return 'maio', 31, day
+                case 6:
+                    return 'junho', 30, day
+                case 7:
+                    return 'julho', 31, day
+                case 8:
+                    return 'agosto', 31, day
+                case 9:
+                    return 'setembro', 30, day
+                case 10:
+                    return 'outubro', 31, day
+                case 11:
+                    return 'novembro', 30, day
+                case 12:
+                    return 'dezembro', 31, day
+        else:
+            self.months -= back_time
+            match self.months:
+                case 1:
+                    return 'janeiro', 31, day
+                case 2:
+                    return 'fevereiro', 28, day
+                case 3:
+                    return 'março', 31, day
+                case 4:
+                    return 'abril', 30, day
+                case 5:
+                    return 'maio', 31, day
+                case 6:
+                    return 'junho', 30, day
+                case 7:
+                    return 'julho', 31, day
+                case 8:
+                    return 'agosto', 31, day
+                case 9:
+                    return 'setembro', 30, day
+                case 10:
+                    return 'outubro', 31, day
+                case 11:
+                    return 'novembro', 30, day
+                case 12:
+                    return 'dezembro', 31, day
+
+    def day_registry(self):
+        list_day = []
+        for days in range(1, self.date_month()[1] + 1):
+            list_day.append(str(days))
+        return list_day
 
 
 def colors(scale):
@@ -59,6 +97,17 @@ def max_char(limit, arg, field, parent):
         messagebox.showerror('Erro', f'O campo em questão só permite {limit} caracteres', parent=parent)
         field.delete(0, END)
 
+
+def max_comment(limit, arg, field, parent, days, months, years):
+    if len(arg) >= limit:
+        messagebox.showerror('Erro', f'O campo em questão só permite {limit} caracteres', parent=parent)
+        field.delete(1.0, END)
+    else:
+        bd.connect()
+        bd.insert_comment(arg, days, months, years)
+        bd.disconnect()
+        messagebox.showinfo('Sucesso!', 'comentário inserido no dia desejado!', parent=parent)
+        field.delete(1.0, END)
 
 def show_tree(treeview):
     bd.connect()

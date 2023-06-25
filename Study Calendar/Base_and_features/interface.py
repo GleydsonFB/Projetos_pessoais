@@ -9,6 +9,7 @@ color_helper = Complementar_tree()
 base = Database()
 base.connect()
 base.table_create()
+dates = Issue_date()
 
 
 class Main_window:
@@ -102,10 +103,13 @@ class Schedule_window:
         self.frame2.place(relx=0.04, rely=0.06, relwidth=0.92, relheight=0.88)
 
     def label(self):
-        self.label1 = Label(self.frame1, text=f'Agenda de {date_month()[0]}/{year}!', fg=colors(5),
+        self.label1 = Label(self.frame1, text=f'Agenda de {dates.date_month()[0]}/{year}!', fg=colors(5),
                             font=('Calibri', 15, 'bold'),
                             bg=colors(2))
         self.label1.place(relx=0.35, relwidth=0.30)
+        label2 = Label(self.frame1, text='Registre uma folga para o dia', fg=colors(5), font=('Calibri', 11, 'bold'),
+                       bg=colors(2))
+        label2.place(relx=0.70, rely=0.945)
 
     def button(self):
         #images for buttons
@@ -123,6 +127,12 @@ class Schedule_window:
         button2 = Button(self.frame1, text='Apagar estudo', fg=colors(5), font=('Calibri', 11, 'bold'),
                          bg=colors(2), command=Remove_elem_window)
         button2.place(relx=0.50, rely=0.945, relwidth=0.10)
+        button5 = Button(self.frame1, text='Inserir folga', fg=colors(5), font=('Calibri', 9, 'bold'),
+                         bg=colors(2))
+        button5.place(relx=0.89, rely=0.945, relwidth=0.08)
+        button6 = Button(self.frame1, text='Inserir comentário', fg=colors(5), font=('Calibri', 9, 'bold'),
+                         bg=colors(2), command=Commentary_window)
+        button6.place(relx=0.03, rely=0.945, relwidth=0.10)
 
         #custom buttons
         button3 = Button(self.window, image=self.bt_left, bg=colors(2), borderwidth=0)
@@ -134,7 +144,7 @@ class Schedule_window:
         self.all_days, self.number_day, self.name_day = [], [], []
         control, relx, rely = 0, 0.02, 0.02
         max_width = 100
-        for days in range(1, date_month()[1] + 1):
+        for days in range(1, dates.date_month()[1] + 1):
             self.number_day.append(days)
             self.name_day.append(days)
         for number in range(len(self.number_day)):
@@ -157,6 +167,12 @@ class Schedule_window:
                     max_width = 100
                     rely += 0.24
                     relx = 0.02
+
+            #combo days for day offs
+            list_day = dates.day_registry()
+            combo1 = ttk.Combobox(self.frame1, values=list_day, state='readonly', background=colors(5))
+            combo1.set(list_day[dates.date_month()[2] - 1])
+            combo1.place(relx=0.85, rely=0.95, relwidth=0.03)
 
 
 class Category_window:
@@ -272,11 +288,9 @@ class Registry_window:
         button.place(relx=0.375, rely=0.80, relwidth=0.25)
 
         #date registry
-        list_day = []
-        for days in range(1, date_month()[1] + 1):
-            list_day.append(str(days))
+        list_day = dates.day_registry()
         combo1 = ttk.Combobox(self.frame1, values=list_day, state='readonly', background=colors(5))
-        combo1.set(list_day[date_month()[2] - 1])
+        combo1.set(list_day[dates.date_month()[2] - 1])
         combo1.place(relx=0.25, rely=0.60, relwidth=0.15)
 
     def label(self):
@@ -287,8 +301,55 @@ class Registry_window:
         label2.place(relx=0.125, rely=0.25, relwidth=0.75)
         label3 = Label(self.frame1, text='Determine a data do estudo', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
         label3.place(relx=0.15, rely=0.45)
-        label4 = Label(self.frame1, text=f'/{date_month()[0]}/{year}', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label4 = Label(self.frame1, text=f'/{dates.date_month()[0]}/{year}', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
         label4.place(relx=0.40, rely=0.60)
+
+
+class Commentary_window:
+    def __init__(self):
+        window3 = Toplevel()
+        self.frame1 = None
+        self.var = StringVar()
+        self.window = window3
+        self.screen()
+        self.frame()
+        self.insert_comment()
+        self.label()
+        self.window.mainloop()
+
+    def screen(self):
+        self.window.title('Comentar estudo')
+        self.window.configure(background=colors(1))
+        width = (self.window.winfo_screenwidth() * 0.5)
+        self.window.geometry(f'321x321+{width:.0f}+50')
+        self.window.maxsize(width=321, height=321)
+        self.window.minsize(width=321, height=321)
+        self.window.resizable(False, False)
+        self.window.iconbitmap('images/girl.ico')
+
+    def frame(self):
+        self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
+        self.frame1.place(relx=0.04, rely=0.06, relwidth=0.92, relheight=0.88)
+
+    def insert_comment(self):
+        #combo and entry
+        day_list = dates.day_registry()
+        combo = ttk.Combobox(self.frame1, values=day_list, state='readonly', background=colors(5))
+        combo.set(dates.day_registry()[day - 1])
+        combo.place(relx=0.425, rely=0.18, relwidth=0.15)
+        comment_text = Text(self.frame1, bg=colors(5), font=('calibri', 10), foreground='green')
+        comment_text.place(relx=0.10, rely=0.38, relwidth=0.80, relheight=0.41)
+        button = Button(self.frame1, text='Inserir',
+                        command=lambda: max_comment(254, comment_text.get(1.0, 'end-1c'), comment_text, self.window, combo.get(), dates.date_month()[0], year),
+                        bg=colors(2), fg=colors(5), font=('Calibri', 13, 'bold'))
+        button.place(relx=0.375, rely=0.80, relwidth=0.25)
+
+    def label(self):
+        label1 = Label(self.frame1, text='Escolha o dia para registrar o comentário', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label1.place(relx=0.00, rely=0.05)
+        label2 = Label(self.frame1, text='Faça seu comentário', font=('Calibri', 12, 'bold'), fg=colors(5),
+                       bg=colors(2))
+        label2.place(relx=0.125, rely=0.25, relwidth=0.75)
 
 
 class Remove_elem_window:

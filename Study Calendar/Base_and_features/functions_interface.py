@@ -101,7 +101,6 @@ def max_char(limit, arg, field, parent):
 def max_comment(limit, arg, field, parent, days, months, years):
     if len(arg) >= limit:
         messagebox.showerror('Erro', f'O campo em questão só permite {limit} caracteres', parent=parent)
-        field.delete(1.0, END)
     else:
         bd.connect()
         bd.insert_comment(arg, days, months, years)

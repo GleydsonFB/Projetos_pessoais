@@ -53,7 +53,7 @@ class Main_window:
                                font=('Calibri', 10, 'bold'), command=Goal_window)
         self.category.place(relx=0.225, rely=0.60, relwidth=0.55)
         self.category = Button(self.frame1, text='Escolher regras', bd=2, bg=colors(4), fg=colors(1),
-                               font=('Calibri', 10, 'bold'), command=Goal_window)
+                               font=('Calibri', 10, 'bold'), command=Rule_window)
         self.category.place(relx=0.225, rely=0.70, relwidth=0.55)
         self.category = Button(self.frame1, text='Feedback/FAQ', bd=2, bg=colors(4), fg=colors(1),
                                font=('Calibri', 10, 'bold'))
@@ -94,6 +94,7 @@ class Schedule_window:
         altura = self.window.winfo_screenheight()
         self.window.geometry(f'{largura}x{altura}')
         self.window.state('zoomed')
+        self.window.minsize(width=largura, height=altura)
         self.window.iconbitmap('images/girl.ico')
 
     def frame(self):
@@ -203,7 +204,7 @@ class Category_window:
 
     def tree_view(self):
         style = ttk.Style()
-        style.theme_use('clam')
+        style.theme_use('classic')
         style.configure("Treeview.Heading", background=colors(5), foreground=colors(1))
         style.configure('Treeview', foreground='black', fieldbackground=colors(1), font=('calibri', 12, 'bold'))
         style.map('Treeview', background=[('selected', colors(3))])
@@ -360,6 +361,8 @@ class Remove_elem_window:
         self.window = window4
         self.screen()
         self.frame()
+        self.label_button()
+        self.tree_view()
         self.window.mainloop()
 
     def screen(self):
@@ -375,6 +378,38 @@ class Remove_elem_window:
     def frame(self):
         self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
         self.frame1.place(relx=0.04, rely=0.06, relwidth=0.92, relheight=0.88)
+
+    def label_button(self):
+        label = Label(self.frame1, text='escolha o dia do mês', font=('Calibri', 12, 'bold'), fg=colors(5), bg=colors(2))
+        label.place(relx=0.25, rely=0.06, relwidth=0.50)
+        label1 = Label(self.frame1, text=f'/{dates.date_month()[0]}/{year}', font=('Calibri', 12, 'bold'), fg=colors(5),
+                       bg=colors(2))
+        label1.place(relx=0.40, rely=0.20)
+        list_day = dates.day_registry()
+        combo1 = ttk.Combobox(self.frame1, values=list_day, state='readonly', background=colors(5))
+        combo1.set(list_day[dates.date_month()[2] - 1])
+        combo1.place(relx=0.25, rely=0.20, relwidth=0.15)
+        button = Button(self.frame1, text='Buscar', bg=colors(2), fg=colors(5), font=('Calibri', 10, 'bold'))
+        button.place(relx=0.40, rely=0.30, relwidth=0.20)
+
+    def tree_view(self):
+        style = ttk.Style()
+        style.theme_use('classic')
+        style.configure("Treeview.Heading", background=colors(3), foreground=colors(1))
+        style.configure('Treeview', fieldbackground=colors(5), font=('calibri', 12, 'bold'))
+        style.map('Treeview', background=[('selected', colors(1))])
+        style.configure('Scrollbar')
+        treeview = ttk.Treeview(self.frame1, height=3, columns=('Duração', 'Categoria'), selectmode='browse',
+                                show='headings')
+        treeview.heading('#0', text='')
+        treeview.heading('Duração', text='Duração')
+        treeview.heading('Categoria', text='Categoria')
+        treeview.column('#0', width=1, minwidth=1, stretch=NO)
+        treeview.column('Duração', width=50, minwidth=50, stretch=NO)
+        treeview.column('Categoria', width=211, minwidth=210, stretch=NO, anchor='c')
+        treeview.place(relx=0.04, rely=0.40, relwidth=0.92, relheight=0.50)
+        button_tree = Button(self.frame1, text='Remover registro', bg=colors(2), fg=colors(5), font=('Calibri', 10, 'bold'))
+        button_tree.place(relx=0.30, rely=0.905, relwidth=0.40)
 
 
 class Goal_window:
@@ -392,7 +427,7 @@ class Goal_window:
     def screen(self):
         self.window.title('Definir metas')
         self.window.configure(background=colors(1))
-        self.window.geometry(f'300x300+725+50')
+        self.window.geometry(f'300x300+400+50')
         self.window.maxsize(width=321, height=321)
         self.window.minsize(width=300, height=300)
         self.window.resizable(False, False)
@@ -431,6 +466,46 @@ class Goal_window:
                                                                                   , self.category.get()))
         button.place(relx=0.30, relwidth=0.40, rely=0.85)
 
+
+class Rule_window:
+    def __init__(self):
+        window5 = Toplevel()
+        self.frame1, self.frame_rules, self.frame_conditions, self.frame4 = None, None, None, None
+        self.var, self.category, self.month, self.year = StringVar(), StringVar(), StringVar(), StringVar()
+        self.window = window5
+        self.screen()
+        self.frame()
+        self.label()
+        self.window.mainloop()
+
+    def screen(self):
+        self.window.title('Estabelecer regras')
+        self.window.configure(background=colors(1))
+        self.window.geometry(f'600x600+725+50')
+        self.window.maxsize(width=600, height=600)
+        self.window.minsize(width=600, height=600)
+        self.window.resizable(False, False)
+        self.window.iconbitmap('images/girl.ico')
+
+    def frame(self):
+        self.frame1 = Frame(self.window, bd=1, bg=colors(2), highlightbackground=colors(3), highlightthickness=2)
+        self.frame1.place(relx=0.04, rely=0.04, relwidth=0.92, relheight=0.92)
+        self.frame_rules = Frame(self.frame1, bd=1, bg=colors(5), highlightbackground=colors(2), highlightthickness=2)
+        self.frame_rules.place(relx=0.02, rely=0.04, relwidth=0.45, relheight=0.92)
+        self.frame_conditions = Frame(self.frame1, bd=1, bg=colors(5), highlightbackground=colors(2), highlightthickness=2)
+        self.frame_conditions.place(relx=0.53, rely=0.04, relwidth=0.45, relheight=0.92)
+        self.frame4 = Frame(self.frame1, bd=1, bg=colors(1), highlightbackground=colors(2), highlightthickness=2)
+        self.frame4.place(relx=0.45, rely=0.04, relwidth=0.09, relheight=1)
+
+    def label(self):
+        label = Label(self.window, text='Regras e condições',  bg=colors(2), fg=colors(5), font=('Calibri', 12, 'bold'))
+        label.place(relx=0.375, rely=0.045, relwidth=0.25, relheight=0.03)
+        label_rule1 = Label(self.frame_rules, text='Escolha o modelo de estudo ideal', bg=colors(5), fg=colors(2),
+                            font=('Calibri', 11, 'bold'))
+        label_rule1.place(relx=0.02)
+        label_condition1 = Label(self.frame_conditions, text='Defina a efetividade do estudo', bg=colors(5), fg=colors(2),
+                                 font=('Calibri', 11, 'bold'))
+        label_condition1.place(relx=0.10, relwidth=0.80)
 
 a = Main_window()
 base.disconnect()

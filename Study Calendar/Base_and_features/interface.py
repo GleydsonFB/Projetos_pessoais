@@ -471,11 +471,15 @@ class Rule_window:
     def __init__(self):
         window5 = Toplevel()
         self.frame1, self.frame_rules, self.frame_conditions, self.frame4 = None, None, None, None
-        self.var, self.category, self.month, self.year = StringVar(), StringVar(), StringVar(), StringVar()
+        self.var, self.text, self.text1 = IntVar(), StringVar(), StringVar()
+        self.year, self.month, self.category = StringVar(), StringVar(), StringVar()
+        self.effectivity, self.yearc, self.monthc = StringVar(), StringVar(), StringVar()
         self.window = window5
         self.screen()
         self.frame()
         self.label()
+        self.radio_combo()
+        self.button_entry()
         self.window.mainloop()
 
     def screen(self):
@@ -500,12 +504,100 @@ class Rule_window:
     def label(self):
         label = Label(self.window, text='Regras e condições',  bg=colors(2), fg=colors(5), font=('Calibri', 12, 'bold'))
         label.place(relx=0.375, rely=0.045, relwidth=0.25, relheight=0.03)
-        label_rule1 = Label(self.frame_rules, text='Escolha o modelo de estudo ideal', bg=colors(5), fg=colors(2),
+
+        #labels rule frame
+        label_rule1 = Label(self.frame_rules, text='Escolha o modelo de estudo ideal\n(padrão ou personalizado)', bg=colors(5), fg=colors(2),
                             font=('Calibri', 11, 'bold'))
-        label_rule1.place(relx=0.02)
-        label_condition1 = Label(self.frame_conditions, text='Defina a efetividade do estudo', bg=colors(5), fg=colors(2),
+        label_rule1.place(relx=0.02, rely=0.05)
+        label_rule2 = Label(self.frame_rules, text='Opções padrão', bg=colors(5), fg=colors(2), font=('Calibri', 11, 'bold'))
+        label_rule2.place(relx=0.10, rely=0.17)
+        label_rule3 = Label(self.frame_rules, text='Crie seu próprio formato', bg=colors(5), fg=colors(2), font=('Calibri', 11, 'bold'))
+        label_rule3.place(relx=0.10, rely=0.52)
+        label_rule4 = Label(self.frame_rules, text='X', bg=colors(5), fg=colors(2), font=('Calibri', 11, 'bold'))
+        label_rule4.place(relx=0.35, rely=0.58)
+        label_rule5 = Label(self.frame_rules, text='Estudos', bg=colors(5), fg=colors(2), font=('Calibri', 11, 'bold'))
+        label_rule5.place(relx=0.09, rely=0.62)
+        label_rule6 = Label(self.frame_rules, text='Folgas', bg=colors(5), fg=colors(2), font=('Calibri', 11, 'bold'))
+        label_rule6.place(relx=0.46, rely=0.62)
+        label_rule7 = Label(self.frame_rules, text='Escolha o mês e ano da rotina', bg=colors(5), fg=colors(2),
+                            font=('Calibri', 11, 'bold'))
+        label_rule7.place(relx=0.04, rely=0.77)
+
+        #labels condition frame
+        label_condition1 = Label(self.frame_conditions, text='Defina a efetividade do estudo\n\n*Dúvidas sobre os nomes e siglas?\nConsulte a FAQ!',
+                                 bg=colors(5), fg=colors(2),
                                  font=('Calibri', 11, 'bold'))
-        label_condition1.place(relx=0.10, relwidth=0.80)
+        label_condition1.place(relx=0.05, rely=0.05)
+        label_condition2 = Label(self.frame_conditions, text='Primeiro defina uma categoria', bg=colors(5), fg=colors(2),
+                                 font=('Calibri', 11, 'bold'))
+        label_condition2.place(relx=0.10, rely=0.25)
+        label_condition3 = Label(self.frame_conditions, text='Agora informe a porcentagem\nda efetividade', bg=colors(5),
+                                 fg=colors(2), font=('Calibri', 11, 'bold'))
+        label_condition3.place(relx=0.10, rely=0.45)
+        label_condition4 = Label(self.frame_conditions, text='%', bg=colors(5), fg=colors(2), font=('Calibri', 11, 'bold'))
+        label_condition4.place(relx=0.57, rely=0.565)
+        label_condition5 = Label(self.frame_conditions, text='Escolha também o mês e ano\nde validade', bg=colors(5), fg=colors(2),
+                                 font=('Calibri', 11, 'bold'))
+        label_condition5.place(relx=0.10, rely=0.70)
+
+    def radio_combo(self):
+        padrao1 = Radiobutton(self.frame_rules, text='5x2 (ExF)', bg=colors(5), fg=colors(2), font=('Calibri', 10, 'bold'),
+                              variable=self.var, value=1)
+        padrao1.place(relx=0.15, rely=0.23)
+        padrao2 = Radiobutton(self.frame_rules, text='6x1 (ExF)', bg=colors(5), fg=colors(2), font=('Calibri', 10, 'bold'),
+                              variable=self.var, value=2)
+        padrao2.place(relx=0.15, rely=0.29)
+        padrao3 = Radiobutton(self.frame_rules, text='7x0 (ExF)', bg=colors(5), fg=colors(2), font=('Calibri', 10, 'bold'),
+                              variable=self.var, value=3)
+        padrao3.place(relx=0.15, rely=0.35)
+
+        #combos_rule
+        mon = month_combo()
+        combo2 = ttk.Combobox(self.frame_rules, values=mon, state='readonly', background=colors(5), textvariable=self.month)
+        combo2.set(mon[month - 1])
+        combo2.place(relx=0.10, rely=0.83, relwidth=0.30)
+        yea = year_combo()
+        combo3 = ttk.Combobox(self.frame_rules, values=yea, state='readonly', background=colors(5), textvariable=self.year)
+        combo3.set(yea[year - 2023])
+        combo3.place(relx=0.45, rely=0.83, relwidth=0.20)
+
+        #combo_condition
+        content_category = insert_combo()
+        combo = ttk.Combobox(self.frame_conditions, values=content_category, state='readonly', background=colors(5),
+                             textvariable=self.category)
+        combo.place(relx=0.20, rely=0.35)
+        mon = month_combo()
+        combo2 = ttk.Combobox(self.frame_conditions, values=mon, state='readonly', background=colors(5), textvariable=self.monthc)
+        combo2.set(mon[month - 1])
+        combo2.place(relx=0.20, rely=0.80, relwidth=0.30)
+        yea = year_combo()
+        combo3 = ttk.Combobox(self.frame_conditions, values=yea, state='readonly', background=colors(5), textvariable=self.yearc)
+        combo3.set(yea[year - 2023])
+        combo3.place(relx=0.55, rely=0.80, relwidth=0.20)
+
+    def button_entry(self):
+        #content for rule frame
+        entry_rule1 = Entry(self.frame_rules, bg=colors(1), fg=colors(5), textvariable=self.text)
+        entry_rule1.place(relx=0.15, rely=0.58, relwidth=0.10)
+        entry_rule2 = Entry(self.frame_rules, bg=colors(1), fg=colors(5), textvariable=self.text1)
+        entry_rule2.place(relx=0.50, rely=0.58, relwidth=0.10)
+        button_rule1 = Button(self.frame_rules, text='Aplicar padrão', bg=colors(2), fg=colors(5),
+                              font=('Calibri', 9, 'bold'))
+        button_rule1.place(relx=0.20, rely=0.43)
+        button_rule2 = Button(self.frame_rules, text='Aplicar criação', bg=colors(2), fg=colors(5),
+                              font=('Calibri', 9, 'bold'))
+        button_rule2.place(relx=0.20, rely=0.70)
+        button_rule3 = Button(self.frame_rules, text='Registrar escolhas', bg=colors(2), fg=colors(5),
+                              font=('Calibri', 9, 'bold'))
+        button_rule3.place(relx=0.18, rely=0.92)
+
+        #content for condition frame
+        entry_condition1 = Entry(self.frame_conditions, bg=colors(1), fg=colors(5), textvariable=self.effectivity)
+        entry_condition1.place(relx=0.45, rely=0.57, relwidth=0.10)
+        button_condition = Button(self.frame_conditions, text='Capturar efetividade', bg=colors(2), fg=colors(5),
+                                  font=('Calibri', 9, 'bold'))
+        button_condition.place(relx=0.25, rely=0.90)
+
 
 a = Main_window()
 base.disconnect()

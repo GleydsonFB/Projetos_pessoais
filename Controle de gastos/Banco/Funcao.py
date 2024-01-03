@@ -3,6 +3,7 @@ from .Bd import Conector
 import datetime
 data = datetime.datetime.now()
 ano = data.date()
+from prettytable import PrettyTable
 
 
 def continuar(contagem, mensagem):
@@ -34,8 +35,10 @@ def escolher_mes():
 
 def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
     conexao = con
+    table = PrettyTable()
     if conexao.is_connected():
         if mostrar_id is True and ano != 'nenhum':
+            table.field_names = ['ID', 'Valor', 'Total da compra (0 se não for parcelada)', 'Categoria', 'Ano', 'Nome da compra']
             sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
                   f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes} AND V.ano = {ano};'
             cursor = conexao.cursor()
@@ -50,10 +53,11 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 cursor.execute(sql)
                 print('\nConfira os detalhes abaixo:\n')
                 for c1, c2, c3, c4, c5, c6 in cursor:
-                    print(f'ID:{c1}\tValor: R${c2}\t\tTotal da compra (0 se não for parcelada): R${c3}\tCategoria: {c4}\tAno: {c5}\tNome da compra: {c6}.')
-                print('\n')
+                    table.add_row([c1, f"R${c2}", f"R${c3}", c4, c5, c6])
+                print(table)
                 return execucao
         elif mostrar_id is False and ano != 'nenhum':
+            table.field_names = ['Valor', 'Total da compra (0 se não for parcelada)', 'Categoria', 'Ano', 'Nome da compra']
             sql = f'SELECT V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
                   f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes} AND V.ano = {ano};'
             cursor = conexao.cursor()
@@ -68,9 +72,11 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 cursor.execute(sql)
                 print('\nConfira os dados abaixo:\n')
                 for c1, c2, c3, c4, c5 in cursor:
-                    print(f'Valor: R${c1}\t\tTotal da compra(0 se não for parcelada): R${c2}\t  Categoria: {c3}\tAno: {c4}\tNome da compra: {c5}.')
+                    table.add_row([f'R${c1}', f'R${c2}', c3, c4, c5])
+                print(table)
                 return execucao
         else:
+            table.field_names = ['ID', 'Valor', 'Total da compra (0 se não for parcelada)', 'Categoria', 'Ano', 'Nome da compra']
             sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
                   f'ON V.compra_total = C.id_compra INNER JOIN categoria CA ON V.categoria = CA.id_cat WHERE V.mes = {mes};'
             cursor = conexao.cursor()
@@ -85,13 +91,16 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 cursor.execute(sql)
                 print('\nConfira os detalhes abaixo:\n')
                 for c1, c2, c3, c4, c5, c6 in cursor:
-                    print(f'ID:{c1}\tValor: R${c2}\t\tTotal da compra (0 se não for parcelada): R${c3}\t  Categoria: {c4}\t Ano {c5}\t Nome da compra: {c6}.')
+                    table.add_row([c1, f'R${c2}', f'R${c3}', c4, c5, c6])
+                print(table)
                 return execucao
     else:
         print('Sem conexão com servidor.')
 
 
 def apresentar_salarios(con, mes, gasto=False):
+    table = PrettyTable()
+    table.field_names = ['ID', 'Salário', 'Ano']
     conexao = con
     if conexao.is_connected():
         sql = f'SELECT id_sal, pagamento, ano FROM salario WHERE mes = {mes}'
@@ -107,7 +116,8 @@ def apresentar_salarios(con, mes, gasto=False):
             cursor.execute(sql)
             print(f'\nConfira os detalhes abaixo:\n')
             for c1, c2, c3 in cursor:
-                print(f'ID:{c1}\t\tSalário: R${c2}\t\tAno: {c3}')
+                table.add_row([c1, f'R${c2}', c3])
+            print(table)
             return ides
 
 
@@ -126,14 +136,18 @@ def apresentar_rendimentos(con, mes, gasto=False):
         else:
             cursor.execute(sql)
             print('\nconfira os detalhes abaixo:\n')
+            table = PrettyTable()
+            table.field_names = ['ID', 'Valor', 'Ano']
             for c1, c2, c3 in cursor:
-                print(f'ID:{c1}\t\tValor: R${c2}\t\tAno: {c3}')
+                table.add_row([c1, c2, c3])
+            print(table)
             return ides
 
 
 def apresentar_categorias(con, nome='nenhum', mes=ano.month, an=ano.year):
     conexao = con
     ide = 0
+    table = PrettyTable()
     if conexao.is_connected():
         if nome == 'nenhum':
             sql = 'SELECT id_cat, nome, limite_gasto, minimo_gasto FROM categoria;'
@@ -146,10 +160,12 @@ def apresentar_categorias(con, nome='nenhum', mes=ano.month, an=ano.year):
                 print('Não há categorias cadastradas.')
                 return 0
             else:
+                table.field_names = ['ID', 'Nome', 'Limite', 'Gasto mínimo']
                 cursor.execute(sql)
                 print('\nSegue os dados das atuais categorias:\n')
                 for c1, c2, c3, c4 in cursor:
-                    print(f'ID: {c1}\tNome: {c2}\t\tLimite: R${c3}\t\tGasto mínimo: R${c4}.')
+                    table.add_row([c1, c2, f'R${c3}', f'R${c4}'])
+                print(table)
                 return ides
         else:
             listagem = []
@@ -171,9 +187,11 @@ def apresentar_categorias(con, nome='nenhum', mes=ano.month, an=ano.year):
                 limpa_tela()
                 return 0
             else:
+                table.field_names = ['Valor', 'Nome da compra', 'Total da compra(0 se não for parcelada)']
                 print(f'Confira os detalhes de gasto da categoria {nome} para o {mes}° mês de {an} abaixo:')
                 for c1, c2, c3, c4 in cursor:
-                    print(f'Valor: R${c1}\t\tTotal da compra(0 se não for parcelada): R${c3} Nome da compra: {c2}.')
+                    table.add_row([f'R${c1}', c2, f'R${c3}'])
+                print(table)
                 return listagem
     else:
         print('Sem conexão com o servidor.')

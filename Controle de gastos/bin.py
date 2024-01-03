@@ -1,6 +1,7 @@
 from time import sleep
 from Banco import Bd, Ajustes, Funcao
 import datetime
+
 data = datetime.datetime.now()
 ano = data.date()
 mes_atual = int(ano.month)
@@ -353,8 +354,12 @@ while True:
                                 else:
                                     deleta = Funcao.escolher_compra_edit(bd.conectar(),
                                                                          'Digite o ID do salário que será deletado: ', tabela)
-                                    print(f'Salário de ID({deleta}) será deletado. ')
-                                    c = Funcao.continuar(1, 'continuar? ')
+                                    if deleta == 'n':
+                                        Ajustes.limpa_tela()
+                                        break
+                                    else:
+                                        print(f'Salário de ID({deleta}) será deletado. ')
+                                        c = Funcao.continuar(1, 'continuar? ')
                                     if c == 1:
                                         salarios.deletar_salario(deleta)
                                         Ajustes.limpa_tela(4)
@@ -467,8 +472,12 @@ while True:
                                     deleta = Funcao.escolher_compra_edit(bd.conectar(),
                                                                          'Digite o ID do rendimento que será deletado: ',
                                                                          tabela)
-                                    print(f'Rendimento de ID({deleta}) será deletado. ')
-                                    c = Funcao.continuar(1, 'continuar? ')
+                                    if deleta == 'n':
+                                        Ajustes.limpa_tela()
+                                        break
+                                    else:
+                                        print(f'Rendimento de ID({deleta}) será deletado. ')
+                                        c = Funcao.continuar(1, 'continuar? ')
                                     if c == 1:
                                         salarios.deletar_rendimento(deleta)
                                         Ajustes.limpa_tela(4)

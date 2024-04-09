@@ -1,42 +1,118 @@
 import datetime
-import mysql.connector
+import sqlite3
 
 data = datetime.datetime.now()
 ano = data.date()
 
 
 class Conector:
-    def __init__(self, host, user, pword, bd):
-        self.host = host
-        self.user = user
-        self.pasw = pword
-        self.bd = bd
-        self.conexao = mysql.connector.connect(host=self.host, database=self.bd, user=self.user, password=self.pasw,
-                                               buffered=True)
-        self.cursor = self.conexao.cursor()
+    def __init__(self):
+        self.conexao = None
+        self.cursor = None
 
     def conectar(self):
+        self.conexao = sqlite3.connect('base_cf.db')
+        self.cursor = self.conexao.cursor()
         return self.conexao
 
     def desconectar(self):
         self.conexao.close()
 
+    def criar_auxiliares(self):
+        sql = 'SELECT * FROM mes;'
+        return_sql = []
+        self.cursor.execute(sql)
+        for item in self.cursor:
+            return_sql.append(item)
+        if len(return_sql) > 0:
+            pass
+        else:
+            self.cursor.execute('INSERT INTO mes (id_mes, nome) VALUES (1, "Janeiro");')
+
+            self.cursor.execute('INSERT INTO mes (id_mes, nome) VALUES (2, "Fevereiro");')
+
+            self.cursor.execute('INSERT INTO mes (id_mes, nome) VALUES (3, "Março");')
+
+            self.conexao.commit()
+
+        sql = 'SELECT compra, t_parcela FROM total_compra WHERE id_compra = 1;'
+        return_sql = []
+        self.cursor.execute(sql)
+        for item in self.cursor:
+            return_sql.append(item)
+        if len(return_sql) > 0:
+            if return_sql[0][0] == 0:
+                pass
+            else:
+                self.cursor.execute('UPDATE total_compra SET compra = 0 WHERE id_compra = 1;')
+
+                self.cursor.execute('UPDATE total_compra SET t_parcela = 0 WHERE id_compra = 1;')
+
+                self.conexao.commit()
+
+        else:
+            self.cursor.execute('INSERT INTO total_compra (id_compra, compra, t_parcela) VALUES (1, 0, 0);')
+            self.conexao.commit()
+                    
+    def criar_tabelas(self):
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS categoria"
+                            "(id_cat INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+                            "nome VARCHAR(255) NOT NULL,"
+                            "limite_gasto DECIMAL(10,2) NOT NULL,"
+                            "minimo_gasto DECIMAL(10,2) NULL DEFAULT 0)")
+
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS mes"
+                            "(id_mes INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+                            "nome VARCHAR(45) NOT NULL)")
+
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS rendimento"
+                            "(id_red INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+                            "valor DECIMAL(10,2) NOT NULL,"
+                            "mes INTEGER NOT NULL,"
+                            "ano INTEGER NOT NULL,"
+                            "FOREIGN KEY (mes) REFERENCES mes(id_mes))")
+
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS salario"
+                            "(id_sal INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+                            "pagamento DECIMAL(10,2) NOT NULL,"
+                            "mes INTEGER NOT NULL,"
+                            "ano INTEGER NOT NULL,"
+                            "FOREIGN KEY (mes) REFERENCES mes(id_mes))")
+
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS total_compra"
+                            "(id_compra INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+                            "compra DECIMAL(10,2) NOT NULL,"
+                            "t_parcela INTEGER NOT NULL)")
+
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS valor"
+                            "(id_valor INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+                            "registro DECIMAL(10,2) NOT NULL, mes INTEGER NOT NULL,"
+                            "compra_total INTEGER NULL DEFAULT 1,"
+                            "categoria INTEGER NOT NULL,"
+                            "ANO INTEGER NOT NULL,"
+                            "nome_compra VARCHAR(100) NULL DEFAULT 'N/A',"
+                            "FOREIGN KEY (mes) REFERENCES mes(id_mes),"
+                            "FOREIGN KEY (compra_total) REFERENCES total_compra(id_compra),"
+                            "FOREIGN KEY (categoria) REFERENCES categoria(id_cat))")
+
     def select_ultimo(self, nome_id, tabela):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f'SELECT MAX({nome_id}) FROM {tabela}'
             self.cursor.execute(sql)
             for c1 in self.cursor:
                 return c1
+        else:
+            print('Sem conexão com o servidor.')
 
     def somar_gasto_compra(self, mes, an=ano.year):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f'SELECT SUM(registro) FROM valor WHERE mes = {mes} AND ano = {an}'
             self.cursor.execute(sql)
         for c1 in self.cursor:
             return c1
 
     def select_simples(self, coluna1, coluna2, tabela):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f"SELECT {coluna1}, {coluna2} FROM {tabela};"
             retorno = []
             self.cursor.execute(sql)
@@ -48,7 +124,7 @@ class Conector:
             print('Sem conexão com o servidor.')
 
     def select_simples_1col(self, tabela, coluna):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f"SELECT {coluna} FROM {tabela};"
             retorno = []
             self.cursor.execute(sql)
@@ -59,7 +135,7 @@ class Conector:
             print('Sem conexão com o servidor.')
 
     def select_composto(self, total_colunas, tabela, coluna1, colunap, pesquisa, *demais_colunas):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             match total_colunas:
                 case 0:
                     sql = f'SELECT {coluna1} FROM {tabela} WHERE {colunap} = "{pesquisa}"'
@@ -122,7 +198,7 @@ class Categoria:
         self.cursor = self.conexao.cursor()
 
     def inserir_categoria(self, nome, limite, minimo=0):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             if minimo != 0:
                 sql = 'INSERT INTO categoria (nome, limite_gasto, minimo_gasto) VALUES ("{}", "{}", "{}")'.format(nome,
                                                                                                                   limite,
@@ -139,7 +215,7 @@ class Categoria:
             print('Sem conexão com o servidor.')
 
     def alterar_categoria(self, id_cat, nome='', limite='', minimo=''):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             if nome != '' and limite == '' and minimo == '':
                 sql = 'UPDATE categoria SET nome = "{}" WHERE id_cat = "{}"'.format(nome, id_cat)
                 self.cursor.execute(sql)
@@ -182,13 +258,17 @@ class Categoria:
                 print(f'Nome alterado para {nome} e com novo valor mínimo de R${minimo}!')
             else:
                 print('Opção inválida.')
+        else:
+            print('Sem conexão com o servidor.')
 
     def somar_gasto_cat(self, mes, categoria):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f"SELECT SUM(registro) FROM valor WHERE mes = {mes} AND categoria = {categoria} AND ano = {ano.year};"
             self.cursor.execute(sql)
             for c1 in self.cursor:
                 return c1
+        else:
+            print('Sem conexão com o servidor.')
 
 
 class Compra:
@@ -197,7 +277,7 @@ class Compra:
         self.cursor = self.conexao.cursor()
 
     def adicionar_valor(self, valor, mes, categoria, an=ano.year, nome_compra='', total_compra=0):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             if total_compra != 0 and nome_compra != '':
                 sql = 'INSERT INTO valor (registro, mes, compra_total, categoria, ano, nome_compra) VALUES ("{}", "{}", "{}", "{}", "{}", "{}")' \
                     .format(valor, mes, total_compra, categoria, an, nome_compra)
@@ -222,7 +302,7 @@ class Compra:
             print('Sem conexão com o servidor.')
 
     def alterar_valor(self, novo_valor, id_valor, total_compra=0, novo_valorc=0):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             if total_compra == 0:
                 sql = 'UPDATE valor SET registro = "{}" WHERE id_valor = "{}"'.format(novo_valor, id_valor)
                 self.cursor.execute(sql)
@@ -241,14 +321,16 @@ class Compra:
             print('Sem conexão com servidor.')
 
     def deletar_valor(self, id_valor):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f'DELETE FROM valor WHERE id_valor = {id_valor}'
             self.cursor.execute(sql)
             self.conexao.commit()
             print(f'Valor de id {id_valor} removido com sucesso.')
+        else:
+            print('Sem conexão com o servidor.')
 
     def deletar_valor_mes(self, mes, ano_del, id_compra):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f'DELETE FROM valor WHERE mes = {mes} AND ano = {ano_del} AND compra_total = {id_compra}'
             self.cursor.execute(sql)
             self.conexao.commit()
@@ -256,7 +338,7 @@ class Compra:
             print('Sem conexão com servidor.')
 
     def remover_compras_r(self, mes_atual, ano_atual, id_compra):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f'DELETE FROM valor WHERE compra_total = {id_compra} AND mes >= {mes_atual} AND ano >= {ano_atual}'
             self.cursor.execute(sql)
             self.conexao.commit()
@@ -265,7 +347,7 @@ class Compra:
             print('Sem conexão com servidor.')
 
     def adicionar_compra_p(self, total_compra, parcelas):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = 'INSERT INTO total_compra (compra, t_parcela) VALUES ("{}", "{}")' \
                 .format(total_compra, parcelas)
             self.cursor.execute(sql)
@@ -274,7 +356,7 @@ class Compra:
             print('Sem conexão com o servidor.')
 
     def remover_compra_p(self, id_compra):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f'DELETE FROM valor WHERE compra_total = {id_compra}'
             sql2 = f'DELETE FROM total_compra WHERE id_compra = {id_compra}'
             self.cursor.execute(sql)
@@ -286,7 +368,7 @@ class Compra:
             print('Erro no servidor.')
 
     def antecipar_compra_p(self, id_compra, mes_atual, ano_atual, total_ante):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f'SELECT V.ano FROM valor V INNER JOIN total_compra T ON V.compra_total = T.id_compra WHERE V.compra_total = {id_compra}'
             sql2 = f'SELECT MIN(V.mes) as mes, MIN(V.ano) as ano FROM valor V INNER JOIN total_compra T ON V.compra_total = T.id_compra WHERE V.compra_total = {id_compra}'
             parcelas = []
@@ -334,7 +416,7 @@ class Compra:
             print('Erro no servidor.')
 
     def somar_gasto(self, mes):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f"SELECT SUM(registro) FROM valor WHERE mes = {mes};"
             self.cursor.execute(sql)
             for c1 in self.cursor:
@@ -349,7 +431,7 @@ class SalarioRendimento:
         self.cursor = self.conexao.cursor()
 
     def inserir_salario(self, salario, mes, an=ano.year):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = 'INSERT INTO salario (pagamento, mes, ano) VALUES ("{}", "{}", "{}")'.format(salario, mes, an)
             self.cursor.execute(sql)
             self.conexao.commit()
@@ -358,7 +440,7 @@ class SalarioRendimento:
             print('Sem conexão com o servidor.')
 
     def alterar_salario(self, salario, id_sal):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = 'UPDATE salario SET pagamento = "{}" WHERE id_sal = "{}"'.format(salario, id_sal)
             self.cursor.execute(sql)
             self.conexao.commit()
@@ -367,7 +449,7 @@ class SalarioRendimento:
             print('Sem conexão com servidor.')
 
     def deletar_salario(self, id_sal):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f'DELETE FROM salario WHERE id_sal = {id_sal}'
             self.cursor.execute(sql)
             self.conexao.commit()
@@ -376,7 +458,7 @@ class SalarioRendimento:
             print('Sem conexão com servidor.')
 
     def inserir_rendimento(self, rendimento, mes, an=ano.year):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = 'INSERT INTO rendimento (valor, mes, ano) VALUES ("{}", "{}", "{}")'.format(rendimento, mes, an)
             self.cursor.execute(sql)
             self.conexao.commit()
@@ -385,7 +467,7 @@ class SalarioRendimento:
             print('Sem conexão com o servidor.')
 
     def alterar_rendimento(self, rendimento, id_red):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = 'UPDATE rendimento SET valor = "{}" WHERE id_red = "{}"'.format(rendimento, id_red)
             self.cursor.execute(sql)
             self.conexao.commit()
@@ -394,7 +476,7 @@ class SalarioRendimento:
             print('Sem conexão com servidor.')
 
     def deletar_rendimento(self, id_red):
-        if self.conexao.is_connected():
+        if self.conexao is not None:
             sql = f'DELETE FROM rendimento WHERE id_red = {id_red}'
             self.cursor.execute(sql)
             self.conexao.commit()

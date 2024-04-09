@@ -6,7 +6,11 @@ data = datetime.datetime.now()
 ano = data.date()
 mes_atual = int(ano.month)
 an = int(ano.year)
-bd = Bd.Conector('localhost', 'root', 'root', 'controle_de_gastos')
+bd = Bd.Conector()
+bd.conectar()
+bd.criar_tabelas()
+bd.criar_auxiliares()
+bd.conexao = None
 categorias = Bd.Categoria(bd.conectar())
 compras = Bd.Compra(bd.conectar())
 salarios = Bd.SalarioRendimento(bd.conectar())
@@ -627,40 +631,31 @@ while True:
                                              'Digite um valor válido.', 10)
                 if escolha == 1:
                     while True:
-                        if contador > 0:
-                            c = Funcao.continuar(contador, 'verificar novamente?')
-                            if c == 0:
-                                contador = 0
-                                Ajustes.limpa_tela(1)
-                                break
-                            else:
-                                contador = 0
+                        tabela = Funcao.apresentar_compras(bd.conectar(), mes_atual, an)
+                        gasto_mes = bd.somar_gasto_compra(mes_atual)
+                        rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes_atual)
+                        if tabela == 0:
+                            sleep(3)
+                            break
+                        if gasto_mes[0] is None and rendimento_mes[0][0] is None:
+                            print('\nNão foram apresentados valores de rendimento e nem compras para esse mês.')
+                        elif rendimento_mes[0][0] is None:
+                            print('\nNão temos um salário registrado para este mês.')
+                            print(f'O total de gasto foi de R${gasto_mes[0]:.2f}.')
+                        elif rendimento_mes[1][0] is None:
+                            rendimento_total = rendimento_mes[0][0]
+                            print(f'\nSaldo total do mês: R${rendimento_total:.2f}.')
+                            print(f'O total de gasto foi de R${gasto_mes[0]:.2f}.')
+                            print(f'Saldo atual: R${rendimento_total - gasto_mes[0]:.2f}.')
                         else:
-                            tabela = Funcao.apresentar_compras(bd.conectar(), mes_atual, an)
-                            gasto_mes = bd.somar_gasto_compra(mes_atual)
-                            rendimento_mes = Funcao.rendimentos_totais_mes_a(bd.conectar(), mes_atual)
-                            if tabela == 0:
-                                sleep(3)
-                                break
-                            if gasto_mes[0] is None and rendimento_mes[0][0] is None:
-                                print('\nNão foram apresentados valores de rendimento e nem compras para esse mês.')
-                                contador += 1
-                            elif rendimento_mes[0][0] is None:
-                                print('\nNão temos um salário registrado para este mês.')
-                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
-                                contador += 1
-                            elif rendimento_mes[1][0] is None:
-                                rendimento_total = rendimento_mes[0][0]
-                                print(f'\nSaldo total do mês: R${rendimento_total}.')
-                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
-                                print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')
-                                contador += 1
-                            else:
-                                rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
-                                print(f'\nRendimento total do mês: R${rendimento_total}.')
-                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
-                                print(f'Saldo atual: R${rendimento_total - gasto_mes[0]}.')
-                                contador += 1
+                            rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
+                            print(f'\nRendimento total do mês: R${rendimento_total:.2f}.')
+                            print(f'O total de gasto foi de R${gasto_mes[0]:.2f}.')
+                            print(f'Saldo atual: R${rendimento_total - gasto_mes[0]:.2f}.')
+                        c = Funcao.continuar(1, "fechar a visão?")
+                        if c == 0:
+                            Ajustes.limpa_tela(1)
+                            break
                 elif escolha == 2:
                     while True:
                         if contador > 0:
@@ -699,19 +694,19 @@ while True:
                                 print('\nNão houve gastos neste mês.')
                                 contador += 1
                             elif rendimento_mes[0][0] is None:
-                                print(f'\nO total de gasto foi de R${gasto_mes[0]}.')
+                                print(f'\nO total de gasto foi de R${gasto_mes[0]:.2f}.')
                                 print('Não foi registrado um salário para este mês, por tanto não é possível calcular a sobra.')
                                 contador += 1
                             elif rendimento_mes[1][0] is None:
-                                print(f'\nRendimento total do mês é de R${rendimento_mes[0][0]}.')
-                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
-                                print(f'O saldo deste mês é de R$:{rendimento_mes[0][0] - gasto_mes[0]}.')
+                                print(f'\nRendimento total do mês é de R${rendimento_mes[0][0]:.2f}.')
+                                print(f'O total de gasto foi de R${gasto_mes[0]:.2f}.')
+                                print(f'O saldo deste mês é de R$:{rendimento_mes[0][0] - gasto_mes[0]:.2f}.')
                                 contador += 1
                             else:
                                 rendimento_total = rendimento_mes[0][0] + rendimento_mes[1][0]
-                                print(f'\nO total de rendimentos para este mês foi de R${rendimento_total}.')
-                                print(f'O total de gasto foi de R${gasto_mes[0]}.')
-                                print(f'O saldo restante é de R${rendimento_total - gasto_mes[0]}.')
+                                print(f'\nO total de rendimentos para este mês foi de R${rendimento_total:.2f}.')
+                                print(f'O total de gasto foi de R${gasto_mes[0]:.2f}.')
+                                print(f'O saldo restante é de R${rendimento_total - gasto_mes[0]:.2f}.')
                                 contador += 1
                 elif escolha == 3:
                     nomes_cat = bd.select_simples_1col('categoria', 'nome')
@@ -761,9 +756,9 @@ while True:
                                     print('\nNão foram registradas compras para este mês nesta categoria.')
                                     contador += 1
                                 else:
-                                    print(f'Para a categoria {cat} o limite mensal é de R${gasto_cat[0]}.')
-                                    print(f'Foram gastos R${tabela[0][0]} este mês!')
-                                    print(f'O saldo temporário considerando a diferença com o limite é de R${gasto_cat[0] - tabela[0][0]}.')
+                                    print(f'Para a categoria {cat} o limite mensal é de R${gasto_cat[0]:.2f}.')
+                                    print(f'Foram gastos R${tabela[0][0]:.2f} este mês!')
+                                    print(f'O saldo temporário considerando a diferença com o limite é de R${gasto_cat[0] - tabela[0][0]:.2f}.')
                                     contador += 1
                 elif escolha == 4:
                     print('Tudo bem, retornando ao menu anterior.')

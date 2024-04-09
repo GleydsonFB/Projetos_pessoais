@@ -1,5 +1,4 @@
-from .Ajustes import limpa_tela, valida_float, valida_int
-from .Bd import Conector
+from .Ajustes import limpa_tela, valida_int
 import datetime
 data = datetime.datetime.now()
 ano = data.date()
@@ -36,7 +35,7 @@ def escolher_mes():
 def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
     conexao = con
     table = PrettyTable()
-    if conexao.is_connected():
+    if conexao is not None:
         if mostrar_id is True and ano != 'nenhum':
             table.field_names = ['ID', 'Valor', 'Total da compra (0 se não for parcelada)', 'Categoria', 'Ano', 'Nome da compra']
             sql = f'SELECT V.id_valor, V.registro, C.compra, CA.nome, V.ano, V.nome_compra FROM valor V INNER JOIN total_compra C ' \
@@ -53,7 +52,7 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 cursor.execute(sql)
                 print('\nConfira os detalhes abaixo:\n')
                 for c1, c2, c3, c4, c5, c6 in cursor:
-                    table.add_row([c1, f"R${c2}", f"R${c3}", c4, c5, c6])
+                    table.add_row([c1, f"R${c2:.2f}", f"R${c3:.2f}", c4, c5, c6])
                 print(table)
                 return execucao
         elif mostrar_id is False and ano != 'nenhum':
@@ -72,7 +71,7 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 cursor.execute(sql)
                 print('\nConfira os dados abaixo:\n')
                 for c1, c2, c3, c4, c5 in cursor:
-                    table.add_row([f'R${c1}', f'R${c2}', c3, c4, c5])
+                    table.add_row([f'R${c1:.2f}', f'R${c2:.2f}', c3, c4, c5])
                 print(table)
                 return execucao
         else:
@@ -91,7 +90,7 @@ def apresentar_compras(con, mes, ano='nenhum', mostrar_id=False):
                 cursor.execute(sql)
                 print('\nConfira os detalhes abaixo:\n')
                 for c1, c2, c3, c4, c5, c6 in cursor:
-                    table.add_row([c1, f'R${c2}', f'R${c3}', c4, c5, c6])
+                    table.add_row([c1, f'R${c2:.2f}', f'R${c3:.2f}', c4, c5, c6])
                 print(table)
                 return execucao
     else:
@@ -102,7 +101,7 @@ def apresentar_salarios(con, mes, gasto=False):
     table = PrettyTable()
     table.field_names = ['ID', 'Salário', 'Ano']
     conexao = con
-    if conexao.is_connected():
+    if conexao is not None:
         sql = f'SELECT id_sal, pagamento, ano FROM salario WHERE mes = {mes}'
         cursor = conexao.cursor()
         cursor.execute(sql)
@@ -116,14 +115,14 @@ def apresentar_salarios(con, mes, gasto=False):
             cursor.execute(sql)
             print(f'\nConfira os detalhes abaixo:\n')
             for c1, c2, c3 in cursor:
-                table.add_row([c1, f'R${c2}', c3])
+                table.add_row([c1, f'R${c2:.2f}', c3])
             print(table)
             return ides
 
 
 def apresentar_rendimentos(con, mes, gasto=False):
     conexao = con
-    if conexao.is_connected():
+    if conexao is not None:
         sql = f'SELECT id_red, valor, ano FROM rendimento WHERE mes = {mes}'
         cursor = conexao.cursor()
         cursor.execute(sql)
@@ -148,7 +147,7 @@ def apresentar_categorias(con, nome='nenhum', mes=ano.month, an=ano.year):
     conexao = con
     ide = 0
     table = PrettyTable()
-    if conexao.is_connected():
+    if conexao is not None:
         if nome == 'nenhum':
             sql = 'SELECT id_cat, nome, limite_gasto, minimo_gasto FROM categoria;'
             cursor = conexao.cursor()
@@ -164,7 +163,7 @@ def apresentar_categorias(con, nome='nenhum', mes=ano.month, an=ano.year):
                 cursor.execute(sql)
                 print('\nSegue os dados das atuais categorias:\n')
                 for c1, c2, c3, c4 in cursor:
-                    table.add_row([c1, c2, f'R${c3}', f'R${c4}'])
+                    table.add_row([c1, c2, f'R${c3:.2f}', f'R${c4:.2f}'])
                 print(table)
                 return ides
         else:
@@ -190,7 +189,7 @@ def apresentar_categorias(con, nome='nenhum', mes=ano.month, an=ano.year):
                 table.field_names = ['Valor', 'Nome da compra', 'Total da compra(0 se não for parcelada)']
                 print(f'Confira os detalhes de gasto da categoria {nome} para o {mes}° mês de {an} abaixo:')
                 for c1, c2, c3, c4 in cursor:
-                    table.add_row([f'R${c1}', c2, f'R${c3}'])
+                    table.add_row([f'R${c1:.2f}', c2, f'R${c3:.2f}'])
                 print(table)
                 return listagem
     else:
@@ -199,7 +198,7 @@ def apresentar_categorias(con, nome='nenhum', mes=ano.month, an=ano.year):
 
 def escolher_compra_edit(con, ide, lista_id):
     conexao = con
-    if conexao.is_connected():
+    if conexao is not None:
         local = valida_int(ide, 'Digite um número inteiro', '')
         if local not in lista_id:
             print('ID digitado não está presente na selação. \nRetornando ao menu anterior.')
@@ -213,7 +212,7 @@ def escolher_compra_edit(con, ide, lista_id):
 def rendimentos_totais_mes_a(con, mes, an=ano.year):
     conexao = con
     totais = []
-    if conexao.is_connected():
+    if conexao is not None:
         sql = f'SELECT SUM(pagamento) FROM salario WHERE mes = {mes} AND ano = {an}'
         cursor = conexao.cursor()
         cursor.execute(sql)

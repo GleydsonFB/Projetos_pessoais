@@ -75,7 +75,7 @@ while True:
                                 print('Opção não corresponde a nenhuma categoria.')
                                 Ajustes.limpa_tela()
                             else:
-                                tipo_compra = Ajustes.valida_int('A compra será parcelada[1] ou à vista[2]? ', 'Opção inválida',
+                                tipo_compra = Ajustes.valida_int('A compra será parcelada[1] ou à vista[2] (se quiser voltar ao menu anterior, digite[0])? ', 'Opção inválida',
                                                                  'Devido as tentativas sem sucesso, a opção retrocedeu', 10)
                                 if tipo_compra == 0:
                                     break
@@ -653,7 +653,7 @@ while True:
                             print(f'O total de gasto foi de R${gasto_mes[0]:.2f}.')
                             print(f'Saldo atual: R${rendimento_total - gasto_mes[0]:.2f}.')
                         c = Funcao.continuar(1, "fechar a visão?")
-                        if c == 0:
+                        if c == 1:
                             Ajustes.limpa_tela(1)
                             break
                 elif escolha == 2:
